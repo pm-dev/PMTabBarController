@@ -1,0 +1,7 @@
+pod "PMRotatingPrismContainer", :path => "../PMRotatingPrismContainer.podspec"
+
+target "Demo" do
+end
+
+target "DemoTests" do
+end
