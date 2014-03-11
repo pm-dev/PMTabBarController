@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <Group
+      location = "group:Classes"
+      name = "Classes">
+      <Group
+         location = "group:ios"
+         name = "ios">
+         <FileRef
+            location = "group:PMRotatingPrismContainer.h">
+         </FileRef>
+         <FileRef
+            location = "group:PMRotatingPrismContainer.m">
+         </FileRef>
+      </Group>
+      <Group
+         location = "group:osx"
+         name = "osx">
+      </Group>
+   </Group>
+   <FileRef
+      location = "group:PMRotatingPrismContainer-iOSExample/PMRotatingPrismContainer-iOSExample.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:Pods/Pods.xcodeproj">
+   </FileRef>
+</Workspace>
