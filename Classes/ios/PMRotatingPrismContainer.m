@@ -115,8 +115,8 @@ typedef NS_ENUM(NSInteger, PanDirection)
         case UIGestureRecognizerStateChanged:
         {
 			// This shouldn't be needed if switching to an Edge Pan gesture
-			if ((delta.x < 0 && self.panDirection == PanDirectionPositive) ||
-				(delta.x > 0 && self.panDirection == PanDirectionNegative)) {
+			if ((delta.x < 0.0f && self.panDirection == PanDirectionPositive) ||
+				(delta.x > 0.0f && self.panDirection == PanDirectionNegative)) {
 				[self rotateEndedCancelled:YES];
 				[self rotateBeganWithVelocity:velocity];
 			}
@@ -170,12 +170,14 @@ typedef NS_ENUM(NSInteger, PanDirection)
 
 - (void) rotateBeganWithVelocity:(CGPoint)velocity
 {
-	self.panDirection = (velocity.x >= 0)? PanDirectionPositive : PanDirectionNegative;
+	self.panDirection = (velocity.x >= 0.0f)? PanDirectionPositive : PanDirectionNegative;
 	
 	[self setAnchorPoints];
 	self.appearingCover.hidden = NO;
 	self.topCover.hidden = NO;
 	self.appearing.hidden = NO;
+	self.topCover.layer.shouldRasterize = YES;
+	self.appearingCover.layer.shouldRasterize = YES;
 	self.appearingCover.alpha = CoverFullAlpha;
 	self.topCover.alpha = 0.0;
 	
@@ -229,6 +231,8 @@ typedef NS_ENUM(NSInteger, PanDirection)
 	self.panDirection = PanDirectionNone;
 	self.topCover.hidden = YES;
 	self.appearingCover.hidden = YES;
+	self.topCover.layer.shouldRasterize = NO;
+	self.appearingCover.layer.shouldRasterize = NO;
 	
 	NSString *notificationName = cancelled? PMRotatingPrismContainerRotationDidCancel : PMRotatingPrismContainerRotationDidComplete;
 	[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:self];

@@ -14,7 +14,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-	UINib *panelNib = [UINib nibWithNibName:@"Panel" bundle:nil];
+	UINib *panelNib = [UINib nibWithNibName:@"PMPanel" bundle:nil];
 	
 	PMPanel *panelOne = [panelNib instantiateWithOwner:nil options:nil][0];
 	panelOne.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
