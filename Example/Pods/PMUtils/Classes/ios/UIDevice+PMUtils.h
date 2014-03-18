@@ -12,7 +12,7 @@
 
 + (int)hardwareCores;
 
-+ (unsigned int)hardwareRam;
++ (size_t)hardwareRam;
 
 + (NSString *) machine;
 

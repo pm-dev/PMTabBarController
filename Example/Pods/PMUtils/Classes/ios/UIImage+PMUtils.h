@@ -18,11 +18,10 @@
 
 + (UIImage *) cachedImageWithData:(NSData *)data;
 
-- (UIImage *)applyBlurWithCrop:(CGRect)bounds
-						resize:(CGSize)size
-					blurRadius:(CGFloat)blurRadius
-					 tintColor:(UIColor *)tintColor
-		 saturationDeltaFactor:(CGFloat)saturationDeltaFactor
-					 maskImage:(UIImage *) maskImage;
-
+- (UIImage *)blurredImageWithRadius:(CGFloat)radius
+						 iterations:(NSUInteger)iterations
+					scaleDownFactor:(NSUInteger)scaleDownFactor
+						 saturation:(CGFloat)saturation
+						  tintColor:(UIColor *)tintColor
+							   crop:(CGRect)crop;
 @end

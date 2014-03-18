@@ -7,10 +7,12 @@
 //
 
 #import "PMRotatingPrismContainer.h"
+#import "PMUtils.h"
 
 static CGFloat const RequiredXVelocity = 100.0f;
 static CGFloat const RequiredDeltaDistance = 20.0f;
 static CGFloat const CoverFullAlpha = 0.5f;
+static CGFloat const BannerHeight = 30.0f;
 static NSTimeInterval const MaximumDuration = 0.5;
 
 NSString * const PMRotatingPrismContainerRotationWillBegin = @"PMRotatingPrismContainerRotationWillBegin";
@@ -26,10 +28,11 @@ typedef NS_ENUM(NSInteger, PanDirection)
 
 @interface PMRotatingPrismContainer ()
 
-@property (nonatomic, strong, readwrite) NSArray *panels;
+@property (nonatomic, strong, readwrite) PMOrderedDictionary *orderedPanels;
 @property (nonatomic, strong) UIPanGestureRecognizer *pan;
 @property (nonatomic, strong) UIView *appearingCover;
 @property (nonatomic, strong) UIView *topCover;
+@property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic) NSInteger topIndex;
 @property (nonatomic) PanDirection panDirection;
 
@@ -38,18 +41,24 @@ typedef NS_ENUM(NSInteger, PanDirection)
 @implementation PMRotatingPrismContainer
 
 
-- (instancetype) initWithPanels:(NSArray *)panels
+- (instancetype) initWithPanels:(NSDictionary *)panels
 {
 	self = [super init];
 	if (self) {
-		_panels = panels;
+		_orderedPanels = [PMOrderedDictionary dictionaryWithDictionary:panels];
 	}
 	return self;
 }
 
-+ (instancetype) rotatingPrismContainerWithPanels:(NSArray *)panels
++ (instancetype) rotatingPrismContainerWithPanels:(NSDictionary *)panels
 {
 	return [[[self class] alloc] initWithPanels:panels];
+}
+
+- (NSDictionary *) panels
+{
+	return [NSDictionary dictionaryWithObjects:self.panels.allValues
+									   forKeys:self.panels.allKeys];
 }
 
 - (BOOL) prefersStatusBarHidden
@@ -62,21 +71,24 @@ typedef NS_ENUM(NSInteger, PanDirection)
     [super viewDidLoad];
 	self.view.backgroundColor = [UIColor blackColor];
 
-	NSAssert(self.panels.count, @"At least one panel must be set before loading view");
-	self.topIndex = self.panels.count - 1;
+	NSAssert(self.orderedPanels.count, @"At least one panel must be set before loading view");
+	self.topIndex = self.orderedPanels.count - 1;
 	
-	for (UIView *panel in self.panels) {
+	for (NSString *title in self.orderedPanels) {
+		UIView *panel = self.orderedPanels[title];
 		panel.hidden = (panel != self.top);
-		panel.frame = self.view.bounds;
+		panel.frame = self.panelFrame;
 		[self.view addSubview:panel];
 	}
+	
+	
 
 //	self.pan = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
 //	self.pan.edges = UIRectEdgeLeft | UIRectEdgeRight;
-	if (self.panels.count > 1) {
+	if (self.orderedPanels.count > 1) {
 		
-		self.appearingCover = [[UIView alloc] initWithFrame:self.view.bounds];
-		self.topCover = [[UIView alloc] initWithFrame:self.view.bounds];
+		self.appearingCover = [[UIView alloc] initWithFrame:self.panelFrame];
+		self.topCover = [[UIView alloc] initWithFrame:self.panelFrame];
 		self.appearingCover.backgroundColor = self.topCover.backgroundColor = [UIColor blackColor];
 		self.appearingCover.alpha = self.topCover.alpha = 0.0f;
 		[self.view addSubview:self.appearingCover];
@@ -85,18 +97,30 @@ typedef NS_ENUM(NSInteger, PanDirection)
 		self.pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
 		[self.view addGestureRecognizer:self.pan];
 	}
+	
+	CGRect bannerFrame = self.view.bounds;
+	bannerFrame.size.height = BannerHeight;
+	UIView *banner = [[UIView alloc] initWithFrame:bannerFrame];
+	banner.backgroundColor = [UIColor blueColor];
+	banner.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+	[self.view addSubview:banner];
+	
+	self.titleLabel = [[UILabel alloc] initWithFrame:banner.bounds];
+	self.titleLabel.text = (NSString *)[self.orderedPanels keyAtIndex:self.topIndex];
+	[banner addSubview:self.titleLabel];
+	
 }
 
 - (UIView *) top
 {
-	return self.panels[self.topIndex];
+	return [self.orderedPanels objectForKey:[self.orderedPanels keyAtIndex:self.topIndex]];
 }
 
 - (UIView *) appearing
 {
 	switch (self.panDirection) {
-		case PanDirectionPositive:	return self.panels[[self previousIndex]];
-		case PanDirectionNegative:	return self.panels[[self nextIndex]];
+		case PanDirectionPositive:	return [self.orderedPanels objectForKey:[self.orderedPanels keyAtIndex:[self previousIndex]]];
+		case PanDirectionNegative:	return [self.orderedPanels objectForKey:[self.orderedPanels keyAtIndex:[self nextIndex]]];
 		case PanDirectionNone:		@throw([NSException exceptionWithName:@"Pan Direction Not Set" reason:NSLocalizedString(@"Pan Direction must be set when calling -appearing", nil) userInfo:nil]);
 	}
 }
@@ -121,7 +145,7 @@ typedef NS_ENUM(NSInteger, PanDirection)
 				[self rotateBeganWithVelocity:velocity];
 			}
 			
-			CGFloat percent =  fabsf(delta.x) / self.view.bounds.size.width;
+			CGFloat percent =  fabsf(delta.x) / self.panelFrame.size.width;
 			[self panToPercent:percent];
             break;
         }
@@ -164,8 +188,6 @@ typedef NS_ENUM(NSInteger, PanDirection)
 		case PanDirectionNegative:	self.topIndex = [self nextIndex]; break;
 		case PanDirectionNone:		@throw([NSException exceptionWithName:@"Pan Direction Not Set" reason:NSLocalizedString(@"Pan Direction must be set when calling -updateTopIndex", nil) userInfo:nil]);
 	}
-	
-	[self.view bringSubviewToFront:self.top];
 }
 
 - (void) rotateBeganWithVelocity:(CGPoint)velocity
@@ -222,17 +244,25 @@ typedef NS_ENUM(NSInteger, PanDirection)
 
 - (void) rotateEndedCancelled:(BOOL)cancelled
 {
-	for (UIView *panel in self.panels) {
+	for (NSString *title in self.orderedPanels) {
+		UIView *panel = self.orderedPanels[title];
 		panel.hidden = (panel != self.top);
-		panel.frame = self.view.bounds;
+		panel.frame = self.panelFrame;
 		panel.layer.transform = CATransform3DIdentity;
 	}
 	
-	self.panDirection = PanDirectionNone;
 	self.topCover.hidden = YES;
 	self.appearingCover.hidden = YES;
 	self.topCover.layer.shouldRasterize = NO;
 	self.appearingCover.layer.shouldRasterize = NO;
+	
+	self.titleLabel.text = (NSString *)[self.orderedPanels keyAtIndex:self.topIndex];
+	
+	if (cancelled) {
+		[self.view insertSubview:self.top aboveSubview:self.appearing];
+	}
+	
+	self.panDirection = PanDirectionNone;
 	
 	NSString *notificationName = cancelled? PMRotatingPrismContainerRotationDidCancel : PMRotatingPrismContainerRotationDidComplete;
 	[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:self];
@@ -258,7 +288,7 @@ typedef NS_ENUM(NSInteger, PanDirection)
 
 - (CGRect) appearingFrameWithPercent:(CGFloat)percent
 {
-	CGRect frame = self.view.bounds;
+	CGRect frame = self.panelFrame;
 	switch (self.panDirection) {
 		case PanDirectionPositive:	frame.origin.x = floorf(frame.size.width * (percent - 1.0f)); break;
 		case PanDirectionNegative:	frame.origin.x = floorf(frame.size.width * (1.0f - percent)); break;
@@ -269,7 +299,7 @@ typedef NS_ENUM(NSInteger, PanDirection)
 
 - (CGRect) topFrameWithPercent:(CGFloat)percent
 {
-	CGRect frame = self.view.bounds;
+	CGRect frame = self.panelFrame;
 	switch (self.panDirection) {
 		case PanDirectionPositive:	frame.origin.x = floorf(frame.size.width * percent); break;
 		case PanDirectionNegative:	frame.origin.x = floorf(-frame.size.width * percent); break;
@@ -299,7 +329,7 @@ typedef NS_ENUM(NSInteger, PanDirection)
 
 - (NSUInteger) nextIndex
 {
-	if (self.topIndex == self.panels.count-1) {
+	if (self.topIndex == self.orderedPanels.count-1) {
 		return 0;
 	}
 	return self.topIndex + 1;
@@ -308,9 +338,17 @@ typedef NS_ENUM(NSInteger, PanDirection)
 - (NSUInteger) previousIndex
 {
 	if (self.topIndex == 0) {
-		return self.panels.count - 1;
+		return self.orderedPanels.count - 1;
 	}
 	return self.topIndex - 1;
+}
+
+- (CGRect)panelFrame
+{
+	CGRect frame = self.view.bounds;
+	frame.origin.y += BannerHeight;
+	frame.size.height -= BannerHeight;
+	return frame;
 }
 
 - (NSTimeInterval) durationForVelocity:(CGPoint)velocity
@@ -324,7 +362,7 @@ typedef NS_ENUM(NSInteger, PanDirection)
 - (CGFloat) distanceRemaining
 {
 	switch (self.panDirection) {
-		case PanDirectionPositive:	return self.view.bounds.size.width - self.top.frame.origin.x;
+		case PanDirectionPositive:	return self.panelFrame.size.width - self.top.frame.origin.x;
 		case PanDirectionNegative:	return self.top.frame.origin.x;
 		case PanDirectionNone:		@throw([NSException exceptionWithName:@"Pan Direction Not Set" reason:NSLocalizedString(@"Pan Direction must be set when calling -distanceRemaining:", nil) userInfo:nil]);
 	}

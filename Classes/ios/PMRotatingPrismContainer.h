@@ -14,10 +14,10 @@ extern NSString * const PMRotatingPrismContainerRotationDidCancel;
 
 @interface PMRotatingPrismContainer : UIViewController
 
-@property (strong, nonatomic, readonly) NSArray *panels;
+- (NSDictionary *) panels;
 
-- (instancetype) initWithPanels:(NSArray *)panels;
+- (instancetype) initWithPanels:(NSDictionary *)panels;
 
-+ (instancetype) rotatingPrismContainerWithPanels:(NSArray *)panels;
++ (instancetype) rotatingPrismContainerWithPanels:(NSDictionary *)panels;
 
 @end

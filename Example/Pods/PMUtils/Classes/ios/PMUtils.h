@@ -20,5 +20,6 @@
 #import "NSThread+PMUtils.h"
 #import "NSIndexPath+PMUtils.h"
 #import "UITableView+PMUtils.h"
+#import "PMOrderedDictionary.h"
 
 #endif

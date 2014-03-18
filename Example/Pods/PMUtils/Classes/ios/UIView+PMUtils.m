@@ -21,27 +21,27 @@
 	return [UINib nibWithNibName:[self nibName] bundle:nil];
 }
 
-- (UIImage *) blurredViewWithCrop:(CGRect)bounds
-						   resize:(CGSize)size
-					   blurRadius:(CGFloat)blurRadius
-						tintColor:(UIColor *)tintColor
-			saturationDeltaFactor:(CGFloat)saturationDeltaFactor
-						maskImage:(UIImage *)maskImage
+- (UIImage *)blurredViewWithRadius:(CGFloat)radius
+						 iterations:(NSUInteger)iterations
+					scaleDownFactor:(NSUInteger)scaleDownFactor
+						 saturation:(CGFloat)saturation
+						  tintColor:(UIColor *)tintColor
+							   crop:(CGRect)crop
 {
-	UIGraphicsBeginImageContextWithOptions(bounds.size, YES, 1.0f);
-	
-	[self drawViewHierarchyInRect:CGRectMake(0, 0, bounds.size.width, bounds.size.height) afterScreenUpdates:NO];
+	UIGraphicsBeginImageContextWithOptions(crop.size, YES, 1.0f);
+
+	[self drawViewHierarchyInRect:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height) afterScreenUpdates:NO];
 	
 	UIImage *snapshot = UIGraphicsGetImageFromCurrentImageContext();
 	
 	UIGraphicsEndImageContext();
 	
-	return [snapshot applyBlurWithCrop:bounds
-								resize:size
-							blurRadius:blurRadius
-							 tintColor:tintColor
-				 saturationDeltaFactor:saturationDeltaFactor
-							 maskImage:maskImage];
+	return 	[snapshot blurredImageWithRadius:radius
+								  iterations:iterations
+							 scaleDownFactor:scaleDownFactor
+								  saturation:saturation
+								   tintColor:tintColor
+										crop:crop];
 }
 
 @end

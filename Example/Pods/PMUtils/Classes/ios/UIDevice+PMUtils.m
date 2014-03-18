@@ -24,7 +24,7 @@
     return numberOfCores;
 }
 
-+ (unsigned int)hardwareRam
++ (size_t)hardwareRam
 {
 	int mib[] = { CTL_HW, HW_PHYSMEM };
 	size_t mem;

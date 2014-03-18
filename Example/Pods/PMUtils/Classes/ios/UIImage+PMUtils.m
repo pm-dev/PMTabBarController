@@ -10,6 +10,9 @@
 #import <ImageIO/ImageIO.h>
 #import <Accelerate/Accelerate.h>
 
+static NSUInteger const bitsPerComponent = 8;
+static NSUInteger const bytesPerPixel = 4;
+
 @implementation UIImage (PMUtils)
 
 - (UIImage *) makeResizableHorizontally:(BOOL)horizontal vertically:(BOOL)vertical;
@@ -83,198 +86,172 @@
 	return nil;
 }
 
-static NSUInteger const ScaleDownFactor = 4;
+- (UIImage *)blurredImageWithRadius:(CGFloat)radius
+						 iterations:(NSUInteger)iterations
+					scaleDownFactor:(NSUInteger)scaleDownFactor
+						 saturation:(CGFloat)saturation
+						  tintColor:(UIColor *)tintColor
+							   crop:(CGRect)crop
+{
+    //image must be nonzero size
+    if (floorf(self.size.width) * floorf(self.size.height) <= 0.0f) return self;
+	
+	if (CGRectIsEmpty(crop)) {
+		crop = CGRectMake(0, 0, self.size.width, self.size.height);
+	}
+	CGImageRef sourceImageRef = CGImageCreateWithImageInRect(self.CGImage, crop);
+	
+	CGColorSpaceRef sourceColorRef = CGImageGetColorSpace(sourceImageRef);
+	CGBitmapInfo sourceBitmapInfo = CGImageGetBitmapInfo(sourceImageRef);
 
-- (UIImage *)applyBlurWithCrop:(CGRect) bounds resize:(CGSize) size blurRadius:(CGFloat) blurRadius tintColor:(UIColor *) tintColor saturationDeltaFactor:(CGFloat) saturationDeltaFactor maskImage:(UIImage *) maskImage {
+	// scale down image
+	NSUInteger sourceWidth = CGImageGetWidth(sourceImageRef);
+	NSUInteger sourceHeight = CGImageGetHeight(sourceImageRef);
 	
-    if (self.size.width < 1 || self.size.height < 1) {
-        NSLog (@"*** error: invalid size: (%.2f x %.2f). Both dimensions must be >= 1: %@", self.size.width, self.size.height, self);
-        return nil;
-    }
-    
-    if (!self.CGImage) {
-        NSLog (@"*** error: image must be backed by a CGImage: %@", self);
-        return nil;
-    }
-    
-    if (maskImage && !maskImage.CGImage) {
-        NSLog (@"*** error: maskImage must be backed by a CGImage: %@", maskImage);
-        return nil;
-    }
+	unsigned char *sourceData = (unsigned char*) calloc(sourceWidth * sourceHeight * bytesPerPixel, sizeof(unsigned char));
 	
-    //Crop
-    UIImage *outputImage = nil;
-    
-    CGImageRef imageRef = CGImageCreateWithImageInRect([self CGImage], bounds);
-    outputImage = [UIImage imageWithCGImage:imageRef];
-    
-    CGImageRelease(imageRef);
-    
-    //Re-Size
-    CGImageRef sourceRef = [outputImage CGImage];
-    NSUInteger sourceWidth = CGImageGetWidth(sourceRef);
-    NSUInteger sourceHeight = CGImageGetHeight(sourceRef);
-    
-    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    
-    unsigned char *sourceData = (unsigned char*) calloc(sourceHeight * sourceWidth * 4, sizeof(unsigned char));
-    
-    NSUInteger bytesPerPixel = 4;
-    NSUInteger sourceBytesPerRow = bytesPerPixel * sourceWidth;
-    NSUInteger bitsPerComponent = 8;
-    
-    CGContextRef context = CGBitmapContextCreate(sourceData, sourceWidth, sourceHeight, bitsPerComponent, sourceBytesPerRow, colorSpace, kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Big);
-    
-    CGContextDrawImage(context, CGRectMake(0, 0, sourceWidth, sourceHeight), sourceRef);
-    CGContextRelease(context);
-    
-    NSUInteger destWidth = (NSUInteger) size.width / ScaleDownFactor;
-    NSUInteger destHeight = (NSUInteger) size.height / ScaleDownFactor;
-    NSUInteger destBytesPerRow = bytesPerPixel * destWidth;
-    
-    unsigned char *destData = (unsigned char*) calloc(destHeight * destWidth * 4, sizeof(unsigned char));
-    
-    vImage_Buffer src = {
+	vImage_Buffer sourceBuffer = {
         .data = sourceData,
         .height = sourceHeight,
         .width = sourceWidth,
-        .rowBytes = sourceBytesPerRow
+        .rowBytes = CGImageGetBytesPerRow(sourceImageRef)
     };
-    
-    vImage_Buffer dest = {
-        .data = destData,
-        .height = destHeight,
-        .width = destWidth,
-        .rowBytes = destBytesPerRow
-    };
-    
-    vImageScale_ARGB8888 (&src, &dest, NULL, kvImageNoInterpolation);
-    
-    free(sourceData);
-    
-    CGContextRef destContext = CGBitmapContextCreate(destData, destWidth, destHeight, bitsPerComponent, destBytesPerRow, colorSpace, kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Big);
-    
-    CGImageRef destRef = CGBitmapContextCreateImage(destContext);
-    
-    outputImage = [UIImage imageWithCGImage:destRef];
-    
-    CGImageRelease(destRef);
-    
-    CGColorSpaceRelease(colorSpace);
-    CGContextRelease(destContext);
-    
-    free(destData);
-    
-    //Blur
-    CGRect imageRect = { CGPointZero, outputImage.size };
-    
-    BOOL hasBlur = blurRadius > __FLT_EPSILON__;
-    BOOL hasSaturationChange = fabs(saturationDeltaFactor - 1.) > __FLT_EPSILON__;
-    
-    if (hasBlur || hasSaturationChange) {
+	vImage_Buffer destBuffer = sourceBuffer;
+	CGImageRef scaledImageRef = sourceImageRef;
+	
+	if (scaleDownFactor > 1)
+	{
+		CGContextRef context = CGBitmapContextCreate(sourceData,
+													 sourceBuffer.width,
+													 sourceBuffer.height,
+													 bitsPerComponent,
+													 sourceBuffer.rowBytes,
+													 sourceColorRef,
+													 sourceBitmapInfo);
 		
-        UIGraphicsBeginImageContextWithOptions(outputImage.size, NO, 1);
-        
-        CGContextRef effectInContext = UIGraphicsGetCurrentContext();
-        
-        CGContextScaleCTM(effectInContext, 1.0, -1.0);
-        CGContextTranslateCTM(effectInContext, 0, -outputImage.size.height);
-        CGContextDrawImage(effectInContext, imageRect, outputImage.CGImage);
+		CGContextDrawImage(context,
+						   CGRectMake(0, 0, sourceBuffer.width, sourceBuffer.height),
+						   sourceImageRef);
 		
-        vImage_Buffer effectInBuffer;
-        
-        effectInBuffer.data     = CGBitmapContextGetData(effectInContext);
-        effectInBuffer.width    = CGBitmapContextGetWidth(effectInContext);
-        effectInBuffer.height   = CGBitmapContextGetHeight(effectInContext);
-        effectInBuffer.rowBytes = CGBitmapContextGetBytesPerRow(effectInContext);
+		CGContextRelease(context);
 		
-        UIGraphicsBeginImageContextWithOptions(outputImage.size, NO, 1);
-        
-        CGContextRef effectOutContext = UIGraphicsGetCurrentContext();
-        vImage_Buffer effectOutBuffer;
-        
-        effectOutBuffer.data     = CGBitmapContextGetData(effectOutContext);
-        effectOutBuffer.width    = CGBitmapContextGetWidth(effectOutContext);
-        effectOutBuffer.height   = CGBitmapContextGetHeight(effectOutContext);
-        effectOutBuffer.rowBytes = CGBitmapContextGetBytesPerRow(effectOutContext);
+		NSUInteger destWidth = sourceBuffer.width / scaleDownFactor;
+		NSUInteger destHeight = sourceBuffer.height / scaleDownFactor;
 		
-        if (hasBlur) {
-            CGFloat inputRadius = blurRadius * 1;
-            NSUInteger radius = floor(inputRadius * 3. * sqrt(2 * M_PI) / 4 + 0.5);
-            
-            if (radius % 2 != 1) {
-                radius += 1;
-            }
-            
-            vImageBoxConvolve_ARGB8888(&effectInBuffer, &effectOutBuffer, NULL, 0, 0, radius, radius, 0, kvImageEdgeExtend);
-            vImageBoxConvolve_ARGB8888(&effectOutBuffer, &effectInBuffer, NULL, 0, 0, radius, radius, 0, kvImageEdgeExtend);
-            vImageBoxConvolve_ARGB8888(&effectInBuffer, &effectOutBuffer, NULL, 0, 0, radius, radius, 0, kvImageEdgeExtend);
-        }
-        
-        BOOL effectImageBuffersAreSwapped = NO;
-        
-        if (hasSaturationChange) {
-            
-            CGFloat s = saturationDeltaFactor;
-            CGFloat floatingPointSaturationMatrix[] = {
-                0.0722 + 0.9278 * s,  0.0722 - 0.0722 * s,  0.0722 - 0.0722 * s,  0,
-                0.7152 - 0.7152 * s,  0.7152 + 0.2848 * s,  0.7152 - 0.7152 * s,  0,
-                0.2126 - 0.2126 * s,  0.2126 - 0.2126 * s,  0.2126 + 0.7873 * s,  0,
-				0,                    0,                    0,  1,
-            };
-            
-            const int32_t divisor = 256;
-            NSUInteger matrixSize = sizeof(floatingPointSaturationMatrix)/sizeof(floatingPointSaturationMatrix[0]);
-            int16_t saturationMatrix[matrixSize];
-            
-            for (NSUInteger i = 0; i < matrixSize; ++i) {
-                saturationMatrix[i] = (int16_t)roundf(floatingPointSaturationMatrix[i] * divisor);
-            }
-            
-            if (hasBlur) {
-                vImageMatrixMultiply_ARGB8888(&effectOutBuffer, &effectInBuffer, saturationMatrix, divisor, NULL, NULL, kvImageNoFlags);
-                effectImageBuffersAreSwapped = YES;
-            } else {
-                vImageMatrixMultiply_ARGB8888(&effectInBuffer, &effectOutBuffer, saturationMatrix, divisor, NULL, NULL, kvImageNoFlags);
-            }
-        }
-        
-        if (!effectImageBuffersAreSwapped)
-            outputImage = UIGraphicsGetImageFromCurrentImageContext();
-		UIGraphicsEndImageContext();
+		unsigned char *destData = (unsigned char*) calloc(destWidth * destHeight * bytesPerPixel, sizeof(unsigned char));
 		
-        if (effectImageBuffersAreSwapped)
-            outputImage = UIGraphicsGetImageFromCurrentImageContext();
-		UIGraphicsEndImageContext();
+		destBuffer.data = destData;
+		destBuffer.height = destHeight;
+		destBuffer.width = destWidth;
+		destBuffer.rowBytes = bytesPerPixel * destWidth;
+		
+		vImageScale_ARGB8888 (&sourceBuffer, &destBuffer, NULL, kvImageNoInterpolation);
+		
+		free(sourceData);
+		
+		CGContextRef scaledContext = CGBitmapContextCreate(destData,
+														   destBuffer.width,
+														   destBuffer.height,
+														   bitsPerComponent,
+														   destBuffer.rowBytes,
+														   sourceColorRef,
+														   sourceBitmapInfo);
+		
+		scaledImageRef = CGBitmapContextCreateImage(scaledContext);
+		CGContextRelease(scaledContext);
+		free(destData);
+	}
+	
+	CGImageRelease(sourceImageRef);
+	
+	// blur
+    //boxsize must be an odd integer
+    uint32_t boxSize = (uint32_t)(radius * self.scale);
+    if (boxSize % 2 == 0) boxSize ++;
+    
+	// setup image buffers for blurring
+	sourceBuffer.width = destBuffer.width;
+	sourceBuffer.height = destBuffer.height;
+	sourceBuffer.rowBytes = destBuffer.rowBytes;
+	size_t bytes = sourceBuffer.rowBytes * sourceBuffer.height;
+    sourceBuffer.data = malloc(bytes);
+    destBuffer.data = malloc(bytes);
+    
+    //create temp buffer
+    void *tempBuffer = malloc((size_t)vImageBoxConvolve_ARGB8888(&sourceBuffer,
+																 &destBuffer, NULL, 0, 0, boxSize, boxSize,
+                                                                 NULL, kvImageEdgeExtend + kvImageGetTempBufferSize));
+    
+    //copy image data
+    CFDataRef dataSource = CGDataProviderCopyData(CGImageGetDataProvider(scaledImageRef));
+    memcpy(sourceBuffer.data, CFDataGetBytePtr(dataSource), bytes);
+    CFRelease(dataSource);
+	CGImageRelease(scaledImageRef);
+    
+    for (NSUInteger i = 0; i < iterations; i++)
+    {
+        //perform blur
+        vImageBoxConvolve_ARGB8888(&sourceBuffer, &destBuffer, tempBuffer, 0, 0, boxSize, boxSize, NULL, kvImageEdgeExtend);
+        
+        //swap buffers
+        void *temp = sourceBuffer.data;
+        sourceBuffer.data = destBuffer.data;
+        destBuffer.data = temp;
     }
+    free(tempBuffer);
+    
+    //create image context from buffer
+    CGContextRef ctx = CGBitmapContextCreate(sourceBuffer.data,
+											 sourceBuffer.width,
+											 sourceBuffer.height,
+                                             bitsPerComponent,
+											 sourceBuffer.rowBytes,
+											 sourceColorRef,
+                                             sourceBitmapInfo);
+    
+	BOOL hasSaturationChange = fabs(saturation - 1.) > __FLT_EPSILON__;
+	if (hasSaturationChange)
+	{
+		CGFloat s = saturation;
+		CGFloat floatingPointSaturationMatrix[] = {
+			0.0722 + 0.9278 * s,  0.0722 - 0.0722 * s,  0.0722 - 0.0722 * s,  0,
+			0.7152 - 0.7152 * s,  0.7152 + 0.2848 * s,  0.7152 - 0.7152 * s,  0,
+			0.2126 - 0.2126 * s,  0.2126 - 0.2126 * s,  0.2126 + 0.7873 * s,  0,
+			0,                    0,                    0,					  1,
+		};
+		
+		const int32_t divisor = 256;
+		NSUInteger matrixSize = sizeof(floatingPointSaturationMatrix)/sizeof(floatingPointSaturationMatrix[0]);
+		int16_t saturationMatrix[matrixSize];
+		
+		for (NSUInteger i = 0; i < matrixSize; ++i) {
+			saturationMatrix[i] = (int16_t)roundf(floatingPointSaturationMatrix[i] * divisor);
+		}
+		
+		vImageMatrixMultiply_ARGB8888(&destBuffer,
+									  &sourceBuffer,
+									  saturationMatrix,
+									  divisor,
+									  NULL,
+									  NULL,
+									  kvImageNoFlags);
+	}
 	
-    UIGraphicsBeginImageContextWithOptions(outputImage.size, NO, 1);
-    CGContextRef outputContext = UIGraphicsGetCurrentContext();
-    CGContextScaleCTM(outputContext, 1.0, -1.0);
-    CGContextTranslateCTM(outputContext, 0, -outputImage.size.height);
-	
-    CGContextDrawImage(outputContext, imageRect, outputImage.CGImage);
-	
-    if (hasBlur) {
-        CGContextSaveGState(outputContext);
-        if (maskImage) {
-            CGContextClipToMask(outputContext, imageRect, maskImage.CGImage);
-        }
-        CGContextDrawImage(outputContext, imageRect, outputImage.CGImage);
-        CGContextRestoreGState(outputContext);
+    //apply tint
+    if (tintColor && CGColorGetAlpha(tintColor.CGColor) > 0.0f)
+    {
+        CGContextSetFillColorWithColor(ctx, tintColor.CGColor);
+        CGContextFillRect(ctx, CGRectMake(0, 0, sourceBuffer.width, sourceBuffer.height));
     }
-	
-    if (tintColor) {
-        CGContextSaveGState(outputContext);
-        CGContextSetFillColorWithColor(outputContext, tintColor.CGColor);
-        CGContextFillRect(outputContext, imageRect);
-        CGContextRestoreGState(outputContext);
-    }
-	
-    outputImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-	
-    return outputImage;
+
+    //create image from context
+    CGImageRef blurredImageRef = CGBitmapContextCreateImage(ctx);
+    UIImage *image = [UIImage imageWithCGImage:blurredImageRef scale:self.scale orientation:self.imageOrientation];
+    CGImageRelease(blurredImageRef);
+    CGContextRelease(ctx);
+    free(sourceBuffer.data);
+	free(destBuffer.data);
+    return image;
 }
 
 

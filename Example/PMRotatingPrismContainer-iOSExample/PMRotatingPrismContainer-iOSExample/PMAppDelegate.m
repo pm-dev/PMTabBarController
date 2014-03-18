@@ -40,7 +40,8 @@
 	panelFour.label.text = @"Four, Four, Four, Four";
 	panelFour.image.image = [UIImage imageNamed:@"kobe.jpg"];
 
-	NSArray *panels = [NSArray arrayWithObjects:panelOne,panelTwo, panelThree, panelFour, nil];
+	NSDictionary *panels = [NSDictionary dictionaryWithObjects:@[panelOne,panelTwo, panelThree, panelFour]
+												  forKeys:@[@"Paul", @"Chris", @"Lebron", @"Kobe"]];
 	PMRotatingPrismContainer *rpc = [PMRotatingPrismContainer rotatingPrismContainerWithPanels:panels];
 
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];

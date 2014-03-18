@@ -1,7 +1,7 @@
 PODS:
   - PMRotatingPrismContainer (0.0.1):
     - PMUtils (~> 0.0.1)
-  - PMUtils (0.0.1)
+  - PMUtils (0.0.3)
 
 DEPENDENCIES:
   - PMRotatingPrismContainer (from `../PMRotatingPrismContainer.podspec`)
@@ -11,7 +11,7 @@ EXTERNAL SOURCES:
     :path: ../PMRotatingPrismContainer.podspec
 
 SPEC CHECKSUMS:
-  PMRotatingPrismContainer: 080c411567d6ce1c336bc555fba5cb4de02aaccd
-  PMUtils: d725803c11b9a38d7c8d2f82fa2daddcaa083cff
+  PMRotatingPrismContainer: 1a2f83b3b87ef36d07b39f0a30863566f4c632cd
+  PMUtils: 737160520fc7c301fe2be1e89cee1650ea8af065
 
 COCOAPODS: 0.29.0

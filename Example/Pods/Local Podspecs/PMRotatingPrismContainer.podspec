@@ -5,7 +5,7 @@ Pod::Spec.new do |s|
   s.homepage         = "https://github.com/petermeyers1/PMRotatingPrismContainer"
   s.license          = 'MIT'
   s.author           = { "Peter Meyers" => "petermeyers1@gmail.com" }
-  s.source           = { :git => "git@github.com:petermeyers1/PMRotatingPrismContainer.git", :tag => s.version.to_s }
+  s.source           = { :git => "git@github.com:petermeyers1/#{s.name}.git", :tag => s.version.to_s }
   s.platform         = :ios, '7.0'
   s.ios.deployment_target = '7.0'
   s.requires_arc     = true

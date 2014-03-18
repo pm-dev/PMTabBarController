@@ -21,7 +21,7 @@
 {
 	unsigned char	sha1Bytes[CC_SHA1_DIGEST_LENGTH];
 	
-	if (CC_SHA1([self UTF8String], [self lengthOfBytesUsingEncoding:NSUTF8StringEncoding], sha1Bytes))
+	if (CC_SHA1([self UTF8String], (CC_LONG)[self lengthOfBytesUsingEncoding:NSUTF8StringEncoding], sha1Bytes))
 	{
 		NSData		*data		= [NSData dataWithBytes:sha1Bytes length:CC_SHA1_DIGEST_LENGTH];
 		

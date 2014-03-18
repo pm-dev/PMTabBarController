@@ -14,11 +14,10 @@
 
 + (UINib *) nib;
 
-- (UIImage *) blurredViewWithCrop:(CGRect)bounds
-						   resize:(CGSize)size
-					   blurRadius:(CGFloat)blurRadius
-						tintColor:(UIColor *)tintColor
-			saturationDeltaFactor:(CGFloat)saturationDeltaFactor
-						maskImage:(UIImage *)maskImage;
-
+- (UIImage *)blurredViewWithRadius:(CGFloat)radius
+						iterations:(NSUInteger)iterations
+				   scaleDownFactor:(NSUInteger)scaleDownFactor
+						saturation:(CGFloat)saturation
+						 tintColor:(UIColor *)tintColor
+							  crop:(CGRect)crop;
 @end
