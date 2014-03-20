@@ -7,6 +7,7 @@
 //
 
 #import "PMRotatingPrismContainer.h"
+#import "PMCircularCollectionView.h"
 #import "PMUtils.h"
 
 static CGFloat const RequiredXVelocity = 100.0f;
@@ -29,10 +30,10 @@ typedef NS_ENUM(NSInteger, PanDirection)
 @interface PMRotatingPrismContainer ()
 
 @property (nonatomic, strong, readwrite) PMOrderedDictionary *orderedPanels;
-@property (nonatomic, strong) UIPanGestureRecognizer *pan;
 @property (nonatomic, strong) UIView *appearingCover;
 @property (nonatomic, strong) UIView *topCover;
 @property (nonatomic, strong) UILabel *titleLabel;
+@property (nonatomic, strong) PMCircularCollectionView *titleBanner;
 @property (nonatomic) NSInteger topIndex;
 @property (nonatomic) PanDirection panDirection;
 
@@ -74,17 +75,16 @@ typedef NS_ENUM(NSInteger, PanDirection)
 	NSAssert(self.orderedPanels.count, @"At least one panel must be set before loading view");
 	self.topIndex = self.orderedPanels.count - 1;
 	
+    NSMutableArray *titleLabels = [[NSMutableArray alloc] initWithCapacity:self.orderedPanels.count];
+    
 	for (NSString *title in self.orderedPanels) {
 		UIView *panel = self.orderedPanels[title];
 		panel.hidden = (panel != self.top);
 		panel.frame = self.panelFrame;
+        [titleLabels addObject:[self newTitleLabel:title]];
 		[self.view addSubview:panel];
 	}
-	
-	
 
-//	self.pan = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
-//	self.pan.edges = UIRectEdgeLeft | UIRectEdgeRight;
 	if (self.orderedPanels.count > 1) {
 		
 		self.appearingCover = [[UIView alloc] initWithFrame:self.panelFrame];
@@ -94,21 +94,39 @@ typedef NS_ENUM(NSInteger, PanDirection)
 		[self.view addSubview:self.appearingCover];
 		[self.view addSubview:self.topCover];
 		
-		self.pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
-		[self.view addGestureRecognizer:self.pan];
+        UIScreenEdgePanGestureRecognizer *leftEdgePan = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
+        leftEdgePan.edges = UIRectEdgeLeft;
+        UIScreenEdgePanGestureRecognizer *rightEdgePan = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
+        rightEdgePan.edges = UIRectEdgeRight;
+        
+        [self.view addGestureRecognizer:leftEdgePan];
+		[self.view addGestureRecognizer:rightEdgePan];
 	}
 	
-	CGRect bannerFrame = self.view.bounds;
-	bannerFrame.size.height = BannerHeight;
-	UIView *banner = [[UIView alloc] initWithFrame:bannerFrame];
-	banner.backgroundColor = [UIColor blueColor];
-	banner.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-	[self.view addSubview:banner];
-	
-	self.titleLabel = [[UILabel alloc] initWithFrame:banner.bounds];
-	self.titleLabel.text = (NSString *)[self.orderedPanels keyAtIndex:self.topIndex];
-	[banner addSubview:self.titleLabel];
-	
+    
+    CGRect frame = {0, 0, self.view.bounds.size.width, BannerHeight };
+
+    UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
+    layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+    layout.minimumInteritemSpacing = 50.0f;
+    
+    self.titleBanner = [[PMCircularCollectionView alloc] initWithFrame:frame collectionViewLayout:layout];
+    self.titleBanner.views = titleLabels;
+    self.titleBanner.backgroundColor = [UIColor blueColor];
+    [self.view addSubview:self.titleBanner];
+}
+
+- (UILabel *) newTitleLabel:(NSString *)title
+{
+    UILabel *label = [UILabel new];
+    label.text = title;
+    label.backgroundColor = [UIColor orangeColor];
+//    label.textAlignment = NSTextAlignmentCenter;
+    [label sizeToFit];
+//    CGRect frame = label.frame;
+//    frame.size.width += 50.0f;
+//    label.frame = frame;
+    return label;
 }
 
 - (UIView *) top

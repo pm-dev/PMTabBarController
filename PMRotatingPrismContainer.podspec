@@ -1,8 +1,8 @@
 Pod::Spec.new do |s|
   s.name             = "PMRotatingPrismContainer"
-  s.version          = "0.0.1"
+  s.version          = "0.0.2"
   s.summary          = "A container for view controllers. Upon panning left or right, the user will flip through view controllers as if rotating a prism."
-  s.homepage         = "https://github.com/petermeyers1/PMRotatingPrismContainer"
+  s.homepage         = "https://github.com/petermeyers1/#{s.name}"
   s.license          = 'MIT'
   s.author           = { "Peter Meyers" => "petermeyers1@gmail.com" }
   s.source           = { :git => "git@github.com:petermeyers1/#{s.name}.git", :tag => s.version.to_s }
@@ -14,5 +14,6 @@ Pod::Spec.new do |s|
   s.osx.exclude_files = 'Classes/ios'
   s.public_header_files = 'Classes/**/*.h'
   s.frameworks       = 'Foundation', 'CoreGraphics', 'UIKit'
-  s.dependency 'PMUtils', '~> 0.0.1'
+  s.dependency 'PMUtils'
+  s.dependency 'PMCircularCollectionView'
 end

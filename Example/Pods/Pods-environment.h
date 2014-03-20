@@ -6,6 +6,12 @@
 // project.
 
 
+// PMCircularCollectionView
+#define COCOAPODS_POD_AVAILABLE_PMCircularCollectionView
+#define COCOAPODS_VERSION_MAJOR_PMCircularCollectionView 0
+#define COCOAPODS_VERSION_MINOR_PMCircularCollectionView 0
+#define COCOAPODS_VERSION_PATCH_PMCircularCollectionView 1
+
 // PMRotatingPrismContainer
 #define COCOAPODS_POD_AVAILABLE_PMRotatingPrismContainer
 #define COCOAPODS_VERSION_MAJOR_PMRotatingPrismContainer 0
@@ -16,5 +22,5 @@
 #define COCOAPODS_POD_AVAILABLE_PMUtils
 #define COCOAPODS_VERSION_MAJOR_PMUtils 0
 #define COCOAPODS_VERSION_MINOR_PMUtils 0
-#define COCOAPODS_VERSION_PATCH_PMUtils 3
+#define COCOAPODS_VERSION_PATCH_PMUtils 4
 

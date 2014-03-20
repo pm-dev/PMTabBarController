@@ -14,6 +14,8 @@
 
 + (UINib *) nib;
 
+- (void) removeSubviews;
+
 - (UIImage *)blurredViewWithRadius:(CGFloat)radius
 						iterations:(NSUInteger)iterations
 				   scaleDownFactor:(NSUInteger)scaleDownFactor

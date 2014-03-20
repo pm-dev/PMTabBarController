@@ -21,6 +21,13 @@
 	return [UINib nibWithNibName:[self nibName] bundle:nil];
 }
 
+- (void) removeSubviews
+{
+    for (UIView *subview in self.subviews) {
+        [subview removeFromSuperview];
+    }
+}
+
 - (UIImage *)blurredViewWithRadius:(CGFloat)radius
 						 iterations:(NSUInteger)iterations
 					scaleDownFactor:(NSUInteger)scaleDownFactor
