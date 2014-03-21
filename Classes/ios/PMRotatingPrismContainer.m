@@ -27,14 +27,15 @@ typedef NS_ENUM(NSInteger, PanDirection)
 	PanDirectionNegative
 };
 
-@interface PMRotatingPrismContainer ()
+@interface PMRotatingPrismContainer () <UICollectionViewDelegate>
 
 @property (nonatomic, strong, readwrite) PMOrderedDictionary *orderedPanels;
 @property (nonatomic, strong) UIView *appearingCover;
 @property (nonatomic, strong) UIView *topCover;
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) PMCircularCollectionView *titleBanner;
-@property (nonatomic) NSInteger topIndex;
+@property (nonatomic) NSUInteger topIndex;
+@property (nonatomic) NSUInteger appearingIndex;
 @property (nonatomic) PanDirection panDirection;
 
 @end
@@ -112,7 +113,8 @@ typedef NS_ENUM(NSInteger, PanDirection)
     
     self.titleBanner = [[PMCircularCollectionView alloc] initWithFrame:frame collectionViewLayout:layout];
     self.titleBanner.views = titleLabels;
-    self.titleBanner.backgroundColor = [UIColor blueColor];
+    self.titleBanner.secondaryDelegate = self;
+    self.titleBanner.backgroundColor = [UIColor blackColor];
     [self.view addSubview:self.titleBanner];
 }
 
@@ -120,27 +122,30 @@ typedef NS_ENUM(NSInteger, PanDirection)
 {
     UILabel *label = [UILabel new];
     label.text = title;
-    label.backgroundColor = [UIColor orangeColor];
-//    label.textAlignment = NSTextAlignmentCenter;
+    label.textColor = [UIColor whiteColor];
     [label sizeToFit];
-//    CGRect frame = label.frame;
-//    frame.size.width += 50.0f;
-//    label.frame = frame;
     return label;
+}
+
+- (void) collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:indexPath];
+    NSAssert(cell.contentView.subviews.count == 1, @"The only subview of a PMCircularCollectionView cell is the view we assigned to it.");
+    UILabel *titleLabel = cell.contentView.subviews.firstObject;
+    if (titleLabel) {
+        NSString *title = titleLabel.text;
+        [self rotateToPanelWithTitle:title animated:YES completion:nil];
+    }
 }
 
 - (UIView *) top
 {
-	return [self.orderedPanels objectForKey:[self.orderedPanels keyAtIndex:self.topIndex]];
+	return [self.orderedPanels objectAtIndex:self.topIndex];
 }
 
 - (UIView *) appearing
 {
-	switch (self.panDirection) {
-		case PanDirectionPositive:	return [self.orderedPanels objectForKey:[self.orderedPanels keyAtIndex:[self previousIndex]]];
-		case PanDirectionNegative:	return [self.orderedPanels objectForKey:[self.orderedPanels keyAtIndex:[self nextIndex]]];
-		case PanDirectionNone:		@throw([NSException exceptionWithName:@"Pan Direction Not Set" reason:NSLocalizedString(@"Pan Direction must be set when calling -appearing", nil) userInfo:nil]);
-	}
+    return [self.orderedPanels objectAtIndex:self.appearingIndex];
 }
 
 - (void)handlePan:(UIPanGestureRecognizer *)gestureRecognizer {
@@ -152,17 +157,12 @@ typedef NS_ENUM(NSInteger, PanDirection)
     {
         case UIGestureRecognizerStateBegan:
 		{
-			[self rotateBeganWithVelocity:velocity];
+            self.panDirection = (velocity.x >= 0.0f)? PanDirectionPositive : PanDirectionNegative;
+            [self updateAppearingIndex];
+			[self rotateBegan];
 		}
         case UIGestureRecognizerStateChanged:
         {
-			// This shouldn't be needed if switching to an Edge Pan gesture
-			if ((delta.x < 0.0f && self.panDirection == PanDirectionPositive) ||
-				(delta.x > 0.0f && self.panDirection == PanDirectionNegative)) {
-				[self rotateEndedCancelled:YES];
-				[self rotateBeganWithVelocity:velocity];
-			}
-			
 			CGFloat percent =  fabsf(delta.x) / self.panelFrame.size.width;
 			[self panToPercent:percent];
             break;
@@ -174,14 +174,13 @@ typedef NS_ENUM(NSInteger, PanDirection)
 
 			if ([self shouldCompleteForVelocity:velocity delta:delta]) {
 				[self animateToPercent:1.0f duration:duration completion:^(BOOL finished) {
-					[self updateTopIndex];
+					self.topIndex = self.appearingIndex;
 					[self rotateEndedCancelled:NO];
 				}];
 			}
 			else {
 				[self animateToPercent:0.0f duration:duration completion:^(BOOL finished) {
 					[self rotateEndedCancelled:YES];
-					
 				}];
 			}
             break;
@@ -199,19 +198,41 @@ typedef NS_ENUM(NSInteger, PanDirection)
 	}
 }
 
-- (void) updateTopIndex
+- (void) rotateToPanel:(UIView *)panel animated:(BOOL)animated completion:(void(^)())completionBlock
 {
-	switch (self.panDirection) {
-		case PanDirectionPositive:	self.topIndex = [self previousIndex]; break;
-		case PanDirectionNegative:	self.topIndex = [self nextIndex]; break;
-		case PanDirectionNone:		@throw([NSException exceptionWithName:@"Pan Direction Not Set" reason:NSLocalizedString(@"Pan Direction must be set when calling -updateTopIndex", nil) userInfo:nil]);
-	}
+    NSUInteger indexOfPanel = [self.orderedPanels indexOfObject:panel];
+    [self rotateToPanelAtIndex:indexOfPanel animated:animated completion:completionBlock];
 }
 
-- (void) rotateBeganWithVelocity:(CGPoint)velocity
+- (void) rotateToPanelWithTitle:(NSString *)panelTitle animated:(BOOL)animated completion:(void(^)())completionBlock
 {
-	self.panDirection = (velocity.x >= 0.0f)? PanDirectionPositive : PanDirectionNegative;
-	
+    NSUInteger indexOfPanel = [self.orderedPanels indexOfKey:panelTitle];
+    [self rotateToPanelAtIndex:indexOfPanel animated:animated completion:completionBlock];
+}
+
+- (void) rotateToPanelAtIndex:(NSUInteger)index animated:(BOOL)animated completion:(void(^)())completionBlock
+{
+    NSInteger distance = [self.orderedPanels distanceFromIndex:self.topIndex toIndex:index circular:YES];
+    
+    self.panDirection = (distance >= 0.0f)? PanDirectionPositive : PanDirectionNegative;
+    self.appearingIndex = index;
+    [self rotateBegan];
+    
+    NSTimeInterval duration = animated? MaximumDuration : 0.0;
+    
+    [self animateToPercent:1.0f duration:duration completion:^(BOOL finished) {
+        
+        self.topIndex = self.appearingIndex;
+        [self rotateEndedCancelled:NO];
+        
+        if (completionBlock) {
+            completionBlock();
+        }
+    }];
+}
+
+- (void) rotateBegan
+{
 	[self setAnchorPoints];
 	self.appearingCover.hidden = NO;
 	self.topCover.hidden = NO;
@@ -221,6 +242,9 @@ typedef NS_ENUM(NSInteger, PanDirection)
 	self.appearingCover.alpha = CoverFullAlpha;
 	self.topCover.alpha = 0.0;
 	
+    [self panToPercent:0.0f];
+    
+    
 	[self.view insertSubview:self.appearing aboveSubview:self.top];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:PMRotatingPrismContainerRotationWillBegin object:self];
@@ -351,6 +375,15 @@ typedef NS_ENUM(NSInteger, PanDirection)
 		return 0;
 	}
 	return self.topIndex + 1;
+}
+
+- (void) updateAppearingIndex
+{
+    switch (self.panDirection) {
+		case PanDirectionPositive:	self.appearingIndex = [self previousIndex]; break;
+		case PanDirectionNegative:	self.appearingIndex = [self nextIndex]; break;
+		case PanDirectionNone:		@throw([NSException exceptionWithName:@"Pan Direction Not Set" reason:NSLocalizedString(@"Pan Direction must be set when calling -updateAppearingIndex", nil) userInfo:nil]);
+	}
 }
 
 - (NSUInteger) previousIndex

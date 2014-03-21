@@ -11,6 +11,7 @@
 @interface PMCircularCollectionView : UICollectionView
 
 @property (nonatomic, strong) NSArray *views;
+@property (nonatomic, weak) id<UICollectionViewDelegate> secondaryDelegate;
 
 - (instancetype) initWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewFlowLayout *)layout;
 

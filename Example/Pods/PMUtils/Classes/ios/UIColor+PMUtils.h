@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+#define RGB(value) value/255.0f
+
 @interface UIColor (PMUtils)
 
 + (UIColor*)colorWithHexString:(NSString *)hexString alpha:(CGFloat)alpha;

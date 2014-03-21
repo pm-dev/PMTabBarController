@@ -24,7 +24,17 @@
 @interface PMOrderedDictionary : NSMutableDictionary
 
 - (void)insertObject:(id)anObject forKey:(id)aKey atIndex:(NSUInteger)anIndex;
-- (id<NSCopying>)keyAtIndex:(NSUInteger)anIndex;
+
+- (id<NSCopying>)keyAtIndex:(NSUInteger)index;
+
+- (id) objectAtIndex:(NSUInteger)index;
+
+- (NSUInteger)indexOfKey:(id<NSCopying>)key;
+
+- (NSUInteger)indexOfObject:(id)object;
+
+- (NSInteger) distanceFromIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex circular:(BOOL)circular;
+
 - (NSEnumerator *)reverseKeyEnumerator;
 
 @end

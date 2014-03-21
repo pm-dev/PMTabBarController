@@ -10,6 +10,10 @@
 
 @interface UIDevice (PMUtils)
 
++ (BOOL) isPad;
+
++ (BOOL) isPhone;
+
 + (int)hardwareCores;
 
 + (size_t)hardwareRam;

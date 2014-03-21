@@ -22,6 +22,7 @@
 //
 
 #import "PMOrderedDictionary.h"
+#import "NSArray+PMUtils.h"
 
 NSString *DescriptionForObject(NSObject *object, id locale, NSUInteger indent)
 {
@@ -120,9 +121,36 @@ NSString *DescriptionForObject(NSObject *object, id locale, NSUInteger indent)
 	[self.dictionary setObject:anObject forKey:aKey];
 }
 
-- (id<NSCopying>)keyAtIndex:(NSUInteger)anIndex
+- (id<NSCopying>)keyAtIndex:(NSUInteger)index
 {
-	return [self.array objectAtIndex:anIndex];
+	return [self.array objectAtIndex:index];
+}
+
+- (id) objectAtIndex:(NSUInteger)index
+{
+    id<NSCopying> key = [self keyAtIndex:index];
+    return self.dictionary[key];
+}
+
+- (NSUInteger)indexOfKey:(id<NSCopying>)key
+{
+    return [self.array indexOfObject:key];
+}
+
+- (NSUInteger)indexOfObject:(id)object
+{
+    for (NSUInteger i = 0; i < self.array.count; i++) {
+        id<NSCopying> key = self.array[i];
+        if ([object isEqual:self.dictionary[key]]) {
+            return i;
+        }
+    }
+    return NSNotFound;
+}
+
+- (NSInteger) distanceFromIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex circular:(BOOL)circular
+{
+    return [self.array distanceFromIndex:fromIndex toIndex:toIndex circular:circular];
 }
 
 - (NSString *)descriptionWithLocale:(id)locale indent:(NSUInteger)level

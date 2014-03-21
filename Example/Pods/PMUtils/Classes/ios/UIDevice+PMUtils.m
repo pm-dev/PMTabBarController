@@ -13,6 +13,16 @@
 
 @implementation UIDevice (PMUtils)
 
++ (BOOL) isPad
+{
+    return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad;
+}
+
++ (BOOL) isPhone
+{
+    return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone;
+}
+
 + (int)hardwareCores
 {
     size_t len;

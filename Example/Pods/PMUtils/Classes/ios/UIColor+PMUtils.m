@@ -21,7 +21,7 @@
 		unsigned int green = (colors >> 8) & 0x00FF;
 		unsigned int blue = colors & 0x00FF;
 		
-		return [UIColor colorWithRed:red/255.0f green:green/255.0f blue:blue/255.0f alpha:alpha];
+		return [UIColor colorWithRed:RGB(red) green:RGB(green) blue:RGB(blue) alpha:alpha];
 	}
 	
 	return [UIColor colorWithWhite:0 alpha:alpha];

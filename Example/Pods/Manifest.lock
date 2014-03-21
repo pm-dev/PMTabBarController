@@ -1,10 +1,10 @@
 PODS:
-  - PMCircularCollectionView (0.0.1):
+  - PMCircularCollectionView (0.0.4):
     - PMUtils
-  - PMRotatingPrismContainer (0.0.1):
+  - PMRotatingPrismContainer (0.0.2):
     - PMCircularCollectionView
     - PMUtils
-  - PMUtils (0.0.4)
+  - PMUtils (0.0.14)
 
 DEPENDENCIES:
   - PMRotatingPrismContainer (from `../PMRotatingPrismContainer.podspec`)
@@ -14,8 +14,8 @@ EXTERNAL SOURCES:
     :path: ../PMRotatingPrismContainer.podspec
 
 SPEC CHECKSUMS:
-  PMCircularCollectionView: 974f9df125fd660a37aeeae31b185c159d6b2079
-  PMRotatingPrismContainer: 719bf7486508d80565cfbc392a869fb398fee704
-  PMUtils: a9fdca34e85a4fe20b6fcec67c9da6f1b6d13604
+  PMCircularCollectionView: 794c82d839fb67340eeeccad7ef6531da8d4307b
+  PMRotatingPrismContainer: 13bd2b5fae65f8a573205706494315ad22219698
+  PMUtils: d8e1f6ce3a279bb203a92eaba701687262fddbb1
 
 COCOAPODS: 0.29.0

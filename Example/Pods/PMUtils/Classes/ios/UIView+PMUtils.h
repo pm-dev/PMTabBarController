@@ -8,11 +8,16 @@
 
 #import <UIKit/UIKit.h>
 
+typedef NS_OPTIONS(NSInteger, PMDirection) {
+    PMDirectionVertical = 1 << 0,
+    PMDirectionHorizontal = 1 << 1
+};
+
 @interface UIView (PMUtils)
 
 + (NSString *) nibName;
 
-+ (UINib *) nib;
++ (instancetype) instanceFromNibWithOwner:(id)ownerOrNil;
 
 - (void) removeSubviews;
 
@@ -22,4 +27,7 @@
 						saturation:(CGFloat)saturation
 						 tintColor:(UIColor *)tintColor
 							  crop:(CGRect)crop;
+
+- (void) centerInRect:(CGRect)rect forDirection:(PMDirection)direction;
+
 @end
