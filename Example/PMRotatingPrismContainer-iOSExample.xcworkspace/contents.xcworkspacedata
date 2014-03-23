@@ -4,24 +4,6 @@
    <FileRef
       location = "group:../PMRotatingPrismContainer.podspec">
    </FileRef>
-   <Group
-      location = "container:../Classes"
-      name = "Classes">
-      <Group
-         location = "group:ios"
-         name = "ios">
-         <FileRef
-            location = "group:PMRotatingPrismContainer.h">
-         </FileRef>
-         <FileRef
-            location = "group:PMRotatingPrismContainer.m">
-         </FileRef>
-      </Group>
-      <Group
-         location = "group:osx"
-         name = "osx">
-      </Group>
-   </Group>
    <FileRef
       location = "group:PMRotatingPrismContainer-iOSExample/PMRotatingPrismContainer-iOSExample.xcodeproj">
    </FileRef>

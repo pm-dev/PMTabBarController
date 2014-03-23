@@ -22,7 +22,7 @@
         NSInteger count = (distance < 0)? self.count : -self.count;
         NSInteger wrappedDistance = count + distance;
         
-        if (abs(wrappedDistance) < abs(distance)) {
+        if (ABS(wrappedDistance) < ABS(distance)) {
             return wrappedDistance;
         }
     }

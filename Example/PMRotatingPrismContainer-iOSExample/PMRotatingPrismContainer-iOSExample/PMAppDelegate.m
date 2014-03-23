@@ -43,6 +43,7 @@
 	NSDictionary *panels = [NSDictionary dictionaryWithObjects:@[panelOne,panelTwo, panelThree, panelFour]
 												  forKeys:@[@"Paul", @"Chris", @"Lebron", @"Kobe"]];
 	PMRotatingPrismContainer *rpc = [PMRotatingPrismContainer rotatingPrismContainerWithPanels:panels];
+    [rpc rotateToPanel:panelFour animated:NO completion:nil];
 
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	[self.window setRootViewController:rpc];

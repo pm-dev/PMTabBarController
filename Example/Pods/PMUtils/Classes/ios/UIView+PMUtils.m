@@ -84,11 +84,11 @@
     CGRect frame = self.frame;
     
     if (direction & PMDirectionHorizontal) {
-        frame.origin.x = (rect.size.width - frame.size.width) / 2.0f + rect.origin.x;
+        frame.origin.x = floorf((rect.size.width - frame.size.width) / 2.0f + rect.origin.x);
     }
     
     if (direction & PMDirectionVertical) {
-        frame.origin.y = (rect.size.height - frame.size.height) / 2.0f + rect.origin.y;
+        frame.origin.y = floorf((rect.size.height - frame.size.height) / 2.0f + rect.origin.y);
     }
     
     self.frame = frame;

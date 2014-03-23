@@ -7,14 +7,16 @@
 //
 
 #import "PMRotatingPrismContainer.h"
-#import "PMCircularCollectionView.h"
+#import "PMCenteredCircularCollectionView.h"
 #import "PMUtils.h"
 
 static CGFloat const RequiredXVelocity = 100.0f;
 static CGFloat const RequiredDeltaDistance = 20.0f;
 static CGFloat const CoverFullAlpha = 0.5f;
 static CGFloat const BannerHeight = 30.0f;
-static NSTimeInterval const MaximumDuration = 0.5;
+static NSTimeInterval const MaximumDuration = 0.4;
+static CGFloat const TitleFontSize = 18.0f;
+static NSString * const TitleFontName = @"HelveticaNeue-Light";
 
 NSString * const PMRotatingPrismContainerRotationWillBegin = @"PMRotatingPrismContainerRotationWillBegin";
 NSString * const PMRotatingPrismContainerRotationDidComplete = @"PMRotatingPrismContainerRotationDidComplete";
@@ -27,13 +29,12 @@ typedef NS_ENUM(NSInteger, PanDirection)
 	PanDirectionNegative
 };
 
-@interface PMRotatingPrismContainer () <UICollectionViewDelegate>
+@interface PMRotatingPrismContainer () <UICollectionViewDelegate, UIScrollViewDelegate>
 
 @property (nonatomic, strong, readwrite) PMOrderedDictionary *orderedPanels;
 @property (nonatomic, strong) UIView *appearingCover;
 @property (nonatomic, strong) UIView *topCover;
-@property (nonatomic, strong) UILabel *titleLabel;
-@property (nonatomic, strong) PMCircularCollectionView *titleBanner;
+@property (nonatomic, strong) PMCenteredCircularCollectionView *titleBanner;
 @property (nonatomic) NSUInteger topIndex;
 @property (nonatomic) NSUInteger appearingIndex;
 @property (nonatomic) PanDirection panDirection;
@@ -104,16 +105,14 @@ typedef NS_ENUM(NSInteger, PanDirection)
 		[self.view addGestureRecognizer:rightEdgePan];
 	}
 	
-    
     CGRect frame = {0, 0, self.view.bounds.size.width, BannerHeight };
 
     UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-    layout.minimumInteritemSpacing = 50.0f;
     
-    self.titleBanner = [[PMCircularCollectionView alloc] initWithFrame:frame collectionViewLayout:layout];
+    self.titleBanner = [[PMCenteredCircularCollectionView alloc] initWithFrame:frame collectionViewLayout:layout];
     self.titleBanner.views = titleLabels;
-    self.titleBanner.secondaryDelegate = self;
+    self.titleBanner.secondDelegate = self;
     self.titleBanner.backgroundColor = [UIColor blackColor];
     [self.view addSubview:self.titleBanner];
 }
@@ -122,16 +121,26 @@ typedef NS_ENUM(NSInteger, PanDirection)
 {
     UILabel *label = [UILabel new];
     label.text = title;
+    label.font = [UIFont fontWithName:TitleFontName size:TitleFontSize];
     label.textColor = [UIColor whiteColor];
     [label sizeToFit];
     return label;
+}
+
+- (void) scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
+{
+    if (velocity.x) {
+        self.panDirection = ( velocity.x > 0 )? PanDirectionNegative : PanDirectionPositive;
+    }
 }
 
 - (void) collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:indexPath];
     NSAssert(cell.contentView.subviews.count == 1, @"The only subview of a PMCircularCollectionView cell is the view we assigned to it.");
+    
     UILabel *titleLabel = cell.contentView.subviews.firstObject;
+    
     if (titleLabel) {
         NSString *title = titleLabel.text;
         [self rotateToPanelWithTitle:title animated:YES completion:nil];
@@ -175,6 +184,7 @@ typedef NS_ENUM(NSInteger, PanDirection)
 			if ([self shouldCompleteForVelocity:velocity delta:delta]) {
 				[self animateToPercent:1.0f duration:duration completion:^(BOOL finished) {
 					self.topIndex = self.appearingIndex;
+                    [self.titleBanner centerView:self.titleBanner.views[self.topIndex] animated:YES];
 					[self rotateEndedCancelled:NO];
 				}];
 			}
@@ -212,23 +222,33 @@ typedef NS_ENUM(NSInteger, PanDirection)
 
 - (void) rotateToPanelAtIndex:(NSUInteger)index animated:(BOOL)animated completion:(void(^)())completionBlock
 {
-    NSInteger distance = [self.orderedPanels distanceFromIndex:self.topIndex toIndex:index circular:YES];
-    
-    self.panDirection = (distance >= 0.0f)? PanDirectionPositive : PanDirectionNegative;
-    self.appearingIndex = index;
-    [self rotateBegan];
-    
-    NSTimeInterval duration = animated? MaximumDuration : 0.0;
-    
-    [self animateToPercent:1.0f duration:duration completion:^(BOOL finished) {
-        
-        self.topIndex = self.appearingIndex;
-        [self rotateEndedCancelled:NO];
-        
-        if (completionBlock) {
-            completionBlock();
+    if (index != self.topIndex &&
+        index != NSNotFound) {
+  
+        if (self.panDirection == PanDirectionNone) {
+            NSInteger delta = [self.orderedPanels distanceFromIndex:self.topIndex toIndex:index circular:YES];
+            self.panDirection = (delta >= 0)? PanDirectionNegative : PanDirectionPositive;
         }
-    }];
+        
+        self.appearingIndex = index;
+        [self rotateBegan];
+        
+        NSTimeInterval duration = animated? MaximumDuration : 0.0;
+        
+        [self animateToPercent:1.0f duration:duration completion:^(BOOL finished) {
+            
+            self.topIndex = self.appearingIndex;
+            [self.titleBanner centerView:self.titleBanner.views[self.topIndex] animated:animated];
+            [self rotateEndedCancelled:NO];
+            
+            if (completionBlock) {
+                completionBlock();
+            }
+        }];
+    }
+    else if (completionBlock) {
+        completionBlock();
+    }
 }
 
 - (void) rotateBegan
@@ -241,9 +261,9 @@ typedef NS_ENUM(NSInteger, PanDirection)
 	self.appearingCover.layer.shouldRasterize = YES;
 	self.appearingCover.alpha = CoverFullAlpha;
 	self.topCover.alpha = 0.0;
+    self.titleBanner.userInteractionEnabled = NO;
 	
     [self panToPercent:0.0f];
-    
     
 	[self.view insertSubview:self.appearing aboveSubview:self.top];
 	
@@ -252,17 +272,17 @@ typedef NS_ENUM(NSInteger, PanDirection)
 
 - (void) panToPercent:(CGFloat)percent
 {
-	self.appearing.layer.transform = CATransform3DRotate(CATransform3DIdentity ,
-														 [self appearingRotationWithPercent:percent],
-														 0.0f,
-														 1.0f,
-														 0.0f);
-	
-	self.top.layer.transform = CATransform3DRotate(CATransform3DIdentity,
-												   [self topRotationWithPercent:percent],
-												   0.0f,
-												   1.0f,
-												   0.0f);
+//	self.appearing.layer.transform = CATransform3DRotate(CATransform3DIdentity ,
+//														 [self appearingRotationWithPercent:percent],
+//														 0.0f,
+//														 1.0f,
+//														 0.0f);
+//	
+//	self.top.layer.transform = CATransform3DRotate(CATransform3DIdentity,
+//												   [self topRotationWithPercent:percent],
+//												   0.0f,
+//												   1.0f,
+//												   0.0f);
 	
 	CGRect appearingFrame = [self appearingFrameWithPercent:percent];
 	self.appearing.frame = appearingFrame;
@@ -297,13 +317,13 @@ typedef NS_ENUM(NSInteger, PanDirection)
 	self.appearingCover.hidden = YES;
 	self.topCover.layer.shouldRasterize = NO;
 	self.appearingCover.layer.shouldRasterize = NO;
-	
-	self.titleLabel.text = (NSString *)[self.orderedPanels keyAtIndex:self.topIndex];
-	
+    self.titleBanner.userInteractionEnabled = YES;
+
+    
 	if (cancelled) {
 		[self.view insertSubview:self.top aboveSubview:self.appearing];
 	}
-	
+    
 	self.panDirection = PanDirectionNone;
 	
 	NSString *notificationName = cancelled? PMRotatingPrismContainerRotationDidCancel : PMRotatingPrismContainerRotationDidComplete;
