@@ -23,8 +23,8 @@
 		67E1CBA418CF523700DB832D /* kobe.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 67E1CBA018CF523700DB832D /* kobe.jpg */; };
 		67E1CBA518CF523700DB832D /* lj.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 67E1CBA118CF523700DB832D /* lj.jpg */; };
 		67E1CBA618CF523700DB832D /* pg.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 67E1CBA218CF523700DB832D /* pg.jpg */; };
-		67E1CBAA18CF525200DB832D /* PMPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 67E1CBA818CF525200DB832D /* PMPanel.m */; };
-		67E1CBAB18CF525200DB832D /* PMPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 67E1CBA918CF525200DB832D /* PMPanel.xib */; };
+		7450F7D818DF943500D66699 /* PMViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7450F7D618DF943500D66699 /* PMViewController.m */; };
+		7450F7D918DF943500D66699 /* PMViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7450F7D718DF943500D66699 /* PMViewController.xib */; };
 		C203D5C7A97A4ABB9D0068E8 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BE01AD8F6394ED3823B0C26 /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -61,9 +61,9 @@
 		67E1CBA018CF523700DB832D /* kobe.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = kobe.jpg; sourceTree = "<group>"; };
 		67E1CBA118CF523700DB832D /* lj.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = lj.jpg; sourceTree = "<group>"; };
 		67E1CBA218CF523700DB832D /* pg.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = pg.jpg; sourceTree = "<group>"; };
-		67E1CBA718CF525200DB832D /* PMPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PMPanel.h; sourceTree = "<group>"; };
-		67E1CBA818CF525200DB832D /* PMPanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PMPanel.m; sourceTree = "<group>"; };
-		67E1CBA918CF525200DB832D /* PMPanel.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PMPanel.xib; sourceTree = "<group>"; };
+		7450F7D518DF943500D66699 /* PMViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PMViewController.h; sourceTree = "<group>"; };
+		7450F7D618DF943500D66699 /* PMViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PMViewController.m; sourceTree = "<group>"; };
+		7450F7D718DF943500D66699 /* PMViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PMViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,9 +128,9 @@
 			children = (
 				67E1CB7F18CF512500DB832D /* PMAppDelegate.h */,
 				67E1CB8018CF512500DB832D /* PMAppDelegate.m */,
-				67E1CBA718CF525200DB832D /* PMPanel.h */,
-				67E1CBA818CF525200DB832D /* PMPanel.m */,
-				67E1CBA918CF525200DB832D /* PMPanel.xib */,
+				7450F7D518DF943500D66699 /* PMViewController.h */,
+				7450F7D618DF943500D66699 /* PMViewController.m */,
+				7450F7D718DF943500D66699 /* PMViewController.xib */,
 				67E1CB8218CF512500DB832D /* Images.xcassets */,
 				67E1CB7718CF512500DB832D /* Supporting Files */,
 			);
@@ -249,7 +249,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				67E1CBA618CF523700DB832D /* pg.jpg in Resources */,
-				67E1CBAB18CF525200DB832D /* PMPanel.xib in Resources */,
+				7450F7D918DF943500D66699 /* PMViewController.xib in Resources */,
 				67E1CBA518CF523700DB832D /* lj.jpg in Resources */,
 				67E1CBA418CF523700DB832D /* kobe.jpg in Resources */,
 				67E1CB7B18CF512500DB832D /* InfoPlist.strings in Resources */,
@@ -307,7 +307,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				67E1CB7D18CF512500DB832D /* main.m in Sources */,
-				67E1CBAA18CF525200DB832D /* PMPanel.m in Sources */,
+				7450F7D818DF943500D66699 /* PMViewController.m in Sources */,
 				67E1CB8118CF512500DB832D /* PMAppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

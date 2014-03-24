@@ -14,14 +14,13 @@ extern NSString * const PMRotatingPrismContainerRotationDidCancel;
 
 @interface PMRotatingPrismContainer : UIViewController
 
-- (void) rotateToPanel:(UIView *)panel animated:(BOOL)animated completion:(void(^)())completionBlock;
+@property (nonatomic, strong, readonly) NSArray *viewControllers;
+@property (nonatomic, strong) NSArray *titleViews;
 
-- (void) rotateToPanelWithTitle:(NSString *)panelTitle animated:(BOOL)animated completion:(void(^)())completionBlock;
+- (void) rotateToViewController:(UIViewController *)viewController animated:(BOOL)animated completion:(void(^)())completionBlock;
 
-- (NSDictionary *) panels;
+- (instancetype) initWithViewControllers:(NSArray *)viewControllers;
 
-- (instancetype) initWithPanels:(NSDictionary *)panels;
-
-+ (instancetype) rotatingPrismContainerWithPanels:(NSDictionary *)panels;
++ (instancetype) rotatingPrismContainerWithViewControllers:(NSArray *)viewControllers;
 
 @end

@@ -15,8 +15,10 @@ static CGFloat const RequiredDeltaDistance = 20.0f;
 static CGFloat const CoverFullAlpha = 0.5f;
 static CGFloat const BannerHeight = 30.0f;
 static NSTimeInterval const MaximumDuration = 0.4;
-static CGFloat const TitleFontSize = 18.0f;
-static NSString * const TitleFontName = @"HelveticaNeue-Light";
+
+static inline CGFloat PMMagnitudeOfVector(CGPoint vector) {
+    return sqrt( vector.x*vector.x + vector.y*vector.y );
+}
 
 NSString * const PMRotatingPrismContainerRotationWillBegin = @"PMRotatingPrismContainerRotationWillBegin";
 NSString * const PMRotatingPrismContainerRotationDidComplete = @"PMRotatingPrismContainerRotationDidComplete";
@@ -31,10 +33,10 @@ typedef NS_ENUM(NSInteger, PanDirection)
 
 @interface PMRotatingPrismContainer () <UICollectionViewDelegate, UIScrollViewDelegate>
 
-@property (nonatomic, strong, readwrite) PMOrderedDictionary *orderedPanels;
+@property (nonatomic, strong, readwrite) NSArray *viewControllers;
+@property (nonatomic, strong, readwrite) PMCenteredCircularCollectionView *titleBanner;
 @property (nonatomic, strong) UIView *appearingCover;
 @property (nonatomic, strong) UIView *topCover;
-@property (nonatomic, strong) PMCenteredCircularCollectionView *titleBanner;
 @property (nonatomic) NSUInteger topIndex;
 @property (nonatomic) NSUInteger appearingIndex;
 @property (nonatomic) PanDirection panDirection;
@@ -44,24 +46,18 @@ typedef NS_ENUM(NSInteger, PanDirection)
 @implementation PMRotatingPrismContainer
 
 
-- (instancetype) initWithPanels:(NSDictionary *)panels
+- (instancetype) initWithViewControllers:(NSArray *)viewControllers
 {
 	self = [super init];
 	if (self) {
-		_orderedPanels = [PMOrderedDictionary dictionaryWithDictionary:panels];
+		_viewControllers = viewControllers;
 	}
 	return self;
 }
 
-+ (instancetype) rotatingPrismContainerWithPanels:(NSDictionary *)panels
++ (instancetype) rotatingPrismContainerWithViewControllers:(NSArray *)viewControllers
 {
-	return [[[self class] alloc] initWithPanels:panels];
-}
-
-- (NSDictionary *) panels
-{
-	return [NSDictionary dictionaryWithObjects:self.panels.allValues
-									   forKeys:self.panels.allKeys];
+	return [[[self class] alloc] initWithViewControllers:viewControllers];
 }
 
 - (BOOL) prefersStatusBarHidden
@@ -72,22 +68,14 @@ typedef NS_ENUM(NSInteger, PanDirection)
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	self.view.backgroundColor = [UIColor blackColor];
 
-	NSAssert(self.orderedPanels.count, @"At least one panel must be set before loading view");
-	self.topIndex = self.orderedPanels.count - 1;
-	
-    NSMutableArray *titleLabels = [[NSMutableArray alloc] initWithCapacity:self.orderedPanels.count];
+	NSAssert(self.viewControllers.count, @"At least one panel must be set before loading view");
+	self.topIndex = self.viewControllers.count - 1;
     
-	for (NSString *title in self.orderedPanels) {
-		UIView *panel = self.orderedPanels[title];
-		panel.hidden = (panel != self.top);
-		panel.frame = self.panelFrame;
-        [titleLabels addObject:[self newTitleLabel:title]];
-		[self.view addSubview:panel];
-	}
+    [self insertViews];
+    [self resetTitleBanner];
 
-	if (self.orderedPanels.count > 1) {
+	if (self.viewControllers.count > 1) {
 		
 		self.appearingCover = [[UIView alloc] initWithFrame:self.panelFrame];
 		self.topCover = [[UIView alloc] initWithFrame:self.panelFrame];
@@ -104,57 +92,79 @@ typedef NS_ENUM(NSInteger, PanDirection)
         [self.view addGestureRecognizer:leftEdgePan];
 		[self.view addGestureRecognizer:rightEdgePan];
 	}
-	
-    CGRect frame = {0, 0, self.view.bounds.size.width, BannerHeight };
+}
 
-    UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
-    layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+- (void) insertViews
+{
+    for (UIViewController *controller in self.viewControllers) {
+        
+		controller.view.hidden = (controller != self.top);
+		controller.view.frame = self.panelFrame;
+		[self.view addSubview:controller.view];
+	}
+}
+
+- (void) resetTitleBanner
+{
+    [self.titleBanner removeFromSuperview];
+    self.titleBanner = nil;
     
-    self.titleBanner = [[PMCenteredCircularCollectionView alloc] initWithFrame:frame collectionViewLayout:layout];
-    self.titleBanner.views = titleLabels;
-    self.titleBanner.secondDelegate = self;
-    self.titleBanner.backgroundColor = [UIColor blackColor];
-    [self.view addSubview:self.titleBanner];
-}
-
-- (UILabel *) newTitleLabel:(NSString *)title
-{
-    UILabel *label = [UILabel new];
-    label.text = title;
-    label.font = [UIFont fontWithName:TitleFontName size:TitleFontSize];
-    label.textColor = [UIColor whiteColor];
-    [label sizeToFit];
-    return label;
-}
-
-- (void) scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
-{
-    if (velocity.x) {
-        self.panDirection = ( velocity.x > 0 )? PanDirectionNegative : PanDirectionPositive;
+    if (self.titleViews.count) {
+        CGRect frame = {0, 0, self.view.bounds.size.width, BannerHeight };
+        
+        UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
+        layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+        
+        self.titleBanner = [[PMCenteredCircularCollectionView alloc] initWithFrame:frame collectionViewLayout:layout];
+        self.titleBanner.views = self.titleViews;
+        self.titleBanner.secondDelegate = self;
+        [self.view addSubview:self.titleBanner];
     }
 }
 
-- (void) collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+- (void) setTitleViews:(NSArray *)titleViews
 {
-    UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:indexPath];
-    NSAssert(cell.contentView.subviews.count == 1, @"The only subview of a PMCircularCollectionView cell is the view we assigned to it.");
-    
-    UILabel *titleLabel = cell.contentView.subviews.firstObject;
-    
-    if (titleLabel) {
-        NSString *title = titleLabel.text;
-        [self rotateToPanelWithTitle:title animated:YES completion:nil];
+    if (_titleViews != titleViews) {
+        _titleViews = titleViews;
+        [self insertViews];
+        [self resetTitleBanner];
     }
 }
 
-- (UIView *) top
+- (void) rotateToViewController:(UIViewController *)viewController animated:(BOOL)animated completion:(void(^)())completionBlock
 {
-	return [self.orderedPanels objectAtIndex:self.topIndex];
+    NSUInteger indexOfController = [self.viewControllers indexOfObject:viewController];
+    [self rotateToViewControllerAtIndex:indexOfController animated:animated completion:completionBlock];
 }
 
-- (UIView *) appearing
+- (void) rotateToViewControllerAtIndex:(NSUInteger)index animated:(BOOL)animated completion:(void(^)())completionBlock
 {
-    return [self.orderedPanels objectAtIndex:self.appearingIndex];
+    if (index != self.topIndex &&
+        index != NSNotFound) {
+        
+        if (self.panDirection == PanDirectionNone) {
+            NSInteger delta = [self.viewControllers distanceFromIndex:self.topIndex toIndex:index circular:YES];
+            self.panDirection = (delta >= 0)? PanDirectionNegative : PanDirectionPositive;
+        }
+        
+        self.appearingIndex = index;
+        [self rotateWillBegin];
+        
+        NSTimeInterval duration = animated? MaximumDuration : 0.0;
+        
+        [self animateToPercent:1.0f duration:duration completion:^(BOOL finished) {
+            
+            self.topIndex = self.appearingIndex;
+            [self rotateDidEndCancelled:NO];
+            
+            if (completionBlock) {
+                completionBlock();
+            }
+        }];
+    }
+    else if (completionBlock) {
+        completionBlock();
+    }
 }
 
 - (void)handlePan:(UIPanGestureRecognizer *)gestureRecognizer {
@@ -168,7 +178,7 @@ typedef NS_ENUM(NSInteger, PanDirection)
 		{
             self.panDirection = (velocity.x >= 0.0f)? PanDirectionPositive : PanDirectionNegative;
             [self updateAppearingIndex];
-			[self rotateBegan];
+			[self rotateWillBegin];
 		}
         case UIGestureRecognizerStateChanged:
         {
@@ -184,13 +194,12 @@ typedef NS_ENUM(NSInteger, PanDirection)
 			if ([self shouldCompleteForVelocity:velocity delta:delta]) {
 				[self animateToPercent:1.0f duration:duration completion:^(BOOL finished) {
 					self.topIndex = self.appearingIndex;
-                    [self.titleBanner centerView:self.titleBanner.views[self.topIndex] animated:YES];
-					[self rotateEndedCancelled:NO];
+					[self rotateDidEndCancelled:NO];
 				}];
 			}
 			else {
 				[self animateToPercent:0.0f duration:duration completion:^(BOOL finished) {
-					[self rotateEndedCancelled:YES];
+					[self rotateDidEndCancelled:YES];
 				}];
 			}
             break;
@@ -208,89 +217,33 @@ typedef NS_ENUM(NSInteger, PanDirection)
 	}
 }
 
-- (void) rotateToPanel:(UIView *)panel animated:(BOOL)animated completion:(void(^)())completionBlock
+- (void) rotateWillBegin
 {
-    NSUInteger indexOfPanel = [self.orderedPanels indexOfObject:panel];
-    [self rotateToPanelAtIndex:indexOfPanel animated:animated completion:completionBlock];
-}
-
-- (void) rotateToPanelWithTitle:(NSString *)panelTitle animated:(BOOL)animated completion:(void(^)())completionBlock
-{
-    NSUInteger indexOfPanel = [self.orderedPanels indexOfKey:panelTitle];
-    [self rotateToPanelAtIndex:indexOfPanel animated:animated completion:completionBlock];
-}
-
-- (void) rotateToPanelAtIndex:(NSUInteger)index animated:(BOOL)animated completion:(void(^)())completionBlock
-{
-    if (index != self.topIndex &&
-        index != NSNotFound) {
-  
-        if (self.panDirection == PanDirectionNone) {
-            NSInteger delta = [self.orderedPanels distanceFromIndex:self.topIndex toIndex:index circular:YES];
-            self.panDirection = (delta >= 0)? PanDirectionNegative : PanDirectionPositive;
-        }
-        
-        self.appearingIndex = index;
-        [self rotateBegan];
-        
-        NSTimeInterval duration = animated? MaximumDuration : 0.0;
-        
-        [self animateToPercent:1.0f duration:duration completion:^(BOOL finished) {
-            
-            self.topIndex = self.appearingIndex;
-            [self.titleBanner centerView:self.titleBanner.views[self.topIndex] animated:animated];
-            [self rotateEndedCancelled:NO];
-            
-            if (completionBlock) {
-                completionBlock();
-            }
-        }];
-    }
-    else if (completionBlock) {
-        completionBlock();
-    }
-}
-
-- (void) rotateBegan
-{
-	[self setAnchorPoints];
 	self.appearingCover.hidden = NO;
 	self.topCover.hidden = NO;
-	self.appearing.hidden = NO;
+	self.appearing.view.hidden = NO;
 	self.topCover.layer.shouldRasterize = YES;
 	self.appearingCover.layer.shouldRasterize = YES;
 	self.appearingCover.alpha = CoverFullAlpha;
 	self.topCover.alpha = 0.0;
     self.titleBanner.userInteractionEnabled = NO;
-	
+    
     [self panToPercent:0.0f];
     
-	[self.view insertSubview:self.appearing aboveSubview:self.top];
+	[self.view insertSubview:self.appearing.view aboveSubview:self.top.view];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:PMRotatingPrismContainerRotationWillBegin object:self];
 }
 
 - (void) panToPercent:(CGFloat)percent
 {
-//	self.appearing.layer.transform = CATransform3DRotate(CATransform3DIdentity ,
-//														 [self appearingRotationWithPercent:percent],
-//														 0.0f,
-//														 1.0f,
-//														 0.0f);
-//	
-//	self.top.layer.transform = CATransform3DRotate(CATransform3DIdentity,
-//												   [self topRotationWithPercent:percent],
-//												   0.0f,
-//												   1.0f,
-//												   0.0f);
-	
 	CGRect appearingFrame = [self appearingFrameWithPercent:percent];
-	self.appearing.frame = appearingFrame;
+	self.appearing.view.frame = appearingFrame;
 	self.appearingCover.frame = appearingFrame;
 	self.appearingCover.alpha = CoverFullAlpha * (1.0f - percent);
 	
 	CGRect topFrame = [self topFrameWithPercent:percent];
-	self.top.frame = topFrame;
+	self.top.view.frame = topFrame;
 	self.topCover.frame = topFrame;
 	self.topCover.alpha = percent * CoverFullAlpha;
 }
@@ -304,24 +257,23 @@ typedef NS_ENUM(NSInteger, PanDirection)
 					 completion:completion];
 }
 
-- (void) rotateEndedCancelled:(BOOL)cancelled
+- (void) rotateDidEndCancelled:(BOOL)cancelled
 {
-	for (NSString *title in self.orderedPanels) {
-		UIView *panel = self.orderedPanels[title];
-		panel.hidden = (panel != self.top);
-		panel.frame = self.panelFrame;
-		panel.layer.transform = CATransform3DIdentity;
+	for (UIViewController *controller in self.viewControllers) {
+		controller.view.hidden = (controller != self.top);
+		controller.view.frame = self.panelFrame;
 	}
-	
+    
+    [self.titleBanner centerView:self.titleBanner.views[self.topIndex] animated:YES];
+
 	self.topCover.hidden = YES;
 	self.appearingCover.hidden = YES;
 	self.topCover.layer.shouldRasterize = NO;
 	self.appearingCover.layer.shouldRasterize = NO;
     self.titleBanner.userInteractionEnabled = YES;
 
-    
 	if (cancelled) {
-		[self.view insertSubview:self.top aboveSubview:self.appearing];
+		[self.view insertSubview:self.top.view aboveSubview:self.appearing.view];
 	}
     
 	self.panDirection = PanDirectionNone;
@@ -330,21 +282,12 @@ typedef NS_ENUM(NSInteger, PanDirection)
 	[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:self];
 }
 
-- (CGFloat) appearingRotationWithPercent:(CGFloat)percent
+- (void) updateAppearingIndex
 {
-	switch (self.panDirection) {
-		case PanDirectionPositive:	return M_PI_2 * (percent - 1.0f);
-		case PanDirectionNegative:	return M_PI_2 * (1.0f - percent);
-		case PanDirectionNone:		@throw([NSException exceptionWithName:@"Pan Direction Not Set" reason:NSLocalizedString(@"Pan Direction must be set when calling -appearingRotationWithPercent:", nil) userInfo:nil]);
-	}
-}
-
-- (CGFloat) topRotationWithPercent:(CGFloat)percent
-{
-	switch (self.panDirection) {
-		case PanDirectionPositive:	return percent * M_PI_2;
-		case PanDirectionNegative:	return -percent * M_PI_2;
-		case PanDirectionNone:		@throw([NSException exceptionWithName:@"Pan Direction Not Set" reason:NSLocalizedString(@"Pan Direction must be set when calling -topRotationWithPercent:", nil) userInfo:nil]);
+    switch (self.panDirection) {
+		case PanDirectionPositive:	self.appearingIndex = [self previousIndex]; break;
+		case PanDirectionNegative:	self.appearingIndex = [self nextIndex]; break;
+		case PanDirectionNone:		@throw([NSException exceptionWithName:@"Pan Direction Not Set" reason:NSLocalizedString(@"Pan Direction must be set when calling -updateAppearingIndex", nil) userInfo:nil]);
 	}
 }
 
@@ -370,46 +313,28 @@ typedef NS_ENUM(NSInteger, PanDirection)
 	return frame;
 }
 
-- (void) setAnchorPoints
+- (UIViewController *) top
 {
-	switch (self.panDirection)
-	{
-		case PanDirectionPositive:
-			self.top.layer.anchorPoint = CGPointMake(0.0f, 0.5f);
-			self.appearing.layer.anchorPoint = CGPointMake(1.0f, 0.5f);
-			break;
-			
-		case PanDirectionNegative:
-			self.top.layer.anchorPoint = CGPointMake(1.0f, 0.5f);
-			self.appearing.layer.anchorPoint = CGPointMake(0.0f, 0.5f);
-			break;
-			
-		case PanDirectionNone:
-			@throw([NSException exceptionWithName:@"Pan Direction Not Set" reason:NSLocalizedString(@"Pan Direction must be set when calling -setAnchorPoints:", nil) userInfo:nil]);
-	}
+	return [self.viewControllers objectAtIndex:self.topIndex];
+}
+
+- (UIViewController *) appearing
+{
+    return [self.viewControllers objectAtIndex:self.appearingIndex];
 }
 
 - (NSUInteger) nextIndex
 {
-	if (self.topIndex == self.orderedPanels.count-1) {
+	if (self.topIndex == self.viewControllers.count-1) {
 		return 0;
 	}
 	return self.topIndex + 1;
 }
 
-- (void) updateAppearingIndex
-{
-    switch (self.panDirection) {
-		case PanDirectionPositive:	self.appearingIndex = [self previousIndex]; break;
-		case PanDirectionNegative:	self.appearingIndex = [self nextIndex]; break;
-		case PanDirectionNone:		@throw([NSException exceptionWithName:@"Pan Direction Not Set" reason:NSLocalizedString(@"Pan Direction must be set when calling -updateAppearingIndex", nil) userInfo:nil]);
-	}
-}
-
 - (NSUInteger) previousIndex
 {
 	if (self.topIndex == 0) {
-		return self.orderedPanels.count - 1;
+		return self.viewControllers.count - 1;
 	}
 	return self.topIndex - 1;
 }
@@ -417,15 +342,17 @@ typedef NS_ENUM(NSInteger, PanDirection)
 - (CGRect)panelFrame
 {
 	CGRect frame = self.view.bounds;
-	frame.origin.y += BannerHeight;
-	frame.size.height -= BannerHeight;
+    if (self.titleViews.count) {
+        frame.origin.y += BannerHeight;
+        frame.size.height -= BannerHeight;
+    }
 	return frame;
 }
 
 - (NSTimeInterval) durationForVelocity:(CGPoint)velocity
 {
 	CGFloat distance = [self distanceRemaining];
-	CGFloat rate = [PMRotatingPrismContainer magnitudeOfVector:velocity];
+	CGFloat rate = PMMagnitudeOfVector(velocity);
 	NSTimeInterval durtaion = MIN(distance / rate, MaximumDuration);
 	return durtaion;
 }
@@ -433,15 +360,31 @@ typedef NS_ENUM(NSInteger, PanDirection)
 - (CGFloat) distanceRemaining
 {
 	switch (self.panDirection) {
-		case PanDirectionPositive:	return self.panelFrame.size.width - self.top.frame.origin.x;
-		case PanDirectionNegative:	return self.top.frame.origin.x;
+		case PanDirectionPositive:	return self.panelFrame.size.width - self.top.view.frame.origin.x;
+		case PanDirectionNegative:	return self.top.view.frame.origin.x;
 		case PanDirectionNone:		@throw([NSException exceptionWithName:@"Pan Direction Not Set" reason:NSLocalizedString(@"Pan Direction must be set when calling -distanceRemaining:", nil) userInfo:nil]);
 	}
 }
 
-+ (CGFloat) magnitudeOfVector:(CGPoint)vector
+
+#pragma mark - UIScrollViewDelegate Methods
+
+
+- (void) scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
 {
-	return sqrt( vector.x*vector.x + vector.y*vector.y );
+    if (velocity.x) {
+        self.panDirection = ( velocity.x > 0 )? PanDirectionNegative : PanDirectionPositive;
+    }
+}
+
+
+#pragma mark - UICollectionViewDelegate Methods
+
+
+- (void) collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSUInteger index = indexPath.item % self.titleViews.count;
+    [self rotateToViewControllerAtIndex:index animated:YES completion:nil];
 }
 
 @end

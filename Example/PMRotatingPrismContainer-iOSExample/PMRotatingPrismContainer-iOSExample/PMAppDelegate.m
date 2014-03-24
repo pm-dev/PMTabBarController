@@ -7,43 +7,55 @@
 //
 
 #import "PMAppDelegate.h"
-#import "PMPanel.h"
+#import "PMViewController.h"
 #import "PMRotatingPrismContainer.h"
+
+static CGFloat const TitleFontSize = 18.0f;
+static CGFloat const TitleTextColor = 200.0f/255.0f;
+static NSString * const TitleFontName = @"HelveticaNeue-Light";
 
 @implementation PMAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-	UINib *panelNib = [UINib nibWithNibName:@"PMPanel" bundle:nil];
+	PMViewController *panelOne = [[PMViewController alloc] initWithNibName:nil
+                                                                    bundle:nil];
+	panelOne.view.backgroundColor = [UIColor redColor];
+	panelOne.image = [UIImage imageNamed:@"pg.jpg"];
 	
-	PMPanel *panelOne = [panelNib instantiateWithOwner:nil options:nil][0];
-	panelOne.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-	panelOne.backgroundColor = [UIColor redColor];
-	panelOne.label.text = @"One, One, One, One";
-	panelOne.image.image = [UIImage imageNamed:@"pg.jpg"];
+	PMViewController *panelTwo = [[PMViewController alloc] initWithNibName:nil
+                                                                    bundle:nil];
+	panelTwo.view.backgroundColor = [UIColor blueColor];
+	panelTwo.image = [UIImage imageNamed:@"cp.jpg"];
 	
-	PMPanel *panelTwo = [panelNib instantiateWithOwner:nil options:nil][0];
-	panelTwo.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-	panelTwo.backgroundColor = [UIColor blueColor];
-	panelTwo.label.text = @"Two, Two, Two, Two";
-	panelTwo.image.image = [UIImage imageNamed:@"cp.jpg"];
+	PMViewController *panelThree = [[PMViewController alloc] initWithNibName:nil
+                                                                      bundle:nil];
+	panelThree.view.backgroundColor = [UIColor grayColor];
+	panelThree.image = [UIImage imageNamed:@"lj.jpg"];
 	
-	PMPanel *panelThree = [panelNib instantiateWithOwner:nil options:nil][0];
-	panelThree.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-	panelThree.backgroundColor = [UIColor grayColor];
-	panelThree.label.text = @"Three, Three, Three, Three";
-	panelThree.image.image = [UIImage imageNamed:@"lj.jpg"];
-	
-	PMPanel *panelFour = [panelNib instantiateWithOwner:nil options:nil][0];
-	panelFour.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-	panelFour.backgroundColor = [UIColor whiteColor];
-	panelFour.label.text = @"Four, Four, Four, Four";
-	panelFour.image.image = [UIImage imageNamed:@"kobe.jpg"];
+	PMViewController *panelFour = [[PMViewController alloc] initWithNibName:nil
+                                                                     bundle:nil];
+	panelFour.view.backgroundColor = [UIColor whiteColor];
+	panelFour.image = [UIImage imageNamed:@"kobe.jpg"];
 
-	NSDictionary *panels = [NSDictionary dictionaryWithObjects:@[panelOne,panelTwo, panelThree, panelFour]
-												  forKeys:@[@"Paul", @"Chris", @"Lebron", @"Kobe"]];
-	PMRotatingPrismContainer *rpc = [PMRotatingPrismContainer rotatingPrismContainerWithPanels:panels];
-    [rpc rotateToPanel:panelFour animated:NO completion:nil];
+    NSArray *viewControllers = @[panelOne,
+                                 panelTwo,
+                                 panelThree,
+                                 panelFour];
+    
+    
+
+    NSArray *titleLabels = @[[self newTitleLabel:@"Paul"],
+                             [self newTitleLabel:@"Chris"],
+                             [self newTitleLabel:@"Lebron"],
+                             [self newTitleLabel:@"Kobe"]];
+    
+    
+	PMRotatingPrismContainer *rpc = [PMRotatingPrismContainer rotatingPrismContainerWithViewControllers:viewControllers];
+    
+    rpc.titleViews = titleLabels;
+    
+    [rpc rotateToViewController:panelThree animated:NO completion:nil];
 
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	[self.window setRootViewController:rpc];
@@ -51,7 +63,17 @@
 	
     return YES;
 }
-							
+
+- (UILabel *) newTitleLabel:(NSString *)title
+{
+    UILabel *label = [UILabel new];
+    label.text = title;
+    label.font = [UIFont fontWithName:TitleFontName size:TitleFontSize];
+    label.textColor = [UIColor colorWithWhite:TitleTextColor alpha:1.0];
+    [label sizeToFit];
+    return label;
+}
+
 - (void)applicationWillResignActive:(UIApplication *)application
 {
 	// Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
