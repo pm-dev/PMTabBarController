@@ -1,0 +1,1 @@
+../../../../Classes/ios/PMPanAnimator.h
