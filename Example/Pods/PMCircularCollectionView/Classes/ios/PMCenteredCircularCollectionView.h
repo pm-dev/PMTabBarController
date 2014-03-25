@@ -10,8 +10,8 @@
 
 @interface PMCenteredCircularCollectionView : PMCircularCollectionView
 
-@property (nonatomic, weak) id<UICollectionViewDelegate, UIScrollViewDelegate> secondDelegate;
-
 - (void) centerView:(UIView *)view animated:(BOOL)animated;
+
+- (void) centerViewAtIndex:(NSUInteger)index animated:(BOOL)animated;
 
 @end

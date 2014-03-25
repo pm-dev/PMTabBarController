@@ -10,17 +10,17 @@
 #define COCOAPODS_POD_AVAILABLE_PMCircularCollectionView
 #define COCOAPODS_VERSION_MAJOR_PMCircularCollectionView 0
 #define COCOAPODS_VERSION_MINOR_PMCircularCollectionView 0
-#define COCOAPODS_VERSION_PATCH_PMCircularCollectionView 8
+#define COCOAPODS_VERSION_PATCH_PMCircularCollectionView 13
 
 // PMRotatingPrismContainer
 #define COCOAPODS_POD_AVAILABLE_PMRotatingPrismContainer
 #define COCOAPODS_VERSION_MAJOR_PMRotatingPrismContainer 0
 #define COCOAPODS_VERSION_MINOR_PMRotatingPrismContainer 0
-#define COCOAPODS_VERSION_PATCH_PMRotatingPrismContainer 2
+#define COCOAPODS_VERSION_PATCH_PMRotatingPrismContainer 3
 
 // PMUtils
 #define COCOAPODS_POD_AVAILABLE_PMUtils
 #define COCOAPODS_VERSION_MAJOR_PMUtils 0
 #define COCOAPODS_VERSION_MINOR_PMUtils 0
-#define COCOAPODS_VERSION_PATCH_PMUtils 19
+#define COCOAPODS_VERSION_PATCH_PMUtils 22
 

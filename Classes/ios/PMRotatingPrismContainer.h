@@ -8,19 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
-extern NSString * const PMRotatingPrismContainerRotationWillBegin;
-extern NSString * const PMRotatingPrismContainerRotationDidComplete;
-extern NSString * const PMRotatingPrismContainerRotationDidCancel;
+@interface PMRotatingPrismContainer : UITabBarController
 
-@interface PMRotatingPrismContainer : UIViewController
-
-@property (nonatomic, strong, readonly) NSArray *viewControllers;
 @property (nonatomic, strong) NSArray *titleViews;
+@property (nonatomic, strong) UIColor *titleBannerBackgroundColor;
 
-- (void) rotateToViewController:(UIViewController *)viewController animated:(BOOL)animated completion:(void(^)())completionBlock;
+- (void) setSelectedIndex:(NSUInteger)selectedIndex animated:(BOOL)animated completion:(void(^)(BOOL completed))completion;
 
-- (instancetype) initWithViewControllers:(NSArray *)viewControllers;
-
-+ (instancetype) rotatingPrismContainerWithViewControllers:(NSArray *)viewControllers;
+- (void) setSelectedViewController:(UIViewController *)selectedViewController animated:(BOOL)animated completion:(void(^)(BOOL completed))completion;
 
 @end

@@ -9,13 +9,23 @@
 #import "PMCenteredCircularCollectionView.h"
 #import "PMUtils.h"
 
+
 @implementation PMCenteredCircularCollectionView
+
 
 - (void) centerView:(UIView *)view animated:(BOOL)animated
 {
-    NSUInteger originalIndexOfView = [self.views indexOfObject:view];
-    
-    if (originalIndexOfView != NSNotFound) {
+    NSUInteger index = [self.views indexOfObject:view];
+    [self centerViewAtIndex:index animated:animated];
+}
+
+- (void) centerViewAtIndex:(NSUInteger)index animated:(BOOL)animated
+{
+    if (index < self.views.count) {
+        
+        if (CGSizeEqualToSize(CGSizeZero, self.contentSize)) {
+            [self layoutSubviews];
+        }
         
         NSIndexPath *indexPathAtMiddle;
         if (self.visibleCells.count) {
@@ -29,7 +39,7 @@
             
             NSInteger originalIndexOfMiddle = indexPathAtMiddle.item % self.views.count;
             
-            NSInteger delta = [self.views distanceFromIndex:originalIndexOfMiddle toIndex:originalIndexOfView circular:YES];
+            NSInteger delta = [self.views distanceFromIndex:originalIndexOfMiddle toIndex:index circular:YES];
             
             NSInteger toItem = indexPathAtMiddle.item + delta;
             
@@ -87,9 +97,12 @@
         
         *targetContentOffset = targetOffset;
     }
-    
-    if ([self.secondDelegate respondsToSelector:@selector(scrollViewWillEndDragging:withVelocity:targetContentOffset:)]) {
-        [self.secondDelegate scrollViewWillEndDragging:scrollView withVelocity:velocity targetContentOffset:targetContentOffset];
+
+    if ([[self superclass] instancesRespondToSelector:@selector(scrollViewWillEndDragging:withVelocity:targetContentOffset:)]) {
+        [super scrollViewWillEndDragging:scrollView withVelocity:velocity targetContentOffset:targetContentOffset];
+    }
+    else if ([self.secondaryDelegate respondsToSelector:@selector(scrollViewWillEndDragging:withVelocity:targetContentOffset:)]) {
+        [self.secondaryDelegate scrollViewWillEndDragging:scrollView withVelocity:velocity targetContentOffset:targetContentOffset];
     }
 }
 
@@ -97,29 +110,11 @@
 {
     [self centerNearestIndexPath];
     
-    if ([self.secondDelegate respondsToSelector:@selector(scrollViewDidEndDecelerating:)]) {
-        [self.secondDelegate scrollViewDidEndDecelerating:scrollView];
+    if ([[self superclass] instancesRespondToSelector:@selector(scrollViewDidEndDecelerating:)]) {
+        [super scrollViewDidEndDecelerating:scrollView];
     }
-}
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    if ([self.secondDelegate respondsToSelector:@selector(scrollViewDidScroll:)]) {
-        [self.secondDelegate scrollViewDidScroll:scrollView];
-    }
-}
-
-- (void)scrollViewDidZoom:(UIScrollView *)scrollView
-{
-    if ([self.secondDelegate respondsToSelector:@selector(scrollViewDidZoom:)]) {
-        [self.secondDelegate scrollViewDidZoom:scrollView];
-    }
-}
-
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
-{
-    if ([self.secondDelegate respondsToSelector:@selector(scrollViewWillBeginDragging:)]) {
-        [self.secondDelegate scrollViewWillBeginDragging:scrollView];
+    else if ([self.secondaryDelegate respondsToSelector:@selector(scrollViewDidEndDecelerating:)]) {
+        [self.secondaryDelegate scrollViewDidEndDecelerating:scrollView];
     }
 }
 
@@ -129,59 +124,11 @@
         [self centerNearestIndexPath];
     }
     
-    if ([self.secondDelegate respondsToSelector:@selector(scrollViewDidEndDragging:willDecelerate:)]) {
-        [self.secondDelegate scrollViewDidEndDragging:scrollView willDecelerate:decelerate];
+    if ([[self superclass] instancesRespondToSelector:@selector(scrollViewDidEndDragging:willDecelerate:)]) {
+        [super scrollViewDidEndDragging:scrollView willDecelerate:decelerate];
     }
-}
-
-- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView
-{
-    if ([self.secondDelegate respondsToSelector:@selector(scrollViewWillBeginDecelerating:)]) {
-        [self.secondDelegate scrollViewWillBeginDecelerating:scrollView];
-    }
-}
-
-- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
-{
-    if ([self.secondDelegate respondsToSelector:@selector(scrollViewDidEndScrollingAnimation:)]) {
-        [self.secondDelegate scrollViewDidEndScrollingAnimation:scrollView];
-    }
-}
-
-- (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView
-{
-    if ([self.secondDelegate respondsToSelector:@selector(viewForZoomingInScrollView:)]) {
-        [self.secondDelegate viewForZoomingInScrollView:scrollView];
-    }
-    return nil;
-}
-
-- (void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(UIView *)view
-{
-    if ([self.secondDelegate respondsToSelector:@selector(scrollViewWillBeginZooming:withView:)]) {
-        [self.secondDelegate scrollViewWillBeginZooming:scrollView withView:view];
-    }
-}
-
-- (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale
-{
-    if ([self.secondDelegate respondsToSelector:@selector(scrollViewDidEndZooming:withView:atScale:)]) {
-        [self.secondDelegate scrollViewDidEndZooming:scrollView withView:view atScale:scale];
-    }
-}
-
-- (BOOL)scrollViewShouldScrollToTop:(UIScrollView *)scrollView
-{
-    if ([self.secondDelegate respondsToSelector:@selector(scrollViewShouldScrollToTop:)]) {
-        return [self.secondDelegate scrollViewShouldScrollToTop:scrollView];
-    }
-    return YES;
-}
-
-- (void)scrollViewDidScrollToTop:(UIScrollView *)scrollView
-{
-    if ([self.secondDelegate respondsToSelector:@selector(scrollViewDidScrollToTop:)]) {
-        [self.secondDelegate scrollViewDidScrollToTop:scrollView];
+    else if ([self.secondaryDelegate respondsToSelector:@selector(scrollViewDidEndDragging:willDecelerate:)]) {
+        [self.secondaryDelegate scrollViewDidEndDragging:scrollView willDecelerate:decelerate];
     }
 }
 
@@ -195,89 +142,12 @@
                  atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally | UICollectionViewScrollPositionCenteredVertically
                          animated:YES];
     
-    if ([self.secondDelegate respondsToSelector:@selector(collectionView:didSelectItemAtIndexPath:)]) {
-        [self.secondDelegate collectionView:collectionView didSelectItemAtIndexPath:indexPath];
+    if ([[self superclass] instancesRespondToSelector:@selector(collectionView:didSelectItemAtIndexPath:)]) {
+        [super collectionView:collectionView didSelectItemAtIndexPath:indexPath];
+    }
+    else if ([self.secondaryDelegate respondsToSelector:@selector(collectionView:didSelectItemAtIndexPath:)]) {
+        [self.secondaryDelegate collectionView:collectionView didSelectItemAtIndexPath:indexPath];
     }
 }
-- (BOOL)collectionView:(UICollectionView *)collectionView shouldHighlightItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    if ([self.secondDelegate respondsToSelector:@selector(collectionView:shouldHighlightItemAtIndexPath:)]) {
-        return [self.secondDelegate collectionView:collectionView shouldHighlightItemAtIndexPath:indexPath];
-    }
-    return YES;
-}
-- (void)collectionView:(UICollectionView *)collectionView didHighlightItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    if ([self.secondDelegate respondsToSelector:@selector(collectionView:didHighlightItemAtIndexPath:)]) {
-        [self.secondDelegate collectionView:collectionView didHighlightItemAtIndexPath:indexPath];
-    }
-}
-- (void)collectionView:(UICollectionView *)collectionView didUnhighlightItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    if ([self.secondDelegate respondsToSelector:@selector(collectionView:didUnhighlightItemAtIndexPath:)]) {
-        [self.secondDelegate collectionView:collectionView didUnhighlightItemAtIndexPath:indexPath];
-    }
-}
-- (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    if ([self.secondDelegate respondsToSelector:@selector(collectionView:shouldSelectItemAtIndexPath:)]) {
-        return [self.secondDelegate collectionView:collectionView shouldSelectItemAtIndexPath:indexPath];
-    }
-    return YES;
-}
-- (BOOL)collectionView:(UICollectionView *)collectionView shouldDeselectItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    if ([self.secondDelegate respondsToSelector:@selector(collectionView:shouldDeselectItemAtIndexPath:)]) {
-        return [self.secondDelegate collectionView:collectionView shouldDeselectItemAtIndexPath:indexPath];
-    }
-    return YES;
-}
-- (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    if ([self.secondDelegate respondsToSelector:@selector(collectionView:didDeselectItemAtIndexPath:)]) {
-        [self.secondDelegate collectionView:collectionView didDeselectItemAtIndexPath:indexPath];
-    }
-}
-- (void)collectionView:(UICollectionView *)collectionView didEndDisplayingCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    if ([self.secondDelegate respondsToSelector:@selector(collectionView:didEndDisplayingCell:forItemAtIndexPath:)]) {
-        [self.secondDelegate collectionView:collectionView didEndDisplayingCell:cell forItemAtIndexPath:indexPath];
-    }
-}
-- (void)collectionView:(UICollectionView *)collectionView didEndDisplayingSupplementaryView:(UICollectionReusableView *)view forElementOfKind:(NSString *)elementKind atIndexPath:(NSIndexPath *)indexPath
-{
-    if ([self.secondDelegate respondsToSelector:@selector(collectionView:didEndDisplayingSupplementaryView:forElementOfKind:atIndexPath:)]) {
-        [self.secondDelegate collectionView:collectionView didEndDisplayingSupplementaryView:view forElementOfKind:elementKind atIndexPath:indexPath];
-    }
-}
-- (BOOL)collectionView:(UICollectionView *)collectionView shouldShowMenuForItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    if ([self.secondDelegate respondsToSelector:@selector(collectionView:shouldShowMenuForItemAtIndexPath:)]) {
-        return [self.secondDelegate collectionView:collectionView shouldShowMenuForItemAtIndexPath:indexPath];
-    }
-    return NO;
-}
-- (BOOL)collectionView:(UICollectionView *)collectionView canPerformAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender
-{
-    if ([self.secondDelegate respondsToSelector:@selector(collectionView:canPerformAction:forItemAtIndexPath:withSender:)]) {
-        return [self.secondDelegate collectionView:collectionView canPerformAction:action forItemAtIndexPath:indexPath withSender:sender];
-    }
-    return NO;
-}
-- (void)collectionView:(UICollectionView *)collectionView performAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender
-{
-    if ([self.secondDelegate respondsToSelector:@selector(collectionView:performAction:forItemAtIndexPath:withSender:)]) {
-        [self.secondDelegate collectionView:collectionView performAction:action forItemAtIndexPath:indexPath withSender:sender];
-    }
-}
-- (UICollectionViewTransitionLayout *)collectionView:(UICollectionView *)collectionView transitionLayoutForOldLayout:(UICollectionViewLayout *)fromLayout newLayout:(UICollectionViewLayout *)toLayout
-{
-    if ([self.secondDelegate respondsToSelector:@selector(collectionView:transitionLayoutForOldLayout:newLayout:)]) {
-        return [self.secondDelegate collectionView:collectionView transitionLayoutForOldLayout:fromLayout newLayout:toLayout];
-    }
-    return [[UICollectionViewTransitionLayout alloc] initWithCurrentLayout:fromLayout
-                                                                nextLayout:toLayout];
-}
-
 
 @end

@@ -11,7 +11,7 @@
 #import "PMRotatingPrismContainer.h"
 
 static CGFloat const TitleFontSize = 18.0f;
-static CGFloat const TitleTextColor = 200.0f/255.0f;
+static CGFloat const TitleTextColor = 181.0f/255.0f;
 static NSString * const TitleFontName = @"HelveticaNeue-Light";
 
 @implementation PMAppDelegate
@@ -22,47 +22,51 @@ static NSString * const TitleFontName = @"HelveticaNeue-Light";
                                                                     bundle:nil];
 	panelOne.view.backgroundColor = [UIColor redColor];
 	panelOne.image = [UIImage imageNamed:@"pg.jpg"];
+    NSLog(@"Paul: %@", panelOne);
 	
 	PMViewController *panelTwo = [[PMViewController alloc] initWithNibName:nil
                                                                     bundle:nil];
 	panelTwo.view.backgroundColor = [UIColor blueColor];
 	panelTwo.image = [UIImage imageNamed:@"cp.jpg"];
-	
+	NSLog(@"Chris: %@", panelTwo);
 	PMViewController *panelThree = [[PMViewController alloc] initWithNibName:nil
                                                                       bundle:nil];
 	panelThree.view.backgroundColor = [UIColor grayColor];
 	panelThree.image = [UIImage imageNamed:@"lj.jpg"];
-	
+	NSLog(@"Lebron: %@", panelThree);
 	PMViewController *panelFour = [[PMViewController alloc] initWithNibName:nil
                                                                      bundle:nil];
 	panelFour.view.backgroundColor = [UIColor whiteColor];
 	panelFour.image = [UIImage imageNamed:@"kobe.jpg"];
-
+    NSLog(@"Kone: %@", panelFour);
     NSArray *viewControllers = @[panelOne,
                                  panelTwo,
                                  panelThree,
                                  panelFour];
     
+	PMRotatingPrismContainer *rpc = [[PMRotatingPrismContainer alloc] init];
     
+    rpc.viewControllers = viewControllers;
 
     NSArray *titleLabels = @[[self newTitleLabel:@"Paul"],
                              [self newTitleLabel:@"Chris"],
                              [self newTitleLabel:@"Lebron"],
                              [self newTitleLabel:@"Kobe"]];
     
-    
-	PMRotatingPrismContainer *rpc = [PMRotatingPrismContainer rotatingPrismContainerWithViewControllers:viewControllers];
-    
     rpc.titleViews = titleLabels;
+    rpc.titleBannerBackgroundColor = [UIColor blackColor];
     
-    [rpc rotateToViewController:panelThree animated:NO completion:nil];
-
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [rpc setSelectedIndex:2 animated:NO completion:nil]; // This just needs to happen on the next run loop.
+    }];
+    
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	[self.window setRootViewController:rpc];
 	[self.window makeKeyAndVisible];
 	
     return YES;
 }
+
 
 - (UILabel *) newTitleLabel:(NSString *)title
 {

@@ -24,7 +24,14 @@
 		return [UIColor colorWithRed:RGB(red) green:RGB(green) blue:RGB(blue) alpha:alpha];
 	}
 	
-	return [UIColor colorWithWhite:0 alpha:alpha];
+	return [UIColor colorWithWhite:0.0f alpha:alpha];
+}
+
+- (CGFloat) alpha
+{
+    CGFloat alpha = 0.0f;
+    [self getRed:NULL green:NULL blue:NULL alpha:&alpha];
+    return alpha;
 }
 
 @end

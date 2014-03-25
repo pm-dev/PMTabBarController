@@ -8,9 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
-@interface PMCircularCollectionView : UICollectionView <UICollectionViewDelegate>
+@interface PMCircularCollectionView : UICollectionView <UICollectionViewDelegateFlowLayout>
 
+@property (nonatomic, weak) id<UICollectionViewDelegateFlowLayout> secondaryDelegate;
 @property (nonatomic, strong) NSArray *views;
+@property (nonatomic) CGFloat shadowRadius;
 
 - (instancetype) initWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewFlowLayout *)layout;
 
