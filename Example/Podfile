@@ -1,7 +1,4 @@
+xcodeproj 'PMTabBarController-iOSExample/PMTabBarController-iOSExample.xcodeproj'
+
+
 pod "PMTabBarController", :path => "../PMTabBarController.podspec"
-
-target "Demo" do
-end
-
-target "DemoTests" do
-end
