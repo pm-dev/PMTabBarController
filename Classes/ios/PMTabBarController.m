@@ -27,6 +27,7 @@ static inline PMPanDirection PMPanDirectionForVelocity(CGPoint velocity) {
 <UICollectionViewDelegateFlowLayout, UITabBarControllerDelegate, PMAnimatorDelegate>
 
 @property (nonatomic, strong, readwrite) PMCenteredCircularCollectionView *titleBanner;
+@property (nonatomic, strong) PMCenteredCollectionViewFlowLayout *titleBannerLayout;
 @property (nonatomic, strong) UIPercentDrivenInteractiveTransition *interactivePanTransition;
 @property (nonatomic, strong) PMPanAnimator *panAnimator;
 @property (nonatomic, copy) void(^panAnimatiorEndedBlock)(BOOL completed);
@@ -38,15 +39,29 @@ static inline PMPanDirection PMPanDirectionForVelocity(CGPoint velocity) {
 
 @implementation PMTabBarController
 
-
-- (instancetype) init
+- (instancetype) initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
-    self = [super init];
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        self.delegate = self;
-        self.animateWithDuration = YES;
+        [self setup];
     }
     return self;
+}
+
+
+- (instancetype) initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        [self setup];
+    }
+    return self;
+}
+
+- (void) setup
+{
+    self.delegate = self;
+    self.animateWithDuration = YES;
 }
 
 - (void)viewDidLoad
@@ -58,14 +73,15 @@ static inline PMPanDirection PMPanDirectionForVelocity(CGPoint velocity) {
     CGRect containerFrame;
     CGRectDivide(self.view.bounds, &bannerFrame, &containerFrame, BannerHeight, CGRectMaxYEdge);
     
-    PMCenteredCollectionViewFlowLayout *layout = [PMCenteredCollectionViewFlowLayout new];
-    layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+    self.titleBannerLayout = [PMCenteredCollectionViewFlowLayout new];
+    self.titleBannerLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+    self.titleBannerLayout.minimumInteritemSpacing = self.titleBannerSpacing;
     
-    self.titleBanner = [[PMCenteredCircularCollectionView alloc] initWithFrame:bannerFrame collectionViewLayout:layout];
+    self.titleBanner = [[PMCenteredCircularCollectionView alloc] initWithFrame:bannerFrame collectionViewLayout:self.titleBannerLayout];
     self.titleBanner.views = self.titleViews;
     self.titleBanner.backgroundColor = self.titleBannerBackgroundColor;
     self.titleBanner.secondaryDelegate = self;
-    self.titleBanner.shadowRadius = 10.0f;
+    self.titleBanner.shadowRadius = self.titleBannerShadowRadius;
     [self.titleBanner centerViewAtIndex:self.selectedIndex animated:NO];
     [self.view addSubview:self.titleBanner];
     
@@ -115,6 +131,22 @@ static inline PMPanDirection PMPanDirectionForVelocity(CGPoint velocity) {
     if (_titleBannerBackgroundColor != titleBannerBackgroundColor) {
         _titleBannerBackgroundColor = titleBannerBackgroundColor;
         self.titleBanner.backgroundColor = titleBannerBackgroundColor;
+    }
+}
+
+- (void) setTitleBannerShadowRadius:(CGFloat)titleBannerShadowRadius
+{
+    if (_titleBannerShadowRadius != titleBannerShadowRadius) {
+        _titleBannerShadowRadius = titleBannerShadowRadius;
+        self.titleBanner.shadowRadius = titleBannerShadowRadius;
+    }
+}
+
+- (void) setTitleBannerSpacing:(CGFloat)titleBannerSpacing
+{
+    if (_titleBannerSpacing != titleBannerSpacing) {
+        _titleBannerSpacing = titleBannerSpacing;
+        self.titleBannerLayout.minimumInteritemSpacing = titleBannerSpacing;
     }
 }
 

@@ -41,20 +41,33 @@ static inline NSString * PMReuseIdentifierForViewIndex(NSUInteger index) {
 {
     self = [super initWithFrame:frame collectionViewLayout:layout];
     if (self) {
-        
-        NSSet *protocols = [NSSet setWithObjects:
-                            @protocol(UICollectionViewDelegate),
-                            @protocol(UIScrollViewDelegate),
-                            @protocol(UICollectionViewDelegateFlowLayout), nil];
-        
-        _delegateInterceptor = [[PMProtocolInterceptor alloc] initWithInterceptedProtocols:protocols];
-        _delegateInterceptor.middleMan = self;
-        self.delegate = (id)self.delegateInterceptor;
-        self.dataSource = self;
-        self.showsHorizontalScrollIndicator = NO;
-        self.showsVerticalScrollIndicator = NO;
+        [self setup];
     }
     return self;
+}
+
+- (instancetype) initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        [self setup];
+    }
+    return self;
+}
+
+- (void) setup
+{
+    NSSet *protocols = [NSSet setWithObjects:
+                        @protocol(UICollectionViewDelegate),
+                        @protocol(UIScrollViewDelegate),
+                        @protocol(UICollectionViewDelegateFlowLayout), nil];
+    
+    _delegateInterceptor = [[PMProtocolInterceptor alloc] initWithInterceptedProtocols:protocols];
+    _delegateInterceptor.middleMan = self;
+    self.delegate = (id)self.delegateInterceptor;
+    self.dataSource = self;
+    self.showsHorizontalScrollIndicator = NO;
+    self.showsVerticalScrollIndicator = NO;
 }
 
 

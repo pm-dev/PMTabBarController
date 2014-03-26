@@ -12,6 +12,8 @@
 
 @property (nonatomic, strong) NSArray *titleViews;
 @property (nonatomic, strong) UIColor *titleBannerBackgroundColor;
+@property (nonatomic) CGFloat titleBannerShadowRadius;
+@property (nonatomic) CGFloat titleBannerSpacing;
 
 - (void) setSelectedIndex:(NSUInteger)selectedIndex animated:(BOOL)animated completion:(void(^)(BOOL completed))completion;
 
