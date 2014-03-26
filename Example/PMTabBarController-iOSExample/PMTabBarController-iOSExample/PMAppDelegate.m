@@ -22,23 +22,23 @@ static NSString * const TitleFontName = @"HelveticaNeue-Light";
                                                                     bundle:nil];
 	panelOne.view.backgroundColor = [UIColor redColor];
 	panelOne.image = [UIImage imageNamed:@"pg.jpg"];
-    NSLog(@"Paul: %@", panelOne);
+    panelOne.title = @"Paul";
 	
 	PMViewController *panelTwo = [[PMViewController alloc] initWithNibName:nil
                                                                     bundle:nil];
 	panelTwo.view.backgroundColor = [UIColor blueColor];
 	panelTwo.image = [UIImage imageNamed:@"cp.jpg"];
-	NSLog(@"Chris: %@", panelTwo);
+    panelTwo.title = @"Chris";
 	PMViewController *panelThree = [[PMViewController alloc] initWithNibName:nil
                                                                       bundle:nil];
 	panelThree.view.backgroundColor = [UIColor grayColor];
 	panelThree.image = [UIImage imageNamed:@"lj.jpg"];
-	NSLog(@"Lebron: %@", panelThree);
+    panelThree.title = @"Lebron";
 	PMViewController *panelFour = [[PMViewController alloc] initWithNibName:nil
                                                                      bundle:nil];
 	panelFour.view.backgroundColor = [UIColor whiteColor];
 	panelFour.image = [UIImage imageNamed:@"kobe.jpg"];
-    NSLog(@"Kone: %@", panelFour);
+    panelFour.title = @"Kobe";
     NSArray *viewControllers = @[panelOne,
                                  panelTwo,
                                  panelThree,
@@ -48,10 +48,10 @@ static NSString * const TitleFontName = @"HelveticaNeue-Light";
     
     rpc.viewControllers = viewControllers;
 
-    NSArray *titleLabels = @[[self newTitleLabel:@"Paul"],
-                             [self newTitleLabel:@"Chris"],
-                             [self newTitleLabel:@"Lebron"],
-                             [self newTitleLabel:@"Kobe"]];
+    NSArray *titleLabels = @[[self newTitleLabel:panelOne.title],
+                             [self newTitleLabel:panelTwo.title],
+                             [self newTitleLabel:panelThree.title],
+                             [self newTitleLabel:panelFour.title]];
     
     rpc.titleViews = titleLabels;
     rpc.titleBannerBackgroundColor = [UIColor blackColor];

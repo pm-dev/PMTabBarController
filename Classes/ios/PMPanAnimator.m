@@ -9,7 +9,7 @@
 #import "PMPanAnimator.h"
 
 static NSTimeInterval const AnimationDuration = 0.5;
-static CGFloat const CoverFullAlpha = 0.5f;
+static CGFloat const CoverFullAlpha = 0.1f;
 
 
 @implementation PMPanAnimator

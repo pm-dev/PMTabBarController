@@ -149,16 +149,29 @@ static inline NSString * PMReuseIdentifierForViewIndex(NSUInteger index) {
     CGFloat contentWidth = 0.0f;
     CGFloat contentHeight = 0.0f;
     
+    CGFloat widestView = 0.0f;
+    CGFloat tallestView = 0.0f;
+    
     for (UIView *view in self.views) {
         contentWidth += view.frame.size.width;
         contentHeight += view.frame.size.height;
+        
+        if (view.frame.size.width > widestView) {
+            widestView = view.frame.size.width;
+        }
+        if (view.frame.size.height > tallestView) {
+            tallestView = view.frame.size.height;
+        }
     }
     
     self.viewsSize = CGSizeMake(contentWidth, contentHeight);
     
-    NSUInteger spaces = self.views.count - 1;
-    CGFloat minimumInteritemSpacing = ceilf((self.bounds.size.width - contentWidth) / spaces + 1.0f);
-    CGFloat minimumLineSpacing = ceilf((self.bounds.size.height - contentHeight) / spaces + 1.0f);
+    contentWidth -= widestView;
+    contentHeight -= tallestView;
+    
+    NSUInteger spaces = self.views.count;
+    CGFloat minimumInteritemSpacing = ceilf((self.bounds.size.width - contentWidth ) / spaces);
+    CGFloat minimumLineSpacing = ceilf((self.bounds.size.height - contentHeight) / spaces);
     
     if (minimumInteritemSpacing - layout.minimumInteritemSpacing > 0.0f) {
         layout.minimumInteritemSpacing = minimumInteritemSpacing;
