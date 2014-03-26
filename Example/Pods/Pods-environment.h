@@ -10,17 +10,17 @@
 #define COCOAPODS_POD_AVAILABLE_PMCircularCollectionView
 #define COCOAPODS_VERSION_MAJOR_PMCircularCollectionView 0
 #define COCOAPODS_VERSION_MINOR_PMCircularCollectionView 0
-#define COCOAPODS_VERSION_PATCH_PMCircularCollectionView 13
+#define COCOAPODS_VERSION_PATCH_PMCircularCollectionView 16
 
 // PMTabBarController
 #define COCOAPODS_POD_AVAILABLE_PMTabBarController
 #define COCOAPODS_VERSION_MAJOR_PMTabBarController 0
 #define COCOAPODS_VERSION_MINOR_PMTabBarController 0
-#define COCOAPODS_VERSION_PATCH_PMTabBarController 3
+#define COCOAPODS_VERSION_PATCH_PMTabBarController 5
 
 // PMUtils
 #define COCOAPODS_POD_AVAILABLE_PMUtils
 #define COCOAPODS_VERSION_MAJOR_PMUtils 0
 #define COCOAPODS_VERSION_MINOR_PMUtils 0
-#define COCOAPODS_VERSION_PATCH_PMUtils 22
+#define COCOAPODS_VERSION_PATCH_PMUtils 25
 

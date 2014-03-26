@@ -7,8 +7,11 @@
 //
 
 #import "PMCircularCollectionView.h"
+#import "PMCenteredCollectionViewFlowLayout.h"
 
 @interface PMCenteredCircularCollectionView : PMCircularCollectionView
+
+- (instancetype) initWithFrame:(CGRect)frame collectionViewLayout:(PMCenteredCollectionViewFlowLayout *)layout;
 
 - (void) centerView:(UIView *)view animated:(BOOL)animated;
 

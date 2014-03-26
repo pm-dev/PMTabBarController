@@ -24,6 +24,7 @@
 #import "NSArray+PMUtils.h"
 #import "UICollectionView+PMUtils.h"
 #import "PMProtocolInterceptor.h"
+#import "UIScrollView+PMUtils.h"
 
 #define DEF_weakSelf    __weak __typeof(self) weakSelf = self;
 #define oneHour         60*60;

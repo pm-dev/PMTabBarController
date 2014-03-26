@@ -10,7 +10,7 @@
 
 @protocol PMAnimatorDelegate <NSObject>
 @optional
-- (BOOL) disableAnimator:(id<UIViewControllerAnimatedTransitioning>)animator;
+- (BOOL) animateWithDuration:(id<UIViewControllerAnimatedTransitioning>)animator;
 - (void) animatior:(id<UIViewControllerAnimatedTransitioning>)animator ended:(BOOL)completed;
 @end
 

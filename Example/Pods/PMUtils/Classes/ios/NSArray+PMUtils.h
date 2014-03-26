@@ -10,6 +10,10 @@
 
 @interface NSArray (PMUtils)
 
-- (NSInteger) distanceFromIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex circular:(BOOL)circular;
+- (NSInteger) shortestCircularDistanceFromIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex;
+
+- (NSInteger) reverseCircularDistanceFromIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex;
+
+- (NSInteger) forwardCircularDistanceFromIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex;
 
 @end

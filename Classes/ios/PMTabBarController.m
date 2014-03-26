@@ -19,14 +19,19 @@ static inline NSTimeInterval PMDuration(CGFloat rate, CGFloat distance) {
     return distance / rate;
 }
 
-@interface PMTabBarController () <UICollectionViewDelegateFlowLayout, UITabBarControllerDelegate, PMAnimatorDelegate>
+static inline PMPanDirection PMPanDirectionForVelocity(CGPoint velocity) {
+    return (velocity.x > 0.0f)? PMPanDirectionPositive : PMPanDirectionNegative;
+}
+
+@interface PMTabBarController ()
+<UICollectionViewDelegateFlowLayout, UITabBarControllerDelegate, PMAnimatorDelegate>
 
 @property (nonatomic, strong, readwrite) PMCenteredCircularCollectionView *titleBanner;
 @property (nonatomic, strong) UIPercentDrivenInteractiveTransition *interactivePanTransition;
 @property (nonatomic, strong) PMPanAnimator *panAnimator;
 @property (nonatomic, copy) void(^panAnimatiorEndedBlock)(BOOL completed);
 @property (nonatomic) BOOL isTransitionInteractive;
-@property (nonatomic) BOOL disableAnimations;
+@property (nonatomic) BOOL animateWithDuration;
 
 @end
 
@@ -39,6 +44,7 @@ static inline NSTimeInterval PMDuration(CGFloat rate, CGFloat distance) {
     self = [super init];
     if (self) {
         self.delegate = self;
+        self.animateWithDuration = YES;
     }
     return self;
 }
@@ -52,7 +58,7 @@ static inline NSTimeInterval PMDuration(CGFloat rate, CGFloat distance) {
     CGRect containerFrame;
     CGRectDivide(self.view.bounds, &bannerFrame, &containerFrame, BannerHeight, CGRectMaxYEdge);
     
-    UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
+    PMCenteredCollectionViewFlowLayout *layout = [PMCenteredCollectionViewFlowLayout new];
     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     
     self.titleBanner = [[PMCenteredCircularCollectionView alloc] initWithFrame:bannerFrame collectionViewLayout:layout];
@@ -89,7 +95,7 @@ static inline NSTimeInterval PMDuration(CGFloat rate, CGFloat distance) {
         selectedIndex != self.selectedIndex) {
         
         [self.titleBanner centerView:self.titleViews[selectedIndex] animated:animated];
-        self.disableAnimations = !animated;
+        self.animateWithDuration = animated;
         self.panAnimatiorEndedBlock = completion;
         self.selectedIndex = selectedIndex;
     }
@@ -112,6 +118,17 @@ static inline NSTimeInterval PMDuration(CGFloat rate, CGFloat distance) {
     }
 }
 
+- (void) setIsTransitionInteractive:(BOOL)isTransitionInteractive
+{
+    if (_isTransitionInteractive != isTransitionInteractive) {
+        _isTransitionInteractive = isTransitionInteractive;
+        self.titleBanner.userInteractionEnabled = !isTransitionInteractive;
+        if (_isTransitionInteractive) {
+            [self.titleBanner killScroll];
+        }
+    }
+}
+
 - (void)handlePan:(UIPanGestureRecognizer *)gestureRecognizer {
 	
 	CGPoint velocity = [gestureRecognizer velocityInView:gestureRecognizer.view.superview];
@@ -120,15 +137,15 @@ static inline NSTimeInterval PMDuration(CGFloat rate, CGFloat distance) {
 	switch (gestureRecognizer.state) {
             
         case UIGestureRecognizerStateBegan: {
+            
             self.isTransitionInteractive = YES;
+            self.panAnimator.panDirection = PMPanDirectionForVelocity(velocity);
             self.selectedIndex = (velocity.x < 0.0f)? [self nextIndex] : [self previousIndex];
 		}
 
         case UIGestureRecognizerStateChanged: {
+            
             CGFloat percent =  fabsf(delta.x) / gestureRecognizer.view.superview.frame.size.width;
-//            Apple bug that apparently prevents completion block from firing if update goes to 100%. This may now be fixed
-//            if (percent >= 1.0)
-//                percent = 0.9999;
             [self.interactivePanTransition updateInteractiveTransition:percent];
             break;
         }
@@ -141,12 +158,12 @@ static inline NSTimeInterval PMDuration(CGFloat rate, CGFloat distance) {
             self.interactivePanTransition.completionSpeed = fmaxf(1.0f, speedMultiplier);
 
             if ([self shouldCompleteForVelocity:velocity delta:delta]) {
+                [self.titleBanner centerViewAtIndex:self.selectedIndex animated:YES];
                 [self.interactivePanTransition finishInteractiveTransition];
             }
             else {
                 [self.interactivePanTransition cancelInteractiveTransition];
             }
-            self.isTransitionInteractive = NO;
             break;
         }
         default:  break;
@@ -182,34 +199,34 @@ static inline NSTimeInterval PMDuration(CGFloat rate, CGFloat distance) {
 #pragma mark - PMAnimatorDelegate Methods
 
 
-- (BOOL) disableAnimator:(id<UIViewControllerAnimatedTransitioning>)animator
+- (BOOL) animateWithDuration:(id<UIViewControllerAnimatedTransitioning>)animator
 {
     if (animator == self.panAnimator) {
-        return self.disableAnimations;
+        return self.animateWithDuration;
     }
-    return NO;
+    return YES;
 }
 
 - (void) animatior:(id<UIViewControllerAnimatedTransitioning>)animator ended:(BOOL)completed
 {
     if (animator == self.panAnimator) {
         
-        [self.titleBanner centerViewAtIndex:self.selectedIndex animated:YES];
-        
         if (self.panAnimatiorEndedBlock) {
             self.panAnimatiorEndedBlock(completed);
         }
-        self.disableAnimations = NO;
+        self.animateWithDuration = YES;
+        self.isTransitionInteractive = NO;
     }
 }
 
 #pragma mark - UIScrollViewDelegate Methods
 
 
-- (void) scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
+- (void) scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
+    CGPoint velocity = [scrollView.panGestureRecognizer velocityInView:scrollView.panGestureRecognizer.view];
     if (velocity.x) {
-        self.panAnimator.panDirection = ( velocity.x > 0.0f )? PMPanDirectionNegative : PMPanDirectionPositive;
+        self.panAnimator.panDirection = PMPanDirectionForVelocity(velocity);
     }
 }
 
@@ -219,8 +236,10 @@ static inline NSTimeInterval PMDuration(CGFloat rate, CGFloat distance) {
 
 - (void) collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSUInteger index = indexPath.item % self.titleViews.count;
-    self.selectedIndex = index;
+    if (!self.isTransitionInteractive) {
+        NSUInteger index = indexPath.item % self.titleViews.count;
+        self.selectedIndex = index;
+    }
 }
 
 
@@ -235,11 +254,10 @@ static inline NSTimeInterval PMDuration(CGFloat rate, CGFloat distance) {
         NSUInteger fromVCIndex = [tabBarController.viewControllers indexOfObject:fromVC];
         NSUInteger toVCIndex = [tabBarController.viewControllers indexOfObject:toVC];
         
-        NSInteger delta = [tabBarController.viewControllers distanceFromIndex:fromVCIndex toIndex:toVCIndex circular:YES];
+        NSInteger delta = [tabBarController.viewControllers shortestCircularDistanceFromIndex:fromVCIndex toIndex:toVCIndex];
         
-        self.panAnimator.panDirection = (delta > 0.0f)? PMPanDirectionNegative : PMPanDirectionPositive;
+        self.panAnimator.panDirection = (delta > 0)? PMPanDirectionNegative : PMPanDirectionPositive;
     }
-    
     return self.panAnimator;
 }
 

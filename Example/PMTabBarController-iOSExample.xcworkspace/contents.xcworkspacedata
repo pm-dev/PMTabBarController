@@ -1,1 +1,19 @@
-<?xml version='1.0' encoding='UTF-8'?><Workspace version='1.0'><FileRef location='group:PMTabBarController-iOSExample/PMTabBarController-iOSExample.xcodeproj'/><FileRef location='group:Pods/Pods.xcodeproj'/></Workspace>
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:../PMTabBarController.podspec">
+   </FileRef>
+   <FileRef
+      location = "group:../releasepod.command">
+   </FileRef>
+   <FileRef
+      location = "group:updatepod.command">
+   </FileRef>
+   <FileRef
+      location = "group:PMTabBarController-iOSExample/PMTabBarController-iOSExample.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:Pods/Pods.xcodeproj">
+   </FileRef>
+</Workspace>

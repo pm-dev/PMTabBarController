@@ -9,9 +9,9 @@
 #import <Foundation/Foundation.h>
 #import "PMAnimatorDelegate.h"
 
-typedef NS_ENUM(NSInteger, PMPanDirection)
+typedef NS_ENUM(NSUInteger, PMPanDirection)
 {
-	PMPanDirectionNone = 0,
+	PMPanDirectionNone,
 	PMPanDirectionPositive,
 	PMPanDirectionNegative
 };

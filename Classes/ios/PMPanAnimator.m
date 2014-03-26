@@ -85,22 +85,22 @@ static CGFloat const CoverFullAlpha = 0.5f;
 
 - (NSTimeInterval) transitionDuration:(id<UIViewControllerContextTransitioning>)transitionContext
 {
-    BOOL disableAnimator = NO;
+    BOOL animateWithDuration = YES;
     
-    if ([self.delegate respondsToSelector:@selector(disableAnimator:)]) {
-        disableAnimator = [self.delegate disableAnimator:self];
+    if ([self.delegate respondsToSelector:@selector(animateWithDuration:)]) {
+        animateWithDuration = [self.delegate animateWithDuration:self];
     }
     
-    return disableAnimator? 0.0 : AnimationDuration;
+    return animateWithDuration? AnimationDuration : 0.0;
 }
 
 - (void) animationEnded:(BOOL)transitionCompleted
 {
-    self.panDirection = PMPanDirectionNone;
-    
     if ([self.delegate respondsToSelector:@selector(animatior:ended:)]) {
         [self.delegate animatior:self ended:transitionCompleted];
     }
+    
+    self.panDirection = PMPanDirectionNone;
 }
 
 
