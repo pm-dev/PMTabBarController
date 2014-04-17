@@ -75,8 +75,14 @@ static CGFloat const CoverFullAlpha = 0.1f;
                          [disappearingCover removeFromSuperview];
                          [appearingCover removeFromSuperview];
                          
-                         appearing.frame = self.containerBounds;
-                         disappearing.frame = self.containerBounds;
+                         if ([transitionContext transitionWasCancelled]) {
+                             appearing.frame = appearingStartFrame;
+                             disappearing.frame = self.containerBounds;
+                         }
+                         else {
+                             appearing.frame = self.containerBounds;
+                             disappearing.frame = disappearingEndFrame;
+                         }
                          
                          [self performSelector:@selector(didComplete:) withObject:transitionContext afterDelay:0.1];
                      }];
