@@ -17,15 +17,15 @@
     return [super initWithFrame:frame collectionViewLayout:layout];
 }
 
-- (void) centerView:(UIView *)view animated:(BOOL)animated
+- (void) centerCell:(UICollectionViewCell *)cell animated:(BOOL)animated;
 {
-    NSUInteger index = [self.views indexOfObject:view];
-    [self centerViewAtIndex:index animated:animated];
+    NSIndexPath *indexPath = [self indexPathForCell:cell];
+    [self centerCellAtIndex:indexPath.item animated:animated];
 }
 
-- (void) centerViewAtIndex:(NSUInteger)index animated:(BOOL)animated
+- (void) centerCellAtIndex:(NSUInteger)index animated:(BOOL)animated
 {
-    if (index < self.views.count) {
+    if (index < self.itemCount) {
         
         if (CGSizeEqualToSize(CGSizeZero, self.contentSize)) {
             [self layoutSubviews];
@@ -35,9 +35,11 @@
         
         if (indexPathAtMiddle) {
             
-            NSInteger originalIndexOfMiddle = indexPathAtMiddle.item % self.views.count;
+            NSInteger originalIndexOfMiddle = indexPathAtMiddle.item % self.itemCount;
             
-            NSInteger delta = [self.views shortestCircularDistanceFromIndex:originalIndexOfMiddle toIndex:index];
+            NSRange range = NSMakeRange(0, self.itemCount);
+
+            NSInteger delta = PMShortestCircularDistance(originalIndexOfMiddle, index, range);
             
             NSInteger toItem = indexPathAtMiddle.item + delta;
             
@@ -91,8 +93,8 @@
     if ([[self superclass] instancesRespondToSelector:@selector(scrollViewDidEndDecelerating:)]) {
         [super scrollViewDidEndDecelerating:scrollView];
     }
-    else if ([self.secondaryDelegate respondsToSelector:@selector(scrollViewDidEndDecelerating:)]) {
-        [self.secondaryDelegate scrollViewDidEndDecelerating:scrollView];
+    else if ([[self PMDelegate] respondsToSelector:@selector(scrollViewDidEndDecelerating:)]) {
+        [[self PMDelegate] scrollViewDidEndDecelerating:scrollView];
     }
 }
 
@@ -109,8 +111,8 @@
     if ([[self superclass] instancesRespondToSelector:@selector(collectionView:didSelectItemAtIndexPath:)]) {
         [super collectionView:collectionView didSelectItemAtIndexPath:indexPath];
     }
-    else if ([self.secondaryDelegate respondsToSelector:@selector(collectionView:didSelectItemAtIndexPath:)]) {
-        [self.secondaryDelegate collectionView:collectionView didSelectItemAtIndexPath:indexPath];
+    else if ([[self PMDelegate] respondsToSelector:@selector(collectionView:didSelectItemAtIndexPath:)]) {
+        [[self PMDelegate] collectionView:collectionView didSelectItemAtIndexPath:indexPath];
     }
 }
 

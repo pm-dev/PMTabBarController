@@ -23,8 +23,12 @@ static inline PMPanDirection PMPanDirectionForVelocity(CGPoint velocity) {
     return (velocity.x > 0.0f)? PMPanDirectionPositive : PMPanDirectionNegative;
 }
 
+static inline NSString * PMReuseIdentifier(NSInteger index) {
+    return [[NSNumber numberWithInteger:index] stringValue];
+}
+
 @interface PMTabBarController ()
-<UICollectionViewDelegateFlowLayout, UITabBarControllerDelegate, PMAnimatorDelegate>
+<UICollectionViewDelegateFlowLayout, UITabBarControllerDelegate, PMAnimatorDelegate, PMCircularCollectionViewDataSource>
 
 @property (nonatomic, strong, readwrite) PMCenteredCircularCollectionView *titleBanner;
 @property (nonatomic, strong) PMCenteredCollectionViewFlowLayout *titleBannerLayout;
@@ -33,6 +37,7 @@ static inline PMPanDirection PMPanDirectionForVelocity(CGPoint velocity) {
 @property (nonatomic, copy) void(^panAnimatiorEndedBlock)(BOOL completed);
 @property (nonatomic) BOOL isTransitionInteractive;
 @property (nonatomic) BOOL animateWithDuration;
+@property (nonatomic) CGFloat addedTitlePadding;
 
 @end
 
@@ -43,7 +48,7 @@ static inline PMPanDirection PMPanDirectionForVelocity(CGPoint velocity) {
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        [self setup];
+        [self commontPMTabBarControllerInit];
     }
     return self;
 }
@@ -53,12 +58,12 @@ static inline PMPanDirection PMPanDirectionForVelocity(CGPoint velocity) {
 {
     self = [super initWithCoder:aDecoder];
     if (self) {
-        [self setup];
+        [self commontPMTabBarControllerInit];
     }
     return self;
 }
 
-- (void) setup
+- (void) commontPMTabBarControllerInit
 {
     self.delegate = self;
     self.animateWithDuration = YES;
@@ -75,14 +80,15 @@ static inline PMPanDirection PMPanDirectionForVelocity(CGPoint velocity) {
     
     self.titleBannerLayout = [PMCenteredCollectionViewFlowLayout new];
     self.titleBannerLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-    self.titleBannerLayout.minimumInteritemSpacing = self.titleBannerSpacing;
+    self.titleBannerLayout.minimumLineSpacing = 0.0f;
+    self.titleBannerLayout.minimumInteritemSpacing = 0.0f;
     
     self.titleBanner = [[PMCenteredCircularCollectionView alloc] initWithFrame:bannerFrame collectionViewLayout:self.titleBannerLayout];
-    self.titleBanner.views = self.titleViews;
     self.titleBanner.backgroundColor = self.titleBannerBackgroundColor;
-    self.titleBanner.secondaryDelegate = self;
+    [self.titleBanner setDelegate:self];
+    [self.titleBanner setDataSource:self];
     self.titleBanner.shadowRadius = self.titleBannerShadowRadius;
-    [self.titleBanner centerViewAtIndex:self.selectedIndex animated:NO];
+    [self.titleBanner centerCellAtIndex:self.selectedIndex animated:NO];
     [self.view addSubview:self.titleBanner];
     
     UIScreenEdgePanGestureRecognizer *leftEdgePan = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
@@ -110,7 +116,7 @@ static inline PMPanDirection PMPanDirectionForVelocity(CGPoint velocity) {
     if (selectedIndex < self.viewControllers.count &&
         selectedIndex != self.selectedIndex) {
         
-        [self.titleBanner centerView:self.titleViews[selectedIndex] animated:animated];
+        [self.titleBanner centerCellAtIndex:selectedIndex animated:animated];
         self.animateWithDuration = animated;
         self.panAnimatiorEndedBlock = completion;
         self.selectedIndex = selectedIndex;
@@ -121,9 +127,38 @@ static inline PMPanDirection PMPanDirectionForVelocity(CGPoint velocity) {
 {
     if (_titleViews != titleViews) {
         _titleViews = titleViews;
-        self.titleBanner.views = titleViews;
-        [self.titleBanner centerViewAtIndex:self.selectedIndex animated:NO];
+        [self registerCells];
+        [self setAddedTitlePadding];
+        [self.titleBanner reloadData];
+        [self.titleBanner centerCellAtIndex:self.selectedIndex animated:NO];
     }
+}
+
+- (void) registerCells
+{
+    for (NSInteger i = 0; i < self.titleViews.count; i++) {
+        [self.titleBanner registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:PMReuseIdentifier(i)];
+    }
+}
+- (void) setAddedTitlePadding
+{
+    CGFloat contentWidth = 0.0f;
+    for (UIView *view in self.titleViews) {
+        contentWidth += view.frame.size.width;
+    }
+    
+    CGFloat maxSpacingRequired = 0.0f;
+    for (UIView *view in self.titleViews) {
+        
+        CGFloat totalSpacingRequired =  (self.titleBanner.bounds.size.width - (contentWidth - view.frame.size.width));
+        CGFloat spacingRequired = ceilf(totalSpacingRequired / (self.titleViews.count-1));
+        
+        if (spacingRequired > maxSpacingRequired) {
+            maxSpacingRequired = spacingRequired;
+        }
+    }
+    
+    self.addedTitlePadding = fmaxf(maxSpacingRequired, self.titleBannerSpacing);
 }
 
 - (void) setTitleBannerBackgroundColor:(UIColor *)titleBannerBackgroundColor
@@ -146,7 +181,11 @@ static inline PMPanDirection PMPanDirectionForVelocity(CGPoint velocity) {
 {
     if (_titleBannerSpacing != titleBannerSpacing) {
         _titleBannerSpacing = titleBannerSpacing;
-        self.titleBannerLayout.minimumInteritemSpacing = titleBannerSpacing;
+        CGFloat titlePadding = self.addedTitlePadding;
+        [self setAddedTitlePadding];
+        if (titlePadding != self.addedTitlePadding) {
+            [self.titleBanner reloadData];
+        }
     }
 }
 
@@ -190,7 +229,7 @@ static inline PMPanDirection PMPanDirectionForVelocity(CGPoint velocity) {
             self.interactivePanTransition.completionSpeed = fmaxf(1.0f, speedMultiplier);
 
             if ([self shouldCompleteForVelocity:velocity delta:delta]) {
-                [self.titleBanner centerViewAtIndex:self.selectedIndex animated:YES];
+                [self.titleBanner centerCellAtIndex:self.selectedIndex animated:YES];
                 [self.interactivePanTransition finishInteractiveTransition];
             }
             else {
@@ -263,6 +302,39 @@ static inline PMPanDirection PMPanDirectionForVelocity(CGPoint velocity) {
 }
 
 
+#pragma mark - PMCircularCollectionViewDataSource Methods
+
+- (NSString *) circularCollectionView:(PMCircularCollectionView *)collectionView reuseIdentifierForIndex:(NSUInteger)index
+{
+    return PMReuseIdentifier(index);
+}
+
+- (NSUInteger) numberOfItemsInCircularCollectionView:(PMCircularCollectionView *)collectionView
+{
+    return self.titleViews.count;
+}
+
+- (void) circularCollectionView:(PMCircularCollectionView *)collectionView configureCell:(UICollectionViewCell *)cell atIndex:(NSUInteger)index
+{
+    if (!cell.contentView.subviews.count) {
+        
+        cell.contentView.backgroundColor = self.titleBannerBackgroundColor;
+        UIView *view = self.titleViews[index];
+        view.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
+        [cell.contentView addSubview:view];
+        [view centerInRect:cell.contentView.bounds forDirection:PMDirectionVertical | PMDirectionHorizontal];
+    }
+}
+
+
+#pragma mark - UICollectionViewDelegateFlowLayout Methods
+
+- (CGSize) collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    UIView *view = self.titleViews[indexPath.item];
+    return CGSizeMake(view.frame.size.width + self.addedTitlePadding, collectionView.bounds.size.height);
+}
+
 #pragma mark - UICollectionViewDelegate Methods
 
 
@@ -286,7 +358,8 @@ static inline PMPanDirection PMPanDirectionForVelocity(CGPoint velocity) {
         NSUInteger fromVCIndex = [tabBarController.viewControllers indexOfObject:fromVC];
         NSUInteger toVCIndex = [tabBarController.viewControllers indexOfObject:toVC];
         
-        NSInteger delta = [tabBarController.viewControllers shortestCircularDistanceFromIndex:fromVCIndex toIndex:toVCIndex];
+        NSRange range = NSMakeRange(0, tabBarController.viewControllers.count);
+        NSInteger delta = PMShortestCircularDistance(fromVCIndex, toVCIndex, range);
         
         self.panAnimator.panDirection = (delta > 0)? PMPanDirectionNegative : PMPanDirectionPositive;
     }

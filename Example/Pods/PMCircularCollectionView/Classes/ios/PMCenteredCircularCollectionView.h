@@ -13,8 +13,8 @@
 
 - (instancetype) initWithFrame:(CGRect)frame collectionViewLayout:(PMCenteredCollectionViewFlowLayout *)layout;
 
-- (void) centerView:(UIView *)view animated:(BOOL)animated;
+- (void) centerCell:(UICollectionViewCell *)cell animated:(BOOL)animated;
 
-- (void) centerViewAtIndex:(NSUInteger)index animated:(BOOL)animated;
+- (void) centerCellAtIndex:(NSUInteger)index animated:(BOOL)animated;
 
 @end

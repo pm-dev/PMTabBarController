@@ -9,39 +9,47 @@
 #import "PMCircularCollectionView.h"
 #import "PMUtils.h"
 
-static CGFloat const ContentMultiplier = 4.0f;
-
-static inline NSString * PMReuseIdentifierForViewIndex(NSUInteger index) {
-    return [[NSNumber numberWithInteger:index] stringValue];
-}
-
+static NSUInteger const ContentMultiplier = 4;
 
 @interface PMCircularCollectionView () <UICollectionViewDataSource>
 
-@property (nonatomic) CGSize viewsSize;
 @property (nonatomic, strong) CAGradientLayer *shadowLayer;
 @property (nonatomic, strong) PMProtocolInterceptor *delegateInterceptor;
+@property (nonatomic, strong) PMProtocolInterceptor *dataSourceInterceptor;
+@property (nonatomic, readwrite) NSInteger itemCount;
+@property (nonatomic) CGFloat addedPadding;
 
 @end
 
 
 @implementation PMCircularCollectionView
 
+
++ (instancetype) collectionViewWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewFlowLayout *)layout
+{
+    return [[self alloc] initWithFrame:frame collectionViewLayout:layout];
+}
+
++ (instancetype) collectionView
+{
+    return [[self alloc] init];
+}
+
 - (instancetype) init
 {
-    return [super initWithFrame:CGRectZero collectionViewLayout:[UICollectionViewFlowLayout new]];
+    return [self initWithFrame:CGRectZero];
 }
 
 - (instancetype) initWithFrame:(CGRect)frame
 {
-    return [super initWithFrame:frame collectionViewLayout:[UICollectionViewFlowLayout new]];
+    return [self initWithFrame:frame collectionViewLayout:[UICollectionViewFlowLayout new]];
 }
 
 - (instancetype) initWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewFlowLayout *)layout
 {
     self = [super initWithFrame:frame collectionViewLayout:layout];
     if (self) {
-        [self setup];
+        [self commonCircularCollectionViewInit];
     }
     return self;
 }
@@ -50,45 +58,47 @@ static inline NSString * PMReuseIdentifierForViewIndex(NSUInteger index) {
 {
     self = [super initWithCoder:aDecoder];
     if (self) {
-        [self setup];
+        [self commonCircularCollectionViewInit];
     }
     return self;
 }
 
-- (void) setup
+- (void) commonCircularCollectionViewInit;
 {
-    NSSet *protocols = [NSSet setWithObjects:
-                        @protocol(UICollectionViewDelegate),
-                        @protocol(UIScrollViewDelegate),
-                        @protocol(UICollectionViewDelegateFlowLayout), nil];
+    NSSet *delegateProtocols = [NSSet setWithObjects:
+                                @protocol(UICollectionViewDelegate),
+                                @protocol(UIScrollViewDelegate),
+                                @protocol(UICollectionViewDelegateFlowLayout), nil];
+    self.delegateInterceptor = [[PMProtocolInterceptor alloc] initWithInterceptedProtocols:delegateProtocols];
+    self.delegateInterceptor.middleMan = self;
+    [super setDelegate:(id)self.delegateInterceptor];
     
-    _delegateInterceptor = [[PMProtocolInterceptor alloc] initWithInterceptedProtocols:protocols];
-    _delegateInterceptor.middleMan = self;
-    self.delegate = (id)self.delegateInterceptor;
-    self.dataSource = self;
+    self.dataSourceInterceptor = [[PMProtocolInterceptor alloc] initWithInterceptedProtocol:@protocol(UICollectionViewDataSource)];
+    self.dataSourceInterceptor.middleMan = self;
+    [super setDataSource:(id)self.dataSourceInterceptor];
+    
     self.showsHorizontalScrollIndicator = NO;
     self.showsVerticalScrollIndicator = NO;
 }
 
+- (void)setDataSource:(id<PMCircularCollectionViewDataSource>)dataSource
+{
+    self.dataSourceInterceptor.receiver = dataSource;
+}
 
-- (id<UICollectionViewDelegateFlowLayout>) secondaryDelegate
+- (id<PMCircularCollectionViewDataSource>)PMDataSource
+{
+    return self.dataSourceInterceptor.receiver;
+}
+
+- (void)setDelegate:(id<UICollectionViewDelegateFlowLayout>)delegate
+{
+    self.delegateInterceptor.receiver = delegate;
+}
+
+- (id<UICollectionViewDelegateFlowLayout>)PMDelegate
 {
     return self.delegateInterceptor.receiver;
-}
-
-- (void) setSecondaryDelegate:(id<UICollectionViewDelegateFlowLayout>)secondaryDelegate
-{
-    self.delegateInterceptor.receiver = secondaryDelegate;
-}
-
-- (void) setViews:(NSArray *)views
-{
-    if (_views != views) {
-        _views = views;
-        [self registerCells];
-        [self setMinimumSpacing];
-        [self reloadData];
-    }
 }
 
 - (void) setShadowRadius:(CGFloat)shadowRadius
@@ -148,53 +158,6 @@ static inline NSString * PMReuseIdentifierForViewIndex(NSUInteger index) {
     }
 }
 
-- (void) registerCells
-{
-    for (NSUInteger i = 0; i < self.views.count; i++) {
-        [self registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:PMReuseIdentifierForViewIndex(i)];
-    }
-}
-
-- (void) setMinimumSpacing
-{
-    UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)self.collectionViewLayout;
-    
-    CGFloat contentWidth = 0.0f;
-    CGFloat contentHeight = 0.0f;
-    
-    CGFloat widestView = 0.0f;
-    CGFloat tallestView = 0.0f;
-    
-    for (UIView *view in self.views) {
-        contentWidth += view.frame.size.width;
-        contentHeight += view.frame.size.height;
-        
-        if (view.frame.size.width > widestView) {
-            widestView = view.frame.size.width;
-        }
-        if (view.frame.size.height > tallestView) {
-            tallestView = view.frame.size.height;
-        }
-    }
-    
-    self.viewsSize = CGSizeMake(contentWidth, contentHeight);
-    
-    contentWidth -= widestView;
-    contentHeight -= tallestView;
-    
-    NSUInteger spaces = self.views.count;
-    CGFloat minimumInteritemSpacing = ceilf((self.bounds.size.width - contentWidth ) / spaces);
-    CGFloat minimumLineSpacing = ceilf((self.bounds.size.height - contentHeight) / spaces);
-    
-    if (minimumInteritemSpacing - layout.minimumInteritemSpacing > 0.0f) {
-        layout.minimumInteritemSpacing = minimumInteritemSpacing;
-    }
-    
-    if (minimumLineSpacing - layout.minimumLineSpacing > 0.0f) {
-        layout.minimumLineSpacing = minimumLineSpacing;
-    }
-}
-
 - (void)layoutSubviews {
     [super layoutSubviews];
     [self recenterIfNecessary];
@@ -211,8 +174,8 @@ static inline NSString * PMReuseIdentifierForViewIndex(NSUInteger index) {
 
             CGFloat contentCenteredX = (self.contentSize.width - self.bounds.size.width) / 2.0f;
             CGFloat deltaFromCenter = currentOffset.x - contentCenteredX;
-            CGFloat singleContentWidth = self.viewsSize.width + layout.minimumInteritemSpacing * self.views.count;
-            
+            CGFloat singleContentWidth = self.contentSize.width / ContentMultiplier;
+
             if (fabsf(deltaFromCenter) >= singleContentWidth ) {
                 
                 CGFloat correction = (deltaFromCenter > 0)? deltaFromCenter - singleContentWidth : deltaFromCenter + singleContentWidth;
@@ -225,7 +188,7 @@ static inline NSString * PMReuseIdentifierForViewIndex(NSUInteger index) {
             
             CGFloat contentCenteredY = (self.contentSize.height - self.bounds.size.height) / 2.0f;
             CGFloat deltaFromCenter = currentOffset.y - contentCenteredY;
-            CGFloat singleContentHeight = self.viewsSize.height + layout.minimumLineSpacing * self.views.count;
+            CGFloat singleContentHeight = self.contentSize.height / ContentMultiplier;
             
             if (fabsf(deltaFromCenter) >= singleContentHeight) {
                 
@@ -241,36 +204,26 @@ static inline NSString * PMReuseIdentifierForViewIndex(NSUInteger index) {
 }
 
 
-- (NSUInteger) viewIndexForIndexPath:(NSIndexPath *)indexPath
+- (NSUInteger) normalizeIndex:(NSUInteger)index
 {
-    return indexPath.item % self.views.count;
+    return index % self.itemCount;
 }
 
 #pragma mark - UICollectionViewDatasource Methods
 
 
-- (NSInteger) collectionView: (UICollectionView *) collectionView
-      numberOfItemsInSection: (NSInteger) section
+- (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return self.views.count * ContentMultiplier;
+    self.itemCount = [[self PMDataSource] numberOfItemsInCircularCollectionView:self];
+    return self.itemCount * ContentMultiplier;
 }
 
-- (UICollectionViewCell *) collectionView:(UICollectionView *) collectionView
-                   cellForItemAtIndexPath: (NSIndexPath *) indexPath
+- (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSUInteger viewIndex = [self viewIndexForIndexPath:indexPath];
-    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:PMReuseIdentifierForViewIndex(viewIndex)
-                                                                           forIndexPath:indexPath];
-    if (!cell.contentView.subviews.count) {
-        
-        UIView *view = self.views[viewIndex];
-        [cell.contentView addSubview:view];
-        
-        UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)self.collectionViewLayout;
-        PMDirection direction = layout.scrollDirection == UICollectionViewScrollDirectionHorizontal? PMDirectionVertical : PMDirectionHorizontal;
-        [view centerInRect:cell.contentView.bounds forDirection:direction];
-    }
-
+    NSUInteger normalizedIndex = [self normalizeIndex:indexPath.item];
+    NSString *reuseIdentifier = [[self PMDataSource] circularCollectionView:self reuseIdentifierForIndex:normalizedIndex];
+    UICollectionViewCell *cell = [self dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
+    [[self PMDataSource] circularCollectionView:self configureCell:cell atIndex:normalizedIndex];
     return cell;
 }
 
@@ -279,16 +232,11 @@ static inline NSString * PMReuseIdentifierForViewIndex(NSUInteger index) {
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewFlowLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    UIView *view = self.views[[self viewIndexForIndexPath:indexPath]];
-    
-    switch (collectionViewLayout.scrollDirection) {
-        case UICollectionViewScrollDirectionHorizontal: return CGSizeMake(view.frame.size.width, self.bounds.size.height);
-        case UICollectionViewScrollDirectionVertical: return CGSizeMake(self.bounds.size.width, view.frame.size.height);
+    if ([[self PMDelegate] respondsToSelector:@selector(collectionView:layout:sizeForItemAtIndexPath:)]) {
+        NSIndexPath *normalizedIndexPath = [indexPath indexPathByReplacingLastIndex:[self normalizeIndex:indexPath.item]];
+        return [[self PMDelegate] collectionView:collectionView layout:collectionViewLayout sizeForItemAtIndexPath:normalizedIndexPath];
     }
-    
-    if ([self.secondaryDelegate respondsToSelector:@selector(collectionView:layout:sizeForItemAtIndexPath:)]) {
-        [self.secondaryDelegate collectionView:collectionView layout:collectionViewLayout sizeForItemAtIndexPath:indexPath];
-    }
+    return collectionViewLayout.itemSize;
 }
 
 #pragma mark - UIScrollViewDelegate Methods
@@ -302,8 +250,8 @@ static inline NSString * PMReuseIdentifierForViewIndex(NSUInteger index) {
         [CATransaction commit];
     }
     
-    if ([self.secondaryDelegate respondsToSelector:@selector(scrollViewDidScroll:)]) {
-        [self.secondaryDelegate scrollViewDidScroll:scrollView];
+    if ([[self PMDelegate] respondsToSelector:@selector(scrollViewDidScroll:)]) {
+        [[self PMDelegate] scrollViewDidScroll:scrollView];
     }
 }
 

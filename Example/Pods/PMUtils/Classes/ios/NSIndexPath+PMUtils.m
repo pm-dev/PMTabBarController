@@ -39,4 +39,32 @@
 	return [NSIndexPath indexPathWithIndexes:newarray length:newLength];
 }
 
+- (NSIndexPath *) indexPathByReplacingLastIndex:(NSUInteger)index
+{
+	NSUInteger newarray[self.length];
+	
+    newarray[self.length-1] = index;
+    
+	for (NSUInteger position = 0; position < self.length-1; position++)
+	{
+		newarray[position] = [self indexAtPosition:position];
+	}
+	
+	return [NSIndexPath indexPathWithIndexes:newarray length:self.length];
+}
+
+- (NSIndexPath *) indexPathByReplacingFirstIndex:(NSUInteger)index
+{
+	NSUInteger newarray[self.length];
+	
+    newarray[0] = index;
+    
+	for (NSUInteger position = 1; position < self.length; position++)
+	{
+		newarray[position] = [self indexAtPosition:position];
+	}
+	
+	return [NSIndexPath indexPathWithIndexes:newarray length:self.length];
+}
+
 @end

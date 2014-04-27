@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-typedef NS_OPTIONS(NSInteger, PMDirection) {
+typedef NS_OPTIONS(NSUInteger, PMDirection) {
     PMDirectionVertical = 1 << 0,
     PMDirectionHorizontal = 1 << 1
 };
@@ -16,6 +16,8 @@ typedef NS_OPTIONS(NSInteger, PMDirection) {
 @interface UIView (PMUtils)
 
 + (NSString *) nibName;
+
++ (UINib *) nib;
 
 + (instancetype) instanceFromNibWithOwner:(id)ownerOrNil;
 
@@ -28,6 +30,26 @@ typedef NS_OPTIONS(NSInteger, PMDirection) {
 						 tintColor:(UIColor *)tintColor
 							  crop:(CGRect)crop;
 
+#pragma mark - Layout
+
 - (void) centerInRect:(CGRect)rect forDirection:(PMDirection)direction;
+
+- (void) setFX:(CGFloat)x;
+
+- (void) setFY:(CGFloat)y;
+
+- (void) setFOrigin:(CGPoint)origin;
+
+- (void) setFWidth:(CGFloat)width;
+
+- (void) setFHeight:(CGFloat)width;
+
+- (void) setFSize:(CGSize)size;
+
+- (void) setBWidth:(CGFloat)width;
+
+- (void) setBHeight:(CGFloat)height;
+
+- (void) setBSize:(CGSize)size;
 
 @end

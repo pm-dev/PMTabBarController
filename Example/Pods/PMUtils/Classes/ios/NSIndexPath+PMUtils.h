@@ -12,5 +12,7 @@
 
 - (NSIndexPath *) indexPathByRemovingFirstIndex;
 - (NSIndexPath *) indexPathByAddingFirstIndex:(NSUInteger)index;
+- (NSIndexPath *) indexPathByReplacingLastIndex:(NSUInteger)index;
+- (NSIndexPath *) indexPathByReplacingFirstIndex:(NSUInteger)index;
 
 @end

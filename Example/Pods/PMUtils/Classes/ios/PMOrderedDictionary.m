@@ -148,21 +148,6 @@ NSString *DescriptionForObject(NSObject *object, id locale, NSUInteger indent)
     return NSNotFound;
 }
 
-- (NSInteger) shortestCircularDistanceFromIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex
-{
-    return [self.array shortestCircularDistanceFromIndex:fromIndex toIndex:toIndex];
-}
-
-- (NSInteger) reverseCircularDistanceFromIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex
-{
-    return [self reverseCircularDistanceFromIndex:fromIndex toIndex:toIndex];
-}
-
-- (NSInteger) forwardCircularDistanceFromIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex
-{
-    return [self forwardCircularDistanceFromIndex:fromIndex toIndex:toIndex];
-}
-
 - (NSString *)descriptionWithLocale:(id)locale indent:(NSUInteger)level
 {
 	NSMutableString *indentString = [NSMutableString string];

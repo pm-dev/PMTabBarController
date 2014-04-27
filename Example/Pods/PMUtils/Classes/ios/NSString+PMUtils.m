@@ -125,4 +125,20 @@
 	return returnValue;
 }
 
+- (NSString *) replaceUnderscoresWithCamelCase
+{
+    NSArray *components = [self componentsSeparatedByString:@"_"];
+    NSMutableString *output = [NSMutableString string];
+    
+    for (NSUInteger i = 0; i < components.count; i++) {
+        if (i == 0) {
+            [output appendString:components[i]];
+        } else {
+            [output appendString:[components[i] capitalizedString]];
+        }
+    }
+    
+    return output;
+}
+
 @end

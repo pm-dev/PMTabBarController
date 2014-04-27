@@ -8,6 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
+typedef NS_ENUM(NSUInteger, PMScrollDirection) {
+    PMScrollDirectionNone,
+    PMScrollDirectionPositive,
+    PMScrollDirectionNegative
+};
+
 @interface UIScrollView (PMUtils)
 
 - (void) killScroll;

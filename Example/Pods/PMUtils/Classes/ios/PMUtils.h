@@ -25,10 +25,22 @@
 #import "UICollectionView+PMUtils.h"
 #import "PMProtocolInterceptor.h"
 #import "UIScrollView+PMUtils.h"
+#import "UICollectionViewFlowLayout+PMUtils.h"
+#import "UICollectionReusableView+PMUtils.h"
+
+#if DEBUG
+#define DLog(args...)   NSLog(args)
+#else
+#define DLog(args...)
+#endif
 
 #define DEF_weakSelf    __weak __typeof(self) weakSelf = self;
-#define oneHour         60*60;
-#define oneDay          oneHour*24
-#define oneWeek         oneDay*7
+#define oneHour         (60*60)
+#define oneDay          (oneHour*24)
+#define oneWeek         (oneDay*7)
+
+extern NSInteger PMShortestCircularDistance(NSInteger fromIndex, NSInteger toIndex, NSRange inRange);
+extern NSInteger PMReverseCircularDistance(NSInteger fromIndex, NSInteger toIndex, NSRange inRange);
+extern NSInteger PMForwardCircularDistance(NSInteger fromIndex, NSInteger toIndex, NSRange inRange);
 
 #endif

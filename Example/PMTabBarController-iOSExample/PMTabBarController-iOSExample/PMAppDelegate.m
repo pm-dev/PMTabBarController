@@ -55,6 +55,7 @@ static NSString * const TitleFontName = @"HelveticaNeue-Light";
     
     rpc.titleViews = titleLabels;
     rpc.titleBannerBackgroundColor = [UIColor blackColor];
+    rpc.titleBannerShadowRadius = 10.0f;
     
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [rpc setSelectedIndex:2 animated:NO completion:nil]; // This just needs to happen on the next run loop.
