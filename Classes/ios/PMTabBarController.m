@@ -28,7 +28,7 @@ static inline NSString * PMReuseIdentifier(NSInteger index) {
 }
 
 @interface PMTabBarController ()
-<UICollectionViewDelegateFlowLayout, UITabBarControllerDelegate, PMAnimatorDelegate, PMCircularCollectionViewDataSource>
+<UICollectionViewDelegateFlowLayout, UITabBarControllerDelegate, PMAnimatorDelegate, PMCircularCollectionViewDataSource, PMCenteredCircularCollectionViewDelegate>
 
 @property (nonatomic, strong, readwrite) PMCenteredCircularCollectionView *titleBanner;
 @property (nonatomic, strong) PMCenteredCollectionViewFlowLayout *titleBannerLayout;
@@ -84,6 +84,7 @@ static inline NSString * PMReuseIdentifier(NSInteger index) {
     self.titleBannerLayout.minimumInteritemSpacing = 0.0f;
     
     self.titleBanner = [[PMCenteredCircularCollectionView alloc] initWithFrame:bannerFrame collectionViewLayout:self.titleBannerLayout];
+    self.titleBanner.centeredCollectionViewDelegate = self;
     self.titleBanner.backgroundColor = self.titleBannerBackgroundColor;
     [self.titleBanner setDelegate:self];
     [self.titleBanner setDataSource:self];
@@ -326,6 +327,15 @@ static inline NSString * PMReuseIdentifier(NSInteger index) {
     }
 }
 
+#pragma mark - PMCenteredCircularCollectionViewDelegate Methods
+
+- (void) collectionView:(PMCenteredCircularCollectionView *)collectionView didCenterItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (!self.isTransitionInteractive) {
+        NSUInteger index = indexPath.item % self.titleViews.count;
+        self.selectedIndex = index;
+    }
+}
 
 #pragma mark - UICollectionViewDelegateFlowLayout Methods
 
@@ -334,18 +344,6 @@ static inline NSString * PMReuseIdentifier(NSInteger index) {
     UIView *view = self.titleViews[indexPath.item];
     return CGSizeMake(view.frame.size.width + self.addedTitlePadding, collectionView.bounds.size.height);
 }
-
-#pragma mark - UICollectionViewDelegate Methods
-
-
-- (void) collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (!self.isTransitionInteractive) {
-        NSUInteger index = indexPath.item % self.titleViews.count;
-        self.selectedIndex = index;
-    }
-}
-
 
 #pragma mark - UITabBarControllerDelegate Methods
 
