@@ -8,6 +8,12 @@
 
 #import "PMUtils.h"
 
+NSTimeInterval const PMOneHour = (60*60);
+NSTimeInterval const PMOneDay = (PMOneHour*24);
+NSTimeInterval const PMOneWeek = (PMOneDay*7);
+NSUInteger const PMBytesPerMegabyte = 1024 * 1024;
+
+
 NSInteger PMShortestCircularDistance(NSInteger fromIndex, NSInteger toIndex, NSRange inRange)
 {
     NSInteger forwardDistance = PMForwardCircularDistance(fromIndex, toIndex, inRange);

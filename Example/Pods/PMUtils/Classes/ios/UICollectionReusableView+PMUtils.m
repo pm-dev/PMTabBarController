@@ -23,7 +23,10 @@
     id sizingCell = [cellCache objectForKey:key];
     
     if (!sizingCell) {
-        sizingCell = [[self class] instanceFromNibWithOwner:nil];
+        sizingCell = [self instanceFromDefaultNibWithOwner:nil];
+		if (!sizingCell) {
+			sizingCell = [self new];
+		}
         [cellCache setObject:sizingCell?: [NSNull null] forKey:key];
     }
     else if ([sizingCell isEqual:[NSNull null]]) {
@@ -33,7 +36,7 @@
     return sizingCell;
 }
 
-+ (NSString *)reuseID
++ (NSString *)defaultReuseIdentifier
 {
     return NSStringFromClass([self class]);
 }

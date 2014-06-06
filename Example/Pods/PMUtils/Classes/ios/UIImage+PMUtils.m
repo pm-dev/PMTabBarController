@@ -1,10 +1,4 @@
-//
-//  UIImage+PMUtils.m
-//  
-//
-//  Created by Peter Meyers on 3/1/14.
-//
-//
+
 
 #import "UIImage+PMUtils.h"
 #import <ImageIO/ImageIO.h>
@@ -15,21 +9,25 @@ static NSUInteger const bytesPerPixel = 4;
 
 @implementation UIImage (PMUtils)
 
-- (UIImage *) makeResizableHorizontally:(BOOL)horizontal vertically:(BOOL)vertical;
+- (UIImage *) makeResizable:(PMDirection)direction;
 {
-	// return a resizable image with one pixel of flex horizonally
-	// and vertically all the rest in the end caps
-	// the images should be an odd number of pixels for non-retina
-	// but this will still work on images with even number of pixels but
-	// the end caps will be one pixel smaller on right and bottom
-	
-	float endCapLeft = floorf((self.size.width - 1.0) / 2.0);
-	float endCapTop = floorf((self.size.height - 1.0) / 2.0);
-	
-	UIEdgeInsets capInsets = UIEdgeInsetsMake(vertical? endCapTop : 0.0,
-											  horizontal? endCapLeft : 0.0,
-											  vertical? floorf(self.size.height - endCapTop - 1.0) : 0.0,
-											  horizontal? floorf(self.size.width - endCapLeft - 1.0) : 0.0);
+    CGFloat leftInset = 0.0f;
+    CGFloat rightInset = 0.0f;
+    
+    if (direction & PMDirectionHorizontal) {
+        leftInset = floorf(self.size.width / 2.0f);
+        rightInset = leftInset + 1.0f;
+    }
+    
+    CGFloat topInset = 0.0f;
+    CGFloat bottomInset = 0.0f;
+    
+    if (direction & PMDirectionVertical) {
+        topInset = floorf(self.size.height / 2.0f);
+        bottomInset = topInset + 1.0f;
+    }
+    
+	UIEdgeInsets capInsets = UIEdgeInsetsMake(topInset, leftInset, bottomInset, rightInset);
 	
 	return [self resizableImageWithCapInsets:capInsets];
 }
@@ -85,6 +83,121 @@ static NSUInteger const bytesPerPixel = 4;
 	}
 	return nil;
 }
+
+
+
+
+/*
+ File: UIImage+PMUtils.m
+ 
+ Abstract: This is a category of UIImage that adds methods to apply blur and tint effects to an image. This is the code you’ll want to look out to find out how to use vImage to efficiently calculate a blur.
+ Version: 1.0
+ 
+ Version: 1.1
+ Created by JUSTIN M FISCHER on 9/02/13.
+ Copyright (c) 2013 Justin M Fischer. All rights reserved.
+ 
+ Version: 1.2
+ Created by PETER MEYERS on 4/28/201.
+ Copyright (c) 2013 Peter Meyers. All rights reserved.
+ 
+ Abstract: This category crops and scales image efficiently using vImage prior to applying blur.
+ 
+ Disclaimer: IMPORTANT:  This Apple software is supplied to you by Apple
+ Inc. ("Apple") in consideration of your agreement to the following
+ terms, and your use, installation, modification or redistribution of
+ this Apple software constitutes acceptance of these terms.  If you do
+ not agree with these terms, please do not use, install, modify or
+ redistribute this Apple software.
+ 
+ In consideration of your agreement to abide by the following terms, and
+ subject to these terms, Apple grants you a personal, non-exclusive
+ license, under Apple's copyrights in this original Apple software (the
+ "Apple Software"), to use, reproduce, modify and redistribute the Apple
+ Software, with or without modifications, in source and/or binary forms;
+ provided that if you redistribute the Apple Software in its entirety and
+ without modifications, you must retain this notice and the following
+ text and disclaimers in all such redistributions of the Apple Software.
+ Neither the name, trademarks, service marks or logos of Apple Inc. may
+ be used to endorse or promote products derived from the Apple Software
+ without specific prior written permission from Apple.  Except as
+ expressly stated in this notice, no other rights or licenses, express or
+ implied, are granted by Apple herein, including but not limited to any
+ patent rights that may be infringed by your derivative works or by other
+ works in which the Apple Software may be incorporated.
+ 
+ The Apple Software is provided by Apple on an "AS IS" basis.  APPLE
+ MAKES NO WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
+ THE IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS
+ FOR A PARTICULAR PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND
+ OPERATION ALONE OR IN COMBINATION WITH YOUR PRODUCTS.
+ 
+ IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL
+ OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ INTERRUPTION) ARISING IN ANY WAY OUT OF THE USE, REPRODUCTION,
+ MODIFICATION AND/OR DISTRIBUTION OF THE APPLE SOFTWARE, HOWEVER CAUSED
+ AND WHETHER UNDER THEORY OF CONTRACT, TORT (INCLUDING NEGLIGENCE),
+ STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.
+ 
+ Copyright (C) 2013 Apple Inc. All Rights Reserved.
+ 
+ Copyright © 2013 Apple Inc. All rights reserved.
+ WWDC 2013 License
+ 
+ NOTE: This Apple Software was supplied by Apple as part of a WWDC 2013
+ Session. Please refer to the applicable WWDC 2013 Session for further
+ information.
+ 
+ IMPORTANT: This Apple software is supplied to you by Apple Inc.
+ ("Apple") in consideration of your agreement to the following terms, and
+ your use, installation, modification or redistribution of this Apple
+ software constitutes acceptance of these terms. If you do not agree with
+ these terms, please do not use, install, modify or redistribute this
+ Apple software.
+ 
+ In consideration of your agreement to abide by the following terms, and
+ subject to these terms, Apple grants you a non-exclusive license, under
+ Apple's copyrights in this original Apple software (the "Apple
+ Software"), to use, reproduce, modify and redistribute the Apple
+ Software, with or without modifications, in source and/or binary forms;
+ provided that if you redistribute the Apple Software in its entirety and
+ without modifications, you must retain this notice and the following
+ text and disclaimers in all such redistributions of the Apple Software.
+ Neither the name, trademarks, service marks or logos of Apple Inc. may
+ be used to endorse or promote products derived from the Apple Software
+ without specific prior written permission from Apple. Except as
+ expressly stated in this notice, no other rights or licenses, express or
+ implied, are granted by Apple herein, including but not limited to any
+ patent rights that may be infringed by your derivative works or by other
+ works in which the Apple Software may be incorporated.
+ 
+ The Apple Software is provided by Apple on an "AS IS" basis. APPLE MAKES
+ NO WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE
+ IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS FOR
+ A PARTICULAR PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND
+ OPERATION ALONE OR IN COMBINATION WITH YOUR PRODUCTS.
+ 
+ IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL
+ OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ INTERRUPTION) ARISING IN ANY WAY OUT OF THE USE, REPRODUCTION,
+ MODIFICATION AND/OR DISTRIBUTION OF THE APPLE SOFTWARE, HOWEVER CAUSED
+ AND WHETHER UNDER THEORY OF CONTRACT, TORT (INCLUDING NEGLIGENCE),
+ STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.
+ 
+ EA1002
+ 5/3/2013
+ 
+ JMF
+ 9/2/2013
+ 
+ PM
+ 4/28/2014
+ */
+
 
 - (UIImage *)blurredImageWithRadius:(CGFloat)radius
 						 iterations:(NSUInteger)iterations

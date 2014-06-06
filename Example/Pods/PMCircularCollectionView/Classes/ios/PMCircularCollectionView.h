@@ -8,31 +8,23 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol PMCircularCollectionViewDataSource;
-
 @interface PMCircularCollectionView : UICollectionView <UICollectionViewDelegateFlowLayout>
 
 @property (nonatomic) CGFloat shadowRadius;
-@property (nonatomic, readonly) NSInteger itemCount;
-@property (nonatomic, strong) UICollectionViewFlowLayout *collectionViewLayout;
+@property (nonatomic, strong) UIColor *shadowColor;
+@property (nonatomic) BOOL circularDisabled;
+- (BOOL) circularActive;
 
-- (void)setDataSource:(id<PMCircularCollectionViewDataSource>)dataSource;
-- (id<PMCircularCollectionViewDataSource>)PMDataSource;
 
-- (void)setDelegate:(id<UICollectionViewDelegateFlowLayout>)delegate;
-- (id<UICollectionViewDelegateFlowLayout>)PMDelegate;
+// Overwrite Type for flow layouts
+@property (nonatomic, retain) UICollectionViewFlowLayout *collectionViewLayout;
+@property (nonatomic, assign) id <UICollectionViewDelegateFlowLayout> delegate;
+
+// delegate methods all say what index path was selected but we've multiplied the items in the row by a multiplier to allow the circular scroll. Feed that index path to this method to get the correct index.
+- (NSInteger) normalizeIndex:(NSInteger)index;
 
 - (instancetype) initWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewFlowLayout *)layout;
 + (instancetype) collectionViewWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewFlowLayout *)layout;
 + (instancetype) collectionView;
-
-@end
-
-@protocol PMCircularCollectionViewDataSource <NSObject>
-
-@required
-- (NSString *) circularCollectionView:(PMCircularCollectionView *)collectionView reuseIdentifierForIndex:(NSUInteger)index;
-- (NSUInteger) numberOfItemsInCircularCollectionView:(PMCircularCollectionView *)collectionView;
-- (void) circularCollectionView:(PMCircularCollectionView *)collectionView configureCell:(UICollectionViewCell *)cell atIndex:(NSUInteger)index;
 
 @end

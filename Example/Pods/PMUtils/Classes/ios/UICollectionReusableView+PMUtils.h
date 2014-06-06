@@ -12,6 +12,6 @@
 
 + (instancetype) sizingCell;
 
-+ (NSString *) reuseID;
++ (NSString *) defaultReuseIdentifier;
 
 @end

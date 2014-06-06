@@ -28,7 +28,7 @@ static inline NSString * PMReuseIdentifier(NSInteger index) {
 }
 
 @interface PMTabBarController ()
-<UICollectionViewDelegateFlowLayout, UITabBarControllerDelegate, PMAnimatorDelegate, PMCircularCollectionViewDataSource, PMCenteredCircularCollectionViewDelegate>
+<UITabBarControllerDelegate, PMAnimatorDelegate, UICollectionViewDataSource, PMCenteredCircularCollectionViewDelegate>
 
 @property (nonatomic, strong, readwrite) PMCenteredCircularCollectionView *titleBanner;
 @property (nonatomic, strong) PMCenteredCollectionViewFlowLayout *titleBannerLayout;
@@ -83,11 +83,10 @@ static inline NSString * PMReuseIdentifier(NSInteger index) {
     self.titleBannerLayout.minimumLineSpacing = 0.0f;
     self.titleBannerLayout.minimumInteritemSpacing = 0.0f;
     
-    self.titleBanner = [[PMCenteredCircularCollectionView alloc] initWithFrame:bannerFrame collectionViewLayout:self.titleBannerLayout];
-    self.titleBanner.centeredCollectionViewDelegate = self;
+    self.titleBanner = [PMCenteredCircularCollectionView collectionViewWithFrame:bannerFrame collectionViewLayout:self.titleBannerLayout];
+    self.titleBanner.delegate = self;
+	self.titleBanner.dataSource = self;
     self.titleBanner.backgroundColor = self.titleBannerBackgroundColor;
-    [self.titleBanner setDelegate:self];
-    [self.titleBanner setDataSource:self];
     self.titleBanner.shadowRadius = self.titleBannerShadowRadius;
     [self.titleBanner centerCellAtIndex:self.selectedIndex animated:NO];
     [self.view addSubview:self.titleBanner];
@@ -303,45 +302,44 @@ static inline NSString * PMReuseIdentifier(NSInteger index) {
 }
 
 
-#pragma mark - PMCircularCollectionViewDataSource Methods
+#pragma mark - UICollectionViewDataSource Methods
 
-- (NSString *) circularCollectionView:(PMCircularCollectionView *)collectionView reuseIdentifierForIndex:(NSUInteger)index
+- (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return PMReuseIdentifier(index);
+	return self.titleViews.count;
 }
 
-- (NSUInteger) numberOfItemsInCircularCollectionView:(PMCircularCollectionView *)collectionView
+- (UICollectionViewCell *) collectionView:(PMCenteredCircularCollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    return self.titleViews.count;
-}
-
-- (void) circularCollectionView:(PMCircularCollectionView *)collectionView configureCell:(UICollectionViewCell *)cell atIndex:(NSUInteger)index
-{
-    if (!cell.contentView.subviews.count) {
-        
-        cell.contentView.backgroundColor = self.titleBannerBackgroundColor;
-        UIView *view = self.titleViews[index];
+	NSInteger normalizedIndex = [collectionView normalizeIndex:indexPath.item];
+	UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:PMReuseIdentifier(normalizedIndex) forIndexPath:indexPath];
+	if (!cell.contentView.subviews.count) {
+		cell.contentView.backgroundColor = self.titleBannerBackgroundColor;
+        UIView *view = self.titleViews[normalizedIndex];
         view.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
         [cell.contentView addSubview:view];
         [view centerInRect:cell.contentView.bounds forDirection:PMDirectionVertical | PMDirectionHorizontal];
-    }
+	}
+	return cell;
 }
+
 
 #pragma mark - PMCenteredCircularCollectionViewDelegate Methods
 
-- (void) collectionView:(PMCenteredCircularCollectionView *)collectionView didCenterItemAtIndexPath:(NSIndexPath *)indexPath
+- (void) collectionView:(PMCenteredCircularCollectionView *)collectionView didCenterItemAtIndex:(NSUInteger)index
 {
     if (!self.isTransitionInteractive) {
-        NSUInteger index = indexPath.item % self.titleViews.count;
-        self.selectedIndex = index;
+		NSInteger normalizedIndex = [collectionView normalizeIndex:index];
+        self.selectedIndex = normalizedIndex;
     }
 }
 
 #pragma mark - UICollectionViewDelegateFlowLayout Methods
 
-- (CGSize) collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
+- (CGSize) collectionView:(PMCenteredCircularCollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    UIView *view = self.titleViews[indexPath.item];
+	NSInteger normalizedIndex = [collectionView normalizeIndex:indexPath.item];
+    UIView *view = self.titleViews[normalizedIndex];
     return CGSizeMake(view.frame.size.width + self.addedTitlePadding, collectionView.bounds.size.height);
 }
 

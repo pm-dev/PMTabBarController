@@ -12,9 +12,13 @@
 
 @property (nonatomic, readonly, copy) NSSet * interceptedProtocols;
 @property (nonatomic, weak) id receiver;
-@property (nonatomic, weak) id middleMan;
+@property (nonatomic, weak, readonly) id middleMan;
 
-- (instancetype)initWithInterceptedProtocol:(Protocol *)interceptedProtocol;
-- (instancetype)initWithInterceptedProtocols:(NSSet *)interceptedProtocols;
+- (instancetype)initWithMiddleMan:(id)middleMan forProtocol:(Protocol *)interceptedProtocol;
+- (instancetype)initWithMiddleMan:(id)middleMan forProtocols:(NSSet *)interceptedProtocols;
+
++ (instancetype)interceptorWithMiddleMan:(id)middleMan forProtocol:(Protocol *)interceptedProtocol;
++ (instancetype)interceptorWithMiddleMan:(id)middleMan forProtocols:(NSSet *)interceptedProtocols;
+
 
 @end

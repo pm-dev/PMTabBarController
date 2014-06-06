@@ -16,6 +16,9 @@ typedef NS_ENUM(NSUInteger, PMScrollDirection) {
 
 @interface UIScrollView (PMUtils)
 
+/**
+ *  If the scroll view is currently animating a scroll, this method will stop the scroll at the current contentOffset.
+ */
 - (void) killScroll;
 
 @end

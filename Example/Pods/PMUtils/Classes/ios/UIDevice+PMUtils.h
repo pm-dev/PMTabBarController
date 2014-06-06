@@ -14,6 +14,8 @@
 
 + (BOOL) isPhone;
 
++ (NSString *) systemVersion;
+
 + (int)hardwareCores;
 
 + (size_t)hardwareRam;

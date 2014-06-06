@@ -17,4 +17,6 @@
 
 - (CGPoint) contentOffsetForCenteredRect:(CGRect)rect;
 
+- (CGPoint) contentOffsetInBoundsCenter;
+
 @end

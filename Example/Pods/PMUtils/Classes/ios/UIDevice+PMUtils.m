@@ -15,12 +15,17 @@
 
 + (BOOL) isPad
 {
-    return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad;
+    return [[self currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad;
 }
 
 + (BOOL) isPhone
 {
-    return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone;
+    return [[self currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone;
+}
+
++ (NSString *) systemVersion
+{
+	return [[self currentDevice] systemVersion];
 }
 
 + (int)hardwareCores

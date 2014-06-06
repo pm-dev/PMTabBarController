@@ -79,11 +79,6 @@
 	return YES; // x.y.z is included in x.y.z
 }
 
-+ (NSString *) systemVersion
-{
-	return [[UIDevice currentDevice] systemVersion];
-}
-
 - (BOOL) containsEmoji
 {
 	__block BOOL returnValue = NO;
@@ -125,19 +120,30 @@
 	return returnValue;
 }
 
-- (NSString *) replaceUnderscoresWithCamelCase
+- (NSString *) camelCaseFromUnderscores
 {
     NSArray *components = [self componentsSeparatedByString:@"_"];
-    NSMutableString *output = [NSMutableString string];
+    NSMutableString *output = [NSMutableString stringWithString:components[0]];
     
-    for (NSUInteger i = 0; i < components.count; i++) {
-        if (i == 0) {
-            [output appendString:components[i]];
-        } else {
-            [output appendString:[components[i] capitalizedString]];
-        }
+    for (NSUInteger i = 1; i < components.count; i++) {
+        [output appendString:[components[i] capitalizedString]];
     }
     
+    return output;
+}
+
+- (NSString *) underscoresFromCamelCase
+{
+    NSMutableString *output = [NSMutableString string];
+    NSCharacterSet *uppercaseCharacters = [NSCharacterSet uppercaseLetterCharacterSet];
+    for (NSInteger i = 0; i < self.length; i++ ) {
+        unichar c = [self characterAtIndex:i];
+        if ([uppercaseCharacters characterIsMember:c]) {
+            [output appendFormat:@"_%@", [[NSString stringWithCharacters:&c length:1] lowercaseString]];
+        } else {
+            [output appendFormat:@"%C", c];
+        }
+    }
     return output;
 }
 

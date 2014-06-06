@@ -26,28 +26,48 @@ static inline BOOL selector_belongsToProtocol(SEL selector, Protocol * protocol)
 
 @implementation PMProtocolInterceptor
 
-- (instancetype)initWithInterceptedProtocol:(Protocol *)interceptedProtocol
+
+- (instancetype)initWithMiddleMan:(id)middleMan forProtocol:(Protocol *)interceptedProtocol
 {
     self = [super init];
     if (self) {
         _interceptedProtocols = [NSSet setWithObject:interceptedProtocol];
+        _middleMan = middleMan;
     }
     return self;
 }
 
-- (instancetype)initWithInterceptedProtocols:(NSSet *)interceptedProtocols
+- (instancetype)initWithMiddleMan:(id)middleMan forProtocols:(NSSet *)interceptedProtocols
 {
     self = [super init];
     if (self) {
         _interceptedProtocols = [interceptedProtocols copy];
+        _middleMan = middleMan;
     }
     return self;
+}
+
++ (instancetype)interceptorWithMiddleMan:(id)middleMan forProtocol:(Protocol *)interceptedProtocol
+{
+    return [[self alloc] initWithMiddleMan:middleMan forProtocol:interceptedProtocol];
+}
+
++ (instancetype)interceptorWithMiddleMan:(id)middleMan forProtocols:(NSSet *)interceptedProtocols
+{
+    return [[self alloc] initWithMiddleMan:middleMan forProtocols:interceptedProtocols];
+}
+
+- (void) setReceiver:(id)receiver
+{
+    NSAssert(![receiver isKindOfClass:[PMProtocolInterceptor class]],
+             @"Setting a PMProtocolInterceptor as another PMProtocolInterceptor's receiver is not supported");
+    _receiver = receiver;
 }
 
 - (id)forwardingTargetForSelector:(SEL)aSelector
 {
     if ([self.middleMan respondsToSelector:aSelector] &&
-        [self isSelectorContainedInInterceptedProtocols:aSelector]) {
+        [self _isSelectorContainedInInterceptedProtocols:aSelector]) {
         return self.middleMan;
     }
     if ([self.receiver respondsToSelector:aSelector]) {
@@ -60,7 +80,7 @@ static inline BOOL selector_belongsToProtocol(SEL selector, Protocol * protocol)
 - (BOOL)respondsToSelector:(SEL)aSelector
 {
     if ([self.middleMan respondsToSelector:aSelector] &&
-        [self isSelectorContainedInInterceptedProtocols:aSelector]) {
+        [self _isSelectorContainedInInterceptedProtocols:aSelector]) {
         return YES;
     }
     if ([self.receiver respondsToSelector:aSelector]) {
@@ -70,7 +90,9 @@ static inline BOOL selector_belongsToProtocol(SEL selector, Protocol * protocol)
     return [super respondsToSelector:aSelector];
 }
 
-- (BOOL)isSelectorContainedInInterceptedProtocols:(SEL)aSelector
+#pragma mark - Private Methods
+
+- (BOOL)_isSelectorContainedInInterceptedProtocols:(SEL)aSelector
 {
     __block BOOL isSelectorContainedInInterceptedProtocols = NO;
     
@@ -80,6 +102,5 @@ static inline BOOL selector_belongsToProtocol(SEL selector, Protocol * protocol)
     }];
     return isSelectorContainedInInterceptedProtocols;
 }
-
 
 @end

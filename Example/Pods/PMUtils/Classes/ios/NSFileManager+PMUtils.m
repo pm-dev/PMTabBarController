@@ -25,7 +25,7 @@
 	size_t					size			= 0;
 	char					*str			= NULL;
 	NSString				*string			= nil;
-	
+    
 	size = getxattr([path UTF8String], [key UTF8String], NULL, 0, 0, 0);
 	if (size != -1)
 	{
@@ -49,9 +49,7 @@
 	setxattr([path UTF8String], [key UTF8String], [value UTF8String], [value length], 0, 0);
 }
 
-/**
- * Only removes files directly underneath the specified directory. This method will *not* recurse into subdirectories.
- */
+
 - (void)shallowRemoveAllFilesInDirectory:(NSString *)path
 {
 	NSDirectoryEnumerator	*enumerator		= [self enumeratorAtPath:path];
@@ -68,6 +66,29 @@
 		}
 	}
 }
+
++ (NSString *) pathForCreatedCachesDirectoryWithName:(NSString *)name
+{
+    NSFileManager *fileManager = [self defaultManager];
+	NSString *basePath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).lastObject;
+	NSString *path = [basePath stringByAppendingPathComponent:name];
+    NSError *error = nil;
+    [fileManager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:&error];
+    NSParameterAssert(!error);
+	return path;
+}
+
++ (NSURL *) URLForCreatedCachesDirectoryWithName:(NSString *)name
+{
+    NSFileManager *fileManager = [self defaultManager];
+    NSURL *baseURL = [fileManager URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask].lastObject;
+    NSURL *fullURL = [baseURL URLByAppendingPathComponent:name];
+    NSError *error = nil;
+    [fileManager createDirectoryAtURL:fullURL withIntermediateDirectories:YES attributes:nil error:&error];
+    NSParameterAssert(!error);
+    return fullURL;
+}
+
 
 
 @end

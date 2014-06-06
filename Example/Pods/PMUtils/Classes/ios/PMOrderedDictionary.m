@@ -22,7 +22,6 @@
 //
 
 #import "PMOrderedDictionary.h"
-#import "NSArray+PMUtils.h"
 
 NSString *DescriptionForObject(NSObject *object, id locale, NSUInteger indent)
 {
