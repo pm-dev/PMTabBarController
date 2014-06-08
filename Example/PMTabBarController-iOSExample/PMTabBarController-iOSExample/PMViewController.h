@@ -11,5 +11,6 @@
 @interface PMViewController : UIViewController
 
 @property (nonatomic, strong) UIImage *image;
+@property (nonatomic, strong) UILabel *titleLabel;
 
 @end

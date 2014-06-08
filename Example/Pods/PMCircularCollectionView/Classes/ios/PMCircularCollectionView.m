@@ -16,7 +16,6 @@ static NSUInteger const ContentMultiplier = 4;
     CAGradientLayer *_shadowLayer;
     PMProtocolInterceptor *_delegateInterceptor;
     PMProtocolInterceptor *_dataSourceInterceptor;
-    NSInteger _itemCount;
     BOOL _delegateRespondsToScrollViewDidScroll;
     BOOL _delegateRespondsToSizeForItemAtIndexPath;
     BOOL _delegateRespondsToMinimumInteritemSpacingForSectionAtIndex;

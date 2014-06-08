@@ -10,10 +10,6 @@
 #import "PMViewController.h"
 #import "PMTabBarController.h"
 
-static CGFloat const TitleFontSize = 18.0f;
-static CGFloat const TitleTextColor = 181.0f/255.0f;
-static NSString * const TitleFontName = @"HelveticaNeue-Light";
-
 @implementation PMAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -39,21 +35,19 @@ static NSString * const TitleFontName = @"HelveticaNeue-Light";
 	panelFour.view.backgroundColor = [UIColor whiteColor];
 	panelFour.image = [UIImage imageNamed:@"kobe.jpg"];
     panelFour.title = @"Kobe";
-    NSArray *viewControllers = @[panelOne,
-                                 panelTwo,
-                                 panelThree,
-                                 panelFour];
-    
-	PMTabBarController *rpc = [[PMTabBarController alloc] init];
-    
-    rpc.viewControllers = viewControllers;
 
-    NSArray *titleLabels = @[[self newTitleLabel:panelOne.title],
-                             [self newTitleLabel:panelTwo.title],
-                             [self newTitleLabel:panelThree.title],
-                             [self newTitleLabel:panelFour.title]];
+	PMTabBarController *rpc = [PMTabBarController new];
     
-    rpc.titleViews = titleLabels;
+    rpc.viewControllers = @[panelOne,
+							panelTwo,
+							panelThree,
+							panelFour];
+
+    rpc.titleViews = @[panelOne.titleLabel,
+					   panelTwo.titleLabel,
+					   panelThree.titleLabel,
+					   panelFour.titleLabel];
+	
     rpc.titleBannerBackgroundColor = [UIColor blackColor];
     rpc.titleBannerShadowRadius = 10.0f;
     
@@ -66,17 +60,6 @@ static NSString * const TitleFontName = @"HelveticaNeue-Light";
 	[self.window makeKeyAndVisible];
 	
     return YES;
-}
-
-
-- (UILabel *) newTitleLabel:(NSString *)title
-{
-    UILabel *label = [UILabel new];
-    label.text = title;
-    label.font = [UIFont fontWithName:TitleFontName size:TitleFontSize];
-    label.textColor = [UIColor colorWithWhite:TitleTextColor alpha:1.0];
-    [label sizeToFit];
-    return label;
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application

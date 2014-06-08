@@ -8,6 +8,10 @@
 
 #import "PMViewController.h"
 
+static CGFloat const TitleFontSize = 18.0f;
+static CGFloat const TitleTextColor = 181.0f/255.0f;
+static NSString * const TitleFontName = @"HelveticaNeue-Light";
+
 @interface PMViewController ()
 
 @property (weak, nonatomic) IBOutlet UIImageView *imageView;
@@ -19,8 +23,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
-    
     self.imageView.image = self.image;
 }
 
@@ -28,6 +30,31 @@
 {
     _image = image;
     self.imageView.image = image;
+}
+
+- (UILabel *) titleLabel
+{
+	if (!_titleLabel) {
+		_titleLabel = [UILabel new];
+		_titleLabel.text = self.title;
+		_titleLabel.font = [UIFont fontWithName:TitleFontName size:TitleFontSize];
+		_titleLabel.textColor = [UIColor colorWithWhite:TitleTextColor alpha:1.0];
+		[_titleLabel sizeToFit];
+	}
+    return _titleLabel;
+}
+
+- (void) viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    self.titleLabel.textColor = [UIColor whiteColor];
+}
+
+
+- (void) viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];    
+    self.titleLabel.textColor = [UIColor colorWithWhite:TitleTextColor alpha:1.0];
 }
 
 @end
