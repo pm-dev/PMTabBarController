@@ -1,7 +1,7 @@
 PODS:
-  - PMCircularCollectionView (0.0.25):
+  - PMCircularCollectionView (0.0.26):
     - PMUtils
-  - PMTabBarController (0.0.11):
+  - PMTabBarController (0.0.12):
     - PMCircularCollectionView
     - PMUtils
   - PMUtils (0.0.46)
@@ -14,8 +14,8 @@ EXTERNAL SOURCES:
     :path: ../PMTabBarController.podspec
 
 SPEC CHECKSUMS:
-  PMCircularCollectionView: 393e0284c032f5fa286a9ee7bae4533badbbae2c
-  PMTabBarController: 2caa7737569154dae07b53aaa341696bf2ad215c
+  PMCircularCollectionView: d4484a6deb58ff7c9d8bb38e2c791977dcb832c4
+  PMTabBarController: 9c6164a47b7b0a2fb103326e77d3db2c17859fcf
   PMUtils: d63d08d739c2c59dacfe77a81bb36c42b9430415
 
 COCOAPODS: 0.33.1

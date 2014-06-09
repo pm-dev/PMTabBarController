@@ -15,15 +15,15 @@ static CGFloat const RequiredXVelocity = 100.0f;
 static CGFloat const RequiredDeltaDistance = 20.0f;
 static CGFloat const BannerHeight = 45.0f;
 
-static inline NSTimeInterval PMDuration(CGFloat rate, CGFloat distance) {
+static inline NSTimeInterval _PMDuration(CGFloat rate, CGFloat distance) {
     return distance / rate;
 }
 
-static inline PMPanDirection PMPanDirectionForVelocity(CGPoint velocity) {
+static inline PMPanDirection _PMPanDirectionForVelocity(CGPoint velocity) {
     return (velocity.x > 0.0f)? PMPanDirectionPositive : PMPanDirectionNegative;
 }
 
-static inline NSString * PMReuseIdentifier(NSInteger index) {
+static inline NSString * _PMReuseIdentifier(NSInteger index) {
     return [[NSNumber numberWithInteger:index] stringValue];
 }
 
@@ -34,7 +34,8 @@ static inline NSString * PMReuseIdentifier(NSInteger index) {
 @end
 
 
-@implementation PMTabBarController {
+@implementation PMTabBarController
+{
 	CGFloat _addedTitlePadding;
 	BOOL _animateWithDuration;
 	BOOL _isTransitionInteractive;
@@ -48,7 +49,7 @@ static inline NSString * PMReuseIdentifier(NSInteger index) {
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        [self commontPMTabBarControllerInit];
+        [self _commonPMTabBarControllerInit];
     }
     return self;
 }
@@ -58,15 +59,9 @@ static inline NSString * PMReuseIdentifier(NSInteger index) {
 {
     self = [super initWithCoder:aDecoder];
     if (self) {
-        [self commontPMTabBarControllerInit];
+        [self _commonPMTabBarControllerInit];
     }
     return self;
-}
-
-- (void) commontPMTabBarControllerInit
-{
-    self.delegate = self;
-    _animateWithDuration = YES;
 }
 
 - (void)viewDidLoad
@@ -208,7 +203,7 @@ static inline NSString * PMReuseIdentifier(NSInteger index) {
 {
     CGPoint velocity = [scrollView.panGestureRecognizer velocityInView:scrollView.panGestureRecognizer.view];
     if (velocity.x) {
-        _panAnimator.panDirection = PMPanDirectionForVelocity(velocity);
+        _panAnimator.panDirection = _PMPanDirectionForVelocity(velocity);
     }
 }
 
@@ -224,7 +219,7 @@ static inline NSString * PMReuseIdentifier(NSInteger index) {
 - (UICollectionViewCell *) collectionView:(PMCenteredCircularCollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
 	NSInteger normalizedIndex = [collectionView normalizeIndex:indexPath.item];
-	UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:PMReuseIdentifier(normalizedIndex) forIndexPath:indexPath];
+	UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:_PMReuseIdentifier(normalizedIndex) forIndexPath:indexPath];
 	if (!cell.contentView.subviews.count) {
 		cell.contentView.backgroundColor = _titleBannerBackgroundColor;
         UIView *view = self.titleViews[normalizedIndex];
@@ -290,6 +285,12 @@ static inline NSString * PMReuseIdentifier(NSInteger index) {
 #pragma mark - Private Methods
 
 
+- (void) _commonPMTabBarControllerInit
+{
+    self.delegate = self;
+    _animateWithDuration = YES;
+}
+
 - (void)_handlePan:(UIPanGestureRecognizer *)gestureRecognizer {
 	
 	CGPoint velocity = [gestureRecognizer velocityInView:gestureRecognizer.view.superview];
@@ -300,7 +301,7 @@ static inline NSString * PMReuseIdentifier(NSInteger index) {
         case UIGestureRecognizerStateBegan: {
             
             self.isTransitionInteractive = YES;
-            _panAnimator.panDirection = PMPanDirectionForVelocity(velocity);
+            _panAnimator.panDirection = _PMPanDirectionForVelocity(velocity);
             self.selectedIndex = (velocity.x < 0.0f)? [self _nextIndex] : [self _previousIndex];
 		}
 			
@@ -315,7 +316,7 @@ static inline NSString * PMReuseIdentifier(NSInteger index) {
         case UIGestureRecognizerStateEnded: {
 			
             CGFloat remainingDistance = gestureRecognizer.view.superview.frame.size.width - fabsf(delta.x);
-            CGFloat speedMultiplier = _interactivePanTransition.duration / PMDuration(fabsf(velocity.x), remainingDistance);
+            CGFloat speedMultiplier = _interactivePanTransition.duration / _PMDuration(fabsf(velocity.x), remainingDistance);
             _interactivePanTransition.completionSpeed = fmaxf(1.0f, speedMultiplier);
 			
             if ([self _shouldCompleteForVelocity:velocity delta:delta]) {
@@ -359,7 +360,7 @@ static inline NSString * PMReuseIdentifier(NSInteger index) {
 - (void) _registerCells
 {
     for (NSInteger i = 0; i < self.titleViews.count; i++) {
-        [_titleBanner registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:PMReuseIdentifier(i)];
+        [_titleBanner registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:_PMReuseIdentifier(i)];
     }
 }
 

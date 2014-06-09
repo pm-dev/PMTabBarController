@@ -9,16 +9,13 @@
 #import "PMCenteredCircularCollectionView.h"
 #import "PMUtils.h"
 
-@interface PMCenteredCircularCollectionView ()
+@implementation PMCenteredCircularCollectionView
 {
     __weak id<PMCenteredCircularCollectionViewDelegate> _originalDelegate;
     BOOL _delegateRespondsToDidCenterItemAtIndex;
     BOOL _delegateRespondsToDidSelectItemAtIndexPath;
     BOOL _delegateRespondsToScrollViewDidEndDecelerating;
 }
-@end
-
-@implementation PMCenteredCircularCollectionView
 
 + (instancetype) collectionViewWithFrame:(CGRect)frame collectionViewLayout:(PMCenteredCollectionViewFlowLayout *)layout
 {
@@ -29,10 +26,20 @@
 {
     self = [super initWithFrame:frame collectionViewLayout:layout];
     if (self) {
+
     }
     return self;
 }
 
+- (void) reloadData
+{
+	[super reloadData];
+	if (CGSizeEqualToSize(CGSizeZero, self.contentSize)) {
+		[self layoutSubviews];
+		NSIndexPath *indexPathAtMiddle = [self _indexPathAtMiddle];
+		[self _centerIndexPath:indexPathAtMiddle animated:NO];
+	}
+}
 
 #pragma mark - Accessors
 
@@ -60,33 +67,25 @@
 
 - (void) centerCellAtIndex:(NSUInteger)index animated:(BOOL)animated
 {	
-    if ([self circularActive]) {
-		
-		if (CGSizeEqualToSize(CGSizeZero, self.contentSize)) {
-		
-			[self layoutSubviews];
-		}
-		
-		if (index < self.itemCount) {
-		
-			NSIndexPath *indexPathAtMiddle = [self _indexPathAtMiddle];
+    if ([self circularActive] && index < self.itemCount) {
 			
-			if (indexPathAtMiddle) {
-				
-				NSInteger originalIndexOfMiddle = indexPathAtMiddle.item % self.itemCount;
-				
-				NSRange range = NSMakeRange(0, self.itemCount);
+		NSIndexPath *indexPathAtMiddle = [self _indexPathAtMiddle];
+		
+		if (indexPathAtMiddle) {
+			
+			NSInteger originalIndexOfMiddle = indexPathAtMiddle.item % self.itemCount;
+			
+			NSRange range = NSMakeRange(0, self.itemCount);
 
-				NSInteger delta = PMShortestCircularDistance(originalIndexOfMiddle, index, range);
-				
-				NSInteger toItem = indexPathAtMiddle.item + delta;
-				
-				NSIndexPath *toIndexPath = [NSIndexPath indexPathForItem:toItem inSection:0];
-				
-				[self _centerIndexPath:toIndexPath animated:animated];
-			}
+			NSInteger delta = PMShortestCircularDistance(originalIndexOfMiddle, index, range);
+			
+			NSInteger toItem = indexPathAtMiddle.item + delta;
+			
+			NSIndexPath *toIndexPath = [NSIndexPath indexPathForItem:toItem inSection:0];
+			
+			[self _centerIndexPath:toIndexPath animated:animated];
 		}
-    }
+	}
 }
 
 

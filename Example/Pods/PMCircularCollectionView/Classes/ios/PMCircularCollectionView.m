@@ -12,6 +12,10 @@
 static NSUInteger const ContentMultiplier = 4;
 
 @interface PMCircularCollectionView ()
+@property (nonatomic) BOOL circularImplicitlyDisabled;
+@end
+
+@implementation PMCircularCollectionView
 {
     CAGradientLayer *_shadowLayer;
     PMProtocolInterceptor *_delegateInterceptor;
@@ -21,10 +25,7 @@ static NSUInteger const ContentMultiplier = 4;
     BOOL _delegateRespondsToMinimumInteritemSpacingForSectionAtIndex;
     BOOL _delegateRespondsToMinimumLineSpacingForSectionAtIndex;
 }
-@property (nonatomic) BOOL circularImplicitlyDisabled;
-@end
 
-@implementation PMCircularCollectionView
 @synthesize circularDisabled = _explicitlyDisabled;
 
 + (instancetype) collectionViewWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewFlowLayout *)layout
@@ -51,7 +52,7 @@ static NSUInteger const ContentMultiplier = 4;
 {
     self = [super initWithFrame:frame collectionViewLayout:layout];
     if (self) {
-        [self commonCircularCollectionViewInit];
+        [self _commonCircularCollectionViewInit];
     }
     return self;
 }
@@ -60,32 +61,10 @@ static NSUInteger const ContentMultiplier = 4;
 {
     self = [super initWithCoder:aDecoder];
     if (self) {
-        [self commonCircularCollectionViewInit];
+        [self _commonCircularCollectionViewInit];
     }
     return self;
 }
-
-- (void) commonCircularCollectionViewInit;
-{
-    NSSet *delegateProtocols = [NSSet setWithObjects:
-                                @protocol(UICollectionViewDelegate),
-                                @protocol(UIScrollViewDelegate),
-                                @protocol(UICollectionViewDelegateFlowLayout), nil];
-    
-    _delegateInterceptor = [PMProtocolInterceptor interceptorWithMiddleMan:self forProtocols:delegateProtocols];
-    [super setDelegate:(id)_delegateInterceptor];
-    
-    _dataSourceInterceptor = [PMProtocolInterceptor interceptorWithMiddleMan:self forProtocol:@protocol(UICollectionViewDataSource)];
-    [super setDataSource:(id)_dataSourceInterceptor];
-    
-	_shadowLayer = [CAGradientLayer layer];
-	[self.layer addSublayer:_shadowLayer];
-	
-    self.showsHorizontalScrollIndicator = NO;
-    self.showsVerticalScrollIndicator = NO;
-}
-
-#pragma mark  Overwritten Methods
 
 - (void)layoutSubviews {
     [super layoutSubviews];
@@ -204,6 +183,26 @@ static NSUInteger const ContentMultiplier = 4;
 
 #pragma mark - Private Methods
 
+
+- (void) _commonCircularCollectionViewInit;
+{
+    NSSet *delegateProtocols = [NSSet setWithObjects:
+                                @protocol(UICollectionViewDelegate),
+                                @protocol(UIScrollViewDelegate),
+                                @protocol(UICollectionViewDelegateFlowLayout), nil];
+    
+    _delegateInterceptor = [PMProtocolInterceptor interceptorWithMiddleMan:self forProtocols:delegateProtocols];
+    [super setDelegate:(id)_delegateInterceptor];
+    
+    _dataSourceInterceptor = [PMProtocolInterceptor interceptorWithMiddleMan:self forProtocol:@protocol(UICollectionViewDataSource)];
+    [super setDataSource:(id)_dataSourceInterceptor];
+    
+	_shadowLayer = [CAGradientLayer layer];
+	[self.layer addSublayer:_shadowLayer];
+	
+    self.showsHorizontalScrollIndicator = NO;
+    self.showsVerticalScrollIndicator = NO;
+}
 
 - (void) _recenterIfNecessary
 {

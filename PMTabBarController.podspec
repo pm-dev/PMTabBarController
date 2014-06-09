@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "PMTabBarController"
-  s.version          = "0.0.12"
+  s.version          = "0.0.13"
   s.summary          = "A container for view controllers. Upon panning left or right, the user will flip through view controllers as if rotating a prism."
   s.homepage         = "https://github.com/petermeyers1/#{s.name}"
   s.license          = 'MIT'
