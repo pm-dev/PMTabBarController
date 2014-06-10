@@ -20,8 +20,8 @@ static CGFloat const CoverFullAlpha = 0.1f;
     UIView *disappearing = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey].view;
     UIView *appearing = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey].view;
     
-    CGRect appearingStartFrame = self.containerBounds;
-    CGRect disappearingEndFrame = self.containerBounds;
+    CGRect appearingStartFrame = containerView.bounds;
+    CGRect disappearingEndFrame = containerView.bounds;
     
     CGFloat containerWidth = containerView.bounds.size.width;
     
@@ -42,7 +42,7 @@ static CGFloat const CoverFullAlpha = 0.1f;
     }
     
     appearing.frame = appearingStartFrame;
-    disappearing.frame = self.containerBounds;
+    disappearing.frame = containerView.bounds;
     
     UIView *appearingCover = [[UIView alloc] initWithFrame:appearing.frame];
     appearingCover.alpha = CoverFullAlpha;
@@ -61,8 +61,8 @@ static CGFloat const CoverFullAlpha = 0.1f;
                         options:UIViewAnimationOptionCurveEaseInOut
                      animations:^{
                          
-                         appearing.frame = self.containerBounds;
-                         appearingCover.frame = self.containerBounds;
+                         appearing.frame = containerView.bounds;
+                         appearingCover.frame = containerView.bounds;
                          appearingCover.alpha = 0.0f;
                          
                          disappearing.frame = disappearingEndFrame;
@@ -77,10 +77,10 @@ static CGFloat const CoverFullAlpha = 0.1f;
                          
                          if ([transitionContext transitionWasCancelled]) {
                              appearing.frame = appearingStartFrame;
-                             disappearing.frame = self.containerBounds;
+                             disappearing.frame = containerView.bounds;
                          }
                          else {
-                             appearing.frame = self.containerBounds;
+                             appearing.frame = containerView.bounds;
                              disappearing.frame = disappearingEndFrame;
                          }
                          

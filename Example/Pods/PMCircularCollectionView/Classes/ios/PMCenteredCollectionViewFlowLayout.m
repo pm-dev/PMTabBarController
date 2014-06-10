@@ -19,19 +19,23 @@
                                 proposedContentOffset.y == self.collectionViewContentSize.height - self.collectionView.bounds.size.height);
 
     if ( !targetFirstIndexPath && !targetLastIndexPath) {
-		
-		proposedContentOffset.x += self.collectionView.bounds.size.width / 2.0f;
-		proposedContentOffset.y += self.collectionView.bounds.size.height / 2.0f;
-		
-		NSIndexPath *targetedIndexPath = [self.collectionView indexPathNearestToPoint:proposedContentOffset];
-		
-		UICollectionViewLayoutAttributes *attributes = [self layoutAttributesForItemAtIndexPath:targetedIndexPath];
-		
-		proposedContentOffset = [self.collectionView contentOffsetForCenteredRect:attributes.frame];
-		
-		return proposedContentOffset;
+		return [self _centerProposedContentOffset:proposedContentOffset];
     }
     return [super targetContentOffsetForProposedContentOffset:proposedContentOffset withScrollingVelocity:velocity];
+}
+
+- (CGPoint) _centerProposedContentOffset:(CGPoint)proposedContentOffset
+{
+	proposedContentOffset.x += self.collectionView.bounds.size.width / 2.0f;
+	proposedContentOffset.y += self.collectionView.bounds.size.height / 2.0f;
+	
+	NSIndexPath *targetedIndexPath = [self.collectionView indexPathNearestToPoint:proposedContentOffset];
+	
+	UICollectionViewLayoutAttributes *attributes = [self layoutAttributesForItemAtIndexPath:targetedIndexPath];
+	
+	proposedContentOffset = [self.collectionView contentOffsetForCenteredRect:attributes.frame];
+	
+	return proposedContentOffset;
 }
 
 @end

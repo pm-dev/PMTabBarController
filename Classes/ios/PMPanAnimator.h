@@ -19,7 +19,6 @@ typedef NS_ENUM(NSUInteger, PMPanDirection)
 @interface PMPanAnimator : NSObject <UIViewControllerAnimatedTransitioning>
 
 @property (nonatomic) PMPanDirection panDirection;
-@property (nonatomic) CGRect containerBounds;
 @property (nonatomic, weak) id<PMAnimatorDelegate> delegate;
 
 @end

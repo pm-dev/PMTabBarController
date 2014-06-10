@@ -84,21 +84,34 @@ static inline NSString * _PMReuseIdentifier(NSInteger index) {
     _titleBanner.backgroundColor = _titleBannerBackgroundColor;
     _titleBanner.shadowRadius = _titleBannerShadowRadius;
     [_titleBanner centerCellAtIndex:self.selectedIndex animated:NO];
+	_titleBanner.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
     [self.view addSubview:_titleBanner];
     
+	UIView *panContainer = [[UIView alloc] initWithFrame:containerFrame];
+	panContainer.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+	[self.view addSubview:panContainer];
+	
     UIScreenEdgePanGestureRecognizer *leftEdgePan = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self action:@selector(_handlePan:)];
     leftEdgePan.edges = UIRectEdgeLeft;
     UIScreenEdgePanGestureRecognizer *rightEdgePan = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self action:@selector(_handlePan:)];
     rightEdgePan.edges = UIRectEdgeRight;
-    [self.view addGestureRecognizer:leftEdgePan];
-    [self.view addGestureRecognizer:rightEdgePan];
-    
+    [panContainer addGestureRecognizer:leftEdgePan];
+    [panContainer addGestureRecognizer:rightEdgePan];
+
     _interactivePanTransition = [UIPercentDrivenInteractiveTransition new];
     _interactivePanTransition.completionCurve = UIViewAnimationCurveEaseOut;
     _panAnimator = [PMPanAnimator new];
     _panAnimator.delegate = self;
-    _panAnimator.containerBounds = containerFrame;
 }
+
+- (BOOL) shouldAutorotate
+{
+	return NO;
+}
+
+
+#pragma mark - Public Methods
+
 
 - (void) setSelectedViewController:(UIViewController *)selectedViewController animated:(BOOL)animated completion:(void (^)(BOOL completed))completion
 {
@@ -138,6 +151,7 @@ static inline NSString * _PMReuseIdentifier(NSInteger index) {
     if (_titleBannerBackgroundColor != titleBannerBackgroundColor) {
         _titleBannerBackgroundColor = titleBannerBackgroundColor;
         _titleBanner.backgroundColor = titleBannerBackgroundColor;
+		_titleBanner.shadowColor = titleBannerBackgroundColor;
     }
 }
 
@@ -155,6 +169,7 @@ static inline NSString * _PMReuseIdentifier(NSInteger index) {
         _titleBannerSpacing = titleBannerSpacing;
         CGFloat newTitlePadding = [self _calculateTitlePadding];
         if (newTitlePadding != _addedTitlePadding) {
+			_addedTitlePadding = newTitlePadding;
             [_titleBanner reloadData];
         }
     }
@@ -373,7 +388,7 @@ static inline NSString * _PMReuseIdentifier(NSInteger index) {
     
     CGFloat maxSpacingRequired = 0.0f;
     for (UIView *view in self.titleViews) {
-        
+
         CGFloat totalSpacingRequired =  (_titleBanner.bounds.size.width - (contentWidth - view.frame.size.width));
         CGFloat spacingRequired = ceilf(totalSpacingRequired / (self.titleViews.count-1));
         

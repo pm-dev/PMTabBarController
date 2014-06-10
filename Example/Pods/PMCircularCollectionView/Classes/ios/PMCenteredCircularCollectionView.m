@@ -41,6 +41,22 @@
 	}
 }
 
+- (void) setFrame:(CGRect)frame
+{
+	BOOL visibleCells = self.visibleCells.count;
+	NSIndexPath *indexPathAtMiddle = nil;
+	
+	if (visibleCells) {
+		indexPathAtMiddle = [self _indexPathAtMiddle];
+	}
+	
+	[super setFrame:frame];
+	
+	if (visibleCells) {
+		[self _centerIndexPath:indexPathAtMiddle animated:NO];
+	}
+}
+
 #pragma mark - Accessors
 
 
