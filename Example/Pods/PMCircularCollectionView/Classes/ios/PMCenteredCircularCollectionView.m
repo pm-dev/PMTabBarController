@@ -49,6 +49,12 @@
 }
 
 
+- (void) reloadData
+{
+	[super reloadData];
+	[self setCenteredIndex:_centeredIndex animated:NO];
+}
+
 #pragma mark - Accessors
 
 

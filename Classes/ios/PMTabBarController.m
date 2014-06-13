@@ -133,7 +133,6 @@ static inline PMPanDirection _PMPanDirectionForVelocity(CGPoint velocity) {
 - (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
 	[_tabBar reloadData];
-	[_tabBar setCenteredIndex:_tabBar.centeredIndex animated:YES];
 }
 
 #pragma mark - Public Methods
