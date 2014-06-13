@@ -1,10 +1,25 @@
 PODS:
-  - PMCircularCollectionView (0.0.26):
+  - PMCircularCollectionView (0.0.32):
     - PMUtils
-  - PMTabBarController (0.0.12):
+  - PMTabBarController (0.0.15):
     - PMCircularCollectionView
     - PMUtils
-  - PMUtils (0.0.46)
+  - PMUtils (0.0.56):
+    - PMUtils/Foundation+PMUtils
+    - PMUtils/PMAnimationQueue
+    - PMUtils/PMImageFilmstrip
+    - PMUtils/PMOrderedDictionary
+    - PMUtils/PMPair
+    - PMUtils/PMProtocolInterceptor
+    - PMUtils/UIKit+PMUtils
+  - PMUtils/Foundation+PMUtils (0.0.56)
+  - PMUtils/PMAnimationQueue (0.0.56)
+  - PMUtils/PMImageFilmstrip (0.0.56):
+    - PMUtils/UIKit+PMUtils
+  - PMUtils/PMOrderedDictionary (0.0.56)
+  - PMUtils/PMPair (0.0.56)
+  - PMUtils/PMProtocolInterceptor (0.0.56)
+  - PMUtils/UIKit+PMUtils (0.0.56)
 
 DEPENDENCIES:
   - PMTabBarController (from `../PMTabBarController.podspec`)
@@ -14,8 +29,8 @@ EXTERNAL SOURCES:
     :path: ../PMTabBarController.podspec
 
 SPEC CHECKSUMS:
-  PMCircularCollectionView: d4484a6deb58ff7c9d8bb38e2c791977dcb832c4
-  PMTabBarController: 9c6164a47b7b0a2fb103326e77d3db2c17859fcf
-  PMUtils: d63d08d739c2c59dacfe77a81bb36c42b9430415
+  PMCircularCollectionView: ee58c2e32d1fd89071e47f5097cba889b719d294
+  PMTabBarController: a85edec73b8127c6be145117576695219932e97b
+  PMUtils: 83c3267bba01155224ed8d88e7410439fdafb158
 
 COCOAPODS: 0.33.1

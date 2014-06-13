@@ -10,10 +10,19 @@
 
 @interface PMTabBarController : UITabBarController
 
-@property (nonatomic, strong) NSArray *titleViews;
-@property (nonatomic, strong) UIColor *titleBannerBackgroundColor;
-@property (nonatomic) CGFloat titleBannerShadowRadius;
-@property (nonatomic) CGFloat titleBannerSpacing;
+@property (nonatomic, strong) NSArray *tabViews;
+
+- (instancetype) initWithTabViews:(NSArray *)tabViews;
++ (instancetype) tabBarWithTabViews:(NSArray *)tabViews;
+
+- (void) setTabBarBackgroundColor:(UIColor *)tabBarBackgroundColor;
+- (UIColor *) tabBarBackgroundColor;
+
+- (void) setTabBarSpacing:(CGFloat)tabBarSpacing;
+- (CGFloat) tabBarSpacing;
+
+- (void) setTabBarShadowRadius:(CGFloat)tabBarShadowRadius;
+- (CGFloat) tabBarShadowRadius;
 
 - (void) setSelectedIndex:(NSUInteger)selectedIndex animated:(BOOL)animated completion:(void(^)(BOOL completed))completion;
 

@@ -15,6 +15,9 @@ static CGFloat const RequiredXVelocity = 100.0f;
 static CGFloat const RequiredDeltaDistance = 20.0f;
 static CGFloat const BannerHeight = 45.0f;
 
+static NSString * const PMReuseIdentifier = @"PMReuseIdentifier";
+static void * PMContext = &PMContext;
+
 static inline NSTimeInterval _PMDuration(CGFloat rate, CGFloat distance) {
     return distance / rate;
 }
@@ -22,11 +25,6 @@ static inline NSTimeInterval _PMDuration(CGFloat rate, CGFloat distance) {
 static inline PMPanDirection _PMPanDirectionForVelocity(CGPoint velocity) {
     return (velocity.x > 0.0f)? PMPanDirectionPositive : PMPanDirectionNegative;
 }
-
-static inline NSString * _PMReuseIdentifier(NSInteger index) {
-    return [[NSNumber numberWithInteger:index] stringValue];
-}
-
 
 @interface PMTabBarController ()
 <UITabBarControllerDelegate, PMAnimatorDelegate, UICollectionViewDataSource, PMCenteredCircularCollectionViewDelegate>
@@ -36,24 +34,35 @@ static inline NSString * _PMReuseIdentifier(NSInteger index) {
 
 @implementation PMTabBarController
 {
-	CGFloat _addedTitlePadding;
+	CGFloat _tabPadding;
 	BOOL _animateWithDuration;
 	BOOL _isTransitionInteractive;
 	PMPanAnimator *_panAnimator;
-	PMCenteredCircularCollectionView *_titleBanner;
+	PMCenteredCircularCollectionView *_tabBar;
 	UIPercentDrivenInteractiveTransition *_interactivePanTransition;
 	void(^_panAnimatiorEndedBlock)(BOOL completed);
 }
 
-- (instancetype) initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
++ (instancetype) tabBarWithTabViews:(NSArray *)tabViews
 {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        [self _commonPMTabBarControllerInit];
-    }
-    return self;
+	return [[self alloc] initWithTabViews:tabViews];
 }
 
+- (instancetype) initWithTabViews:(NSArray *)tabViews
+{
+	self = [super initWithNibName:nil bundle:nil];
+	if (self) {
+		_tabViews = tabViews;
+		_tabPadding = [self _calculateTabPadding];
+		[self _commonPMTabBarControllerInit];
+	}
+	return self;
+}
+
+- (instancetype) initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+	return [self initWithTabViews:nil];
+}
 
 - (instancetype) initWithCoder:(NSCoder *)aDecoder
 {
@@ -73,20 +82,18 @@ static inline NSString * _PMReuseIdentifier(NSInteger index) {
     CGRect containerFrame;
     CGRectDivide(self.view.bounds, &bannerFrame, &containerFrame, BannerHeight, CGRectMaxYEdge);
     
-	PMCenteredCollectionViewFlowLayout *titleBannerLayout = [PMCenteredCollectionViewFlowLayout new];
-	titleBannerLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-    titleBannerLayout.minimumLineSpacing = 0.0f;
-    titleBannerLayout.minimumInteritemSpacing = 0.0f;
+	PMCenteredCollectionViewFlowLayout *tabBarLayout = [PMCenteredCollectionViewFlowLayout new];
+	tabBarLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+    tabBarLayout.minimumLineSpacing = 0.0;
     
-    _titleBanner = [PMCenteredCircularCollectionView collectionViewWithFrame:bannerFrame collectionViewLayout:titleBannerLayout];
-    _titleBanner.delegate = self;
-	_titleBanner.dataSource = self;
-    _titleBanner.backgroundColor = _titleBannerBackgroundColor;
-    _titleBanner.shadowRadius = _titleBannerShadowRadius;
-    [_titleBanner centerCellAtIndex:self.selectedIndex animated:NO];
-	_titleBanner.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
-    [self.view addSubview:_titleBanner];
-    
+    _tabBar = [PMCenteredCircularCollectionView collectionViewWithFrame:bannerFrame collectionViewLayout:tabBarLayout];
+    _tabBar.delegate = self;
+	_tabBar.dataSource = self;
+	_tabBar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
+	[_tabBar registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:PMReuseIdentifier];
+	[_tabBar addObserver:self forKeyPath:NSStringFromSelector(@selector(frame)) options:NSKeyValueObservingOptionNew context:PMContext];
+    [self.view addSubview:_tabBar];
+	
 	UIView *panContainer = [[UIView alloc] initWithFrame:containerFrame];
 	panContainer.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 	[self.view addSubview:panContainer];
@@ -104,30 +111,47 @@ static inline NSString * _PMReuseIdentifier(NSInteger index) {
     _panAnimator.delegate = self;
 }
 
-- (BOOL) shouldAutorotate
+- (void) viewDidAppear:(BOOL)animated
 {
-	return NO;
+	[super viewDidAppear:animated];
+	[_tabBar setCenteredIndex:self.selectedIndex animated:YES];
 }
 
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if (context == PMContext) {
+		if (object == _tabBar && [keyPath isEqualToString:NSStringFromSelector(@selector(frame))]) {
+			CGFloat tabPadding = [self _calculateTabPadding];
+			if (tabPadding != _tabPadding) {
+				_tabPadding = tabPadding;
+				[_tabBar.collectionViewLayout invalidateLayout];
+			}
+		}
+	}
+}
+
+- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+	[_tabBar reloadData];
+	[_tabBar setCenteredIndex:_tabBar.centeredIndex animated:YES];
+}
 
 #pragma mark - Public Methods
 
 
 - (void) setSelectedViewController:(UIViewController *)selectedViewController animated:(BOOL)animated completion:(void (^)(BOOL completed))completion
 {
-    NSUInteger index = [self.viewControllers indexOfObject:selectedViewController];
-    [self setSelectedIndex:index animated:animated completion:completion];
+    NSUInteger selectedIndex = [self.viewControllers indexOfObject:selectedViewController];
+    [self setSelectedIndex:selectedIndex animated:animated completion:completion];
 }
 
 - (void) setSelectedIndex:(NSUInteger)selectedIndex animated:(BOOL)animated completion:(void(^)(BOOL completed))completion
 {
-    if (selectedIndex < self.viewControllers.count &&
-        selectedIndex != self.selectedIndex) {
-        
-        [_titleBanner centerCellAtIndex:selectedIndex animated:animated];
+    if (selectedIndex < self.viewControllers.count && selectedIndex != self.selectedIndex) {
         _animateWithDuration = animated;
         _panAnimatiorEndedBlock = [completion copy];
         self.selectedIndex = selectedIndex;
+		[_tabBar setCenteredIndex:selectedIndex animated:animated];
     }
 }
 
@@ -135,53 +159,62 @@ static inline NSString * _PMReuseIdentifier(NSInteger index) {
 #pragma mark - Accessors
 
 
-- (void) setTitleViews:(NSArray *)titleViews
+- (void) setTabViews:(NSArray *)tabViews
 {
-    if (_titleViews != titleViews) {
-        _titleViews = titleViews;
-        [self _registerCells];
-		_addedTitlePadding = [self _calculateTitlePadding];
-        [_titleBanner reloadData];
-        [_titleBanner centerCellAtIndex:self.selectedIndex animated:NO];
+    if (_tabViews != tabViews) {
+        _tabViews = tabViews;
+		_tabPadding = [self _calculateTabPadding];
+		[_tabBar reloadData];
+		_tabBar.centeredIndex = self.selectedIndex;
     }
 }
 
-- (void) setTitleBannerBackgroundColor:(UIColor *)titleBannerBackgroundColor
+- (void) setTabBarBackgroundColor:(UIColor *)tabBarBackgroundColor
 {
-    if (_titleBannerBackgroundColor != titleBannerBackgroundColor) {
-        _titleBannerBackgroundColor = titleBannerBackgroundColor;
-        _titleBanner.backgroundColor = titleBannerBackgroundColor;
-		_titleBanner.shadowColor = titleBannerBackgroundColor;
+    if (_tabBar.backgroundColor != tabBarBackgroundColor) {
+        _tabBar.backgroundColor = tabBarBackgroundColor;
+		_tabBar.shadowColor = tabBarBackgroundColor;
     }
 }
 
-- (void) setTitleBannerShadowRadius:(CGFloat)titleBannerShadowRadius
+- (UIColor *) tabBarBackgroundColor
 {
-    if (_titleBannerShadowRadius != titleBannerShadowRadius) {
-        _titleBannerShadowRadius = titleBannerShadowRadius;
-        _titleBanner.shadowRadius = titleBannerShadowRadius;
+	return _tabBar.backgroundColor;
+}
+
+- (void) setTabBarShadowRadius:(CGFloat)tabBarShadowRadius
+{
+    if (_tabBar.shadowRadius != tabBarShadowRadius) {
+        _tabBar.shadowRadius = tabBarShadowRadius;
     }
 }
 
-- (void) setTitleBannerSpacing:(CGFloat)titleBannerSpacing
+- (CGFloat) tabBarShadowRadius
 {
-    if (_titleBannerSpacing != titleBannerSpacing) {
-        _titleBannerSpacing = titleBannerSpacing;
-        CGFloat newTitlePadding = [self _calculateTitlePadding];
-        if (newTitlePadding != _addedTitlePadding) {
-			_addedTitlePadding = newTitlePadding;
-            [_titleBanner reloadData];
-        }
+	return _tabBar.shadowRadius;
+}
+
+- (void) setTabBarSpacing:(CGFloat)tabBarSpacing
+{
+    if (_tabBar.collectionViewLayout.minimumLineSpacing != tabBarSpacing) {
+		_tabBar.collectionViewLayout.minimumLineSpacing = tabBarSpacing;
+        _tabPadding = [self _calculateTabPadding];
+		[_tabBar.collectionViewLayout invalidateLayout];
     }
+}
+
+- (CGFloat) tabBarSpacing
+{
+	return _tabBar.collectionViewLayout.minimumLineSpacing;
 }
 
 - (void) setIsTransitionInteractive:(BOOL)isTransitionInteractive
 {
     if (_isTransitionInteractive != isTransitionInteractive) {
         _isTransitionInteractive = isTransitionInteractive;
-        _titleBanner.userInteractionEnabled = !isTransitionInteractive;
+        _tabBar.userInteractionEnabled = !isTransitionInteractive;
         if (_isTransitionInteractive) {
-            [_titleBanner killScroll];
+            [_tabBar killScroll];
         }
     }
 }
@@ -228,20 +261,17 @@ static inline NSString * _PMReuseIdentifier(NSInteger index) {
 
 - (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-	return self.titleViews.count;
+	return self.tabViews.count;
 }
 
 - (UICollectionViewCell *) collectionView:(PMCenteredCircularCollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
 	NSInteger normalizedIndex = [collectionView normalizeIndex:indexPath.item];
-	UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:_PMReuseIdentifier(normalizedIndex) forIndexPath:indexPath];
-	if (!cell.contentView.subviews.count) {
-		cell.contentView.backgroundColor = _titleBannerBackgroundColor;
-        UIView *view = self.titleViews[normalizedIndex];
-        view.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-        [cell.contentView addSubview:view];
-        [view centerInRect:cell.contentView.bounds forDirection:PMDirectionVertical | PMDirectionHorizontal];
-	}
+	UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:PMReuseIdentifier forIndexPath:indexPath];
+	[cell.contentView removeSubviews];
+	UIView *view = self.tabViews[normalizedIndex];
+	[cell.contentView addSubview:view];
+	[view centerInRect:cell.contentView.bounds forDirection:PMDirectionVertical | PMDirectionHorizontal];
 	return cell;
 }
 
@@ -264,8 +294,8 @@ static inline NSString * _PMReuseIdentifier(NSInteger index) {
 - (CGSize) collectionView:(PMCenteredCircularCollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
 	NSInteger normalizedIndex = [collectionView normalizeIndex:indexPath.item];
-    UIView *view = self.titleViews[normalizedIndex];
-    return CGSizeMake(view.frame.size.width + _addedTitlePadding, collectionView.bounds.size.height);
+    UIView *view = self.tabViews[normalizedIndex];
+    return CGSizeMake(view.frame.size.width + _tabPadding, collectionView.bounds.size.height);
 }
 
 
@@ -335,7 +365,7 @@ static inline NSString * _PMReuseIdentifier(NSInteger index) {
             _interactivePanTransition.completionSpeed = fmaxf(1.0f, speedMultiplier);
 			
             if ([self _shouldCompleteForVelocity:velocity delta:delta]) {
-                [_titleBanner centerCellAtIndex:self.selectedIndex animated:YES];
+                [_tabBar setCenteredIndex:self.selectedIndex animated:YES];
                 [_interactivePanTransition finishInteractiveTransition];
             }
             else {
@@ -372,32 +402,30 @@ static inline NSString * _PMReuseIdentifier(NSInteger index) {
 	return self.selectedIndex - 1;
 }
 
-- (void) _registerCells
-{
-    for (NSInteger i = 0; i < self.titleViews.count; i++) {
-        [_titleBanner registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:_PMReuseIdentifier(i)];
-    }
-}
-
-- (CGFloat) _calculateTitlePadding
+- (CGFloat) _calculateTabPadding
 {
     CGFloat contentWidth = 0.0f;
-    for (UIView *view in self.titleViews) {
+	CGFloat widestViewWidth = 0.0f;
+	
+    for (UIView *view in self.tabViews) {
         contentWidth += view.frame.size.width;
+		if (view.frame.size.width > widestViewWidth) {
+			widestViewWidth = view.frame.size.width;
+		}
     }
+	
+	contentWidth += _tabBar.collectionViewLayout.minimumLineSpacing * (self.tabViews.count-1);
     
-    CGFloat maxSpacingRequired = 0.0f;
-    for (UIView *view in self.titleViews) {
-
-        CGFloat totalSpacingRequired =  (_titleBanner.bounds.size.width - (contentWidth - view.frame.size.width));
-        CGFloat spacingRequired = ceilf(totalSpacingRequired / (self.titleViews.count-1));
-        
-        if (spacingRequired > maxSpacingRequired) {
-            maxSpacingRequired = spacingRequired;
-        }
-    }
-    
-    return fmaxf(maxSpacingRequired, _titleBannerSpacing);
+	CGFloat requiredContentWidth = _tabBar.frame.size.width + widestViewWidth;
+	
+	if (requiredContentWidth > contentWidth) {
+		
+		CGFloat missingWidth = requiredContentWidth - contentWidth;
+		CGFloat paddingRequiredPerTab = ceilf(missingWidth / (self.tabViews.count-1));
+		return paddingRequiredPerTab;
+	}
+	
+	return 0.0f;
 }
 
 

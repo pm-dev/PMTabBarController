@@ -17,43 +17,46 @@
 	PMViewController *panelOne = [[PMViewController alloc] initWithNibName:nil
                                                                     bundle:nil];
 	panelOne.view.backgroundColor = [UIColor redColor];
-	panelOne.image = [UIImage imageNamed:@"pg.jpg"];
-    panelOne.title = @"Paul";
+	panelOne.image = [UIImage imageNamed:@"stock_photo1.jpg"];
+    panelOne.title = @"Forest";
 	
 	PMViewController *panelTwo = [[PMViewController alloc] initWithNibName:nil
                                                                     bundle:nil];
 	panelTwo.view.backgroundColor = [UIColor blueColor];
-	panelTwo.image = [UIImage imageNamed:@"cp.jpg"];
-    panelTwo.title = @"Chris";
+	panelTwo.image = [UIImage imageNamed:@"stock_photo2.jpg"];
+    panelTwo.title = @"Skyline";
+	
 	PMViewController *panelThree = [[PMViewController alloc] initWithNibName:nil
                                                                       bundle:nil];
 	panelThree.view.backgroundColor = [UIColor grayColor];
-	panelThree.image = [UIImage imageNamed:@"lj.jpg"];
-    panelThree.title = @"Lebron";
+	panelThree.image = [UIImage imageNamed:@"stock_photo3.jpg"];
+    panelThree.title = @"Beach";
+	
 	PMViewController *panelFour = [[PMViewController alloc] initWithNibName:nil
                                                                      bundle:nil];
-	panelFour.view.backgroundColor = [UIColor whiteColor];
-	panelFour.image = [UIImage imageNamed:@"kobe.jpg"];
-    panelFour.title = @"Kobe";
+	panelFour.view.backgroundColor = [UIColor brownColor];
+	panelFour.image = [UIImage imageNamed:@"stock_photo4.jpg"];
+    panelFour.title = @"Street";
 
-	PMTabBarController *rpc = [PMTabBarController new];
-    
+	PMViewController *panelFive = [[PMViewController alloc] initWithNibName:nil
+                                                                     bundle:nil];
+	panelFive.view.backgroundColor = [UIColor cyanColor];
+	panelFive.image = [UIImage imageNamed:@"stock_photo5.jpg"];
+    panelFive.title = @"Bridge";
+
+	PMTabBarController *rpc = [PMTabBarController tabBarWithTabViews:@[panelOne.titleLabel,
+																	   panelTwo.titleLabel,
+																	   panelThree.titleLabel,
+																	   panelFour.titleLabel,
+																	   panelFive.titleLabel]];    
     rpc.viewControllers = @[panelOne,
 							panelTwo,
 							panelThree,
-							panelFour];
+							panelFour,
+							panelFive];
 
-    rpc.titleViews = @[panelOne.titleLabel,
-					   panelTwo.titleLabel,
-					   panelThree.titleLabel,
-					   panelFour.titleLabel];
-	
-    rpc.titleBannerBackgroundColor = [UIColor blackColor];
-    rpc.titleBannerShadowRadius = 10.0f;
-    
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [rpc setSelectedIndex:2 animated:NO completion:nil]; // This just needs to happen on the next run loop.
-    }];
+    rpc.tabBarBackgroundColor = [UIColor colorWithWhite:0 alpha:0.3];
+    rpc.tabBarShadowRadius = 20.0f;
     
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	[self.window setRootViewController:rpc];

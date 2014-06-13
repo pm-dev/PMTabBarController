@@ -1,7 +1,24 @@
+// Copyright (c) 2013-2014 Peter Meyers
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 //
 //  PMCenteredCircularCollectionView.m
-//  Pods
-//
 //  Created by Peter Meyers on 3/23/14.
 //
 //
@@ -31,31 +48,6 @@
     return self;
 }
 
-- (void) reloadData
-{
-	[super reloadData];
-	if (CGSizeEqualToSize(CGSizeZero, self.contentSize)) {
-		[self layoutSubviews];
-		NSIndexPath *indexPathAtMiddle = [self _indexPathAtMiddle];
-		[self _centerIndexPath:indexPathAtMiddle animated:NO];
-	}
-}
-
-- (void) setFrame:(CGRect)frame
-{
-	BOOL visibleCells = self.visibleCells.count;
-	NSIndexPath *indexPathAtMiddle = nil;
-	
-	if (visibleCells) {
-		indexPathAtMiddle = [self _indexPathAtMiddle];
-	}
-	
-	[super setFrame:frame];
-	
-	if (visibleCells) {
-		[self _centerIndexPath:indexPathAtMiddle animated:NO];
-	}
-}
 
 #pragma mark - Accessors
 
@@ -73,33 +65,44 @@
 #pragma mark - Public Methods
 
 
-- (void) centerCell:(UICollectionViewCell *)cell animated:(BOOL)animated;
+- (void) setCenteredCell:(UICollectionViewCell *)cell animated:(BOOL)animated;
 {
-    if ([self circularActive]) {
-        NSIndexPath *indexPath = [self indexPathForCell:cell];
-        [self centerCellAtIndex:indexPath.item animated:animated];
-    }
+	NSIndexPath *indexPath = [self indexPathForCell:cell];
+
+	if (indexPath) {
+		[self setCenteredIndex:indexPath.item animated:animated];
+	}
 }
 
-- (void) centerCellAtIndex:(NSUInteger)index animated:(BOOL)animated
-{	
-    if ([self circularActive] && index < self.itemCount) {
-			
-		NSIndexPath *indexPathAtMiddle = [self _indexPathAtMiddle];
-		
-		if (indexPathAtMiddle) {
-			
-			NSInteger originalIndexOfMiddle = indexPathAtMiddle.item % self.itemCount;
-			
-			NSRange range = NSMakeRange(0, self.itemCount);
+- (void) setCenteredIndex:(NSUInteger)centeredIndex
+{
+	[self setCenteredIndex:centeredIndex animated:NO];
+}
 
-			NSInteger delta = PMShortestCircularDistance(originalIndexOfMiddle, index, range);
+- (void) setCenteredIndex:(NSUInteger)centeredIndex animated:(BOOL)animated
+{	
+    if ([self circularActive]) {
+
+		[self layoutIfNeeded];
+		
+		if (centeredIndex < self.itemCount) {
+				
+			NSIndexPath *indexPathNearestToBoundsCenter = [self indexPathNearestToBoundsCenter];
 			
-			NSInteger toItem = indexPathAtMiddle.item + delta;
-			
-			NSIndexPath *toIndexPath = [NSIndexPath indexPathForItem:toItem inSection:0];
-			
-			[self _centerIndexPath:toIndexPath animated:animated];
+			if (indexPathNearestToBoundsCenter) {
+				
+				NSInteger normalizedIndexAtMiddle = [self normalizeIndex:indexPathNearestToBoundsCenter.item];
+				
+				NSRange range = NSMakeRange(0, self.itemCount);
+
+				NSInteger delta = PMShortestCircularDistance(normalizedIndexAtMiddle, centeredIndex, range);
+				
+				NSInteger toItem = indexPathNearestToBoundsCenter.item + delta;
+				
+				NSIndexPath *toIndexPath = [NSIndexPath indexPathForItem:toItem inSection:0];
+				
+				[self _centerIndexPath:toIndexPath animated:animated notifyDelegate:YES];
+			}
 		}
 	}
 }
@@ -110,8 +113,8 @@
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
-    NSIndexPath *indexPath = [self _indexPathAtMiddle];
-    [self _centerIndexPath:indexPath animated:YES];
+    NSIndexPath *indexPathNearestToBoundsCenter = [self indexPathNearestToBoundsCenter];
+    [self _centerIndexPath:indexPathNearestToBoundsCenter animated:YES notifyDelegate:YES];
 
     if (_delegateRespondsToScrollViewDidEndDecelerating) {
         [_originalDelegate scrollViewDidEndDecelerating:scrollView];
@@ -124,7 +127,7 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self _centerIndexPath:indexPath animated:YES];
+    [self _centerIndexPath:indexPath animated:YES notifyDelegate:YES];
     
     if (_delegateRespondsToDidSelectItemAtIndexPath) {
         [_originalDelegate collectionView:collectionView didSelectItemAtIndexPath:indexPath];
@@ -135,28 +138,29 @@
 #pragma mark - Private Methods
 
 
-- (NSIndexPath *) _indexPathAtMiddle
+- (void) _centerIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated notifyDelegate:(BOOL)notifyDelegate
 {
-    CGPoint contentOffset = [self contentOffsetInBoundsCenter];
-    
-    switch (self.visibleCells.count) {
-        case 0: return [self indexPathNearestToPoint:contentOffset];
-        default: return [self visibleIndexPathNearestToPoint:contentOffset];
-    }
-}
-
-- (void) _centerIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated
-{
+	NSParameterAssert(indexPath);
+	
     if ([self circularActive]) {
-        [self scrollToItemAtIndexPath:indexPath
-                     atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally | UICollectionViewScrollPositionCenteredVertically
-                             animated:animated];
-        
-        if (_delegateRespondsToDidCenterItemAtIndex) {
-            [_originalDelegate collectionView:self didCenterItemAtIndex:indexPath.item];
-        }
+		
+		_centeredIndex = [self normalizeIndex:indexPath.item];
+		
+		[self scrollToItemAtIndexPath:indexPath
+					 atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally | UICollectionViewScrollPositionCenteredVertically
+							 animated:animated];
+		
+		if (notifyDelegate && _delegateRespondsToDidCenterItemAtIndex) {
+			[_originalDelegate collectionView:self didCenterItemAtIndex:_centeredIndex];
+		}
     }
 }
 
+- (CGPoint) _contentOffsetForCenteredOffset:(CGPoint)centeredOffset
+{
+	centeredOffset.x = floorf(centeredOffset.x - self.bounds.size.width/2.0f);
+	centeredOffset.y = floorf(centeredOffset.y - self.bounds.size.height/2.0f);
+	return centeredOffset;
+}
 
 @end

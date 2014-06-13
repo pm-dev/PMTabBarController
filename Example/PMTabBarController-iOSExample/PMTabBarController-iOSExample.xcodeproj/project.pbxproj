@@ -8,6 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		674A9FA519469AF500EA8352 /* PMViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 674A9FA419469AF500EA8352 /* PMViewController~ipad.xib */; };
+		6780A7A6194A5687006A7DAD /* stock_photo1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 6780A7A1194A5687006A7DAD /* stock_photo1.jpg */; };
+		6780A7A7194A5687006A7DAD /* stock_photo2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 6780A7A2194A5687006A7DAD /* stock_photo2.jpg */; };
+		6780A7A8194A5687006A7DAD /* stock_photo3.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 6780A7A3194A5687006A7DAD /* stock_photo3.jpg */; };
+		6780A7A9194A5687006A7DAD /* stock_photo4.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 6780A7A4194A5687006A7DAD /* stock_photo4.jpg */; };
+		6780A7AA194A5687006A7DAD /* stock_photo5.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 6780A7A5194A5687006A7DAD /* stock_photo5.jpg */; };
+		6780A7B4194A7CDC006A7DAD /* PMLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 6780A7B3194A7CDC006A7DAD /* PMLabel.m */; };
 		6844A0B4D6FD42D990D0248E /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF05C4D5D0B540579FCD0E97 /* libPods.a */; };
 		7450F86818E228B800D66699 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7450F86718E228B800D66699 /* Foundation.framework */; };
 		7450F86A18E228B800D66699 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7450F86918E228B800D66699 /* CoreGraphics.framework */; };
@@ -21,10 +27,6 @@
 		7450F88318E228B800D66699 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7450F86B18E228B800D66699 /* UIKit.framework */; };
 		7450F88B18E228B800D66699 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7450F88918E228B800D66699 /* InfoPlist.strings */; };
 		7450F88D18E228B800D66699 /* PMTabBarController_iOSExampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7450F88C18E228B800D66699 /* PMTabBarController_iOSExampleTests.m */; };
-		7450F89A18E2292400D66699 /* cp.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 7450F89618E2292400D66699 /* cp.jpg */; };
-		7450F89B18E2292400D66699 /* kobe.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 7450F89718E2292400D66699 /* kobe.jpg */; };
-		7450F89C18E2292400D66699 /* lj.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 7450F89818E2292400D66699 /* lj.jpg */; };
-		7450F89D18E2292400D66699 /* pg.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 7450F89918E2292400D66699 /* pg.jpg */; };
 		7450F8A118E2293200D66699 /* PMViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7450F89F18E2293200D66699 /* PMViewController.m */; };
 		7450F8A218E2293200D66699 /* PMViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7450F8A018E2293200D66699 /* PMViewController.xib */; };
 /* End PBXBuildFile section */
@@ -42,6 +44,13 @@
 /* Begin PBXFileReference section */
 		1B666762540249688A2CDCD7 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = ../Pods/Pods.xcconfig; sourceTree = "<group>"; };
 		674A9FA419469AF500EA8352 /* PMViewController~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "PMViewController~ipad.xib"; sourceTree = "<group>"; };
+		6780A7A1194A5687006A7DAD /* stock_photo1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = stock_photo1.jpg; sourceTree = "<group>"; };
+		6780A7A2194A5687006A7DAD /* stock_photo2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = stock_photo2.jpg; sourceTree = "<group>"; };
+		6780A7A3194A5687006A7DAD /* stock_photo3.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = stock_photo3.jpg; sourceTree = "<group>"; };
+		6780A7A4194A5687006A7DAD /* stock_photo4.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = stock_photo4.jpg; sourceTree = "<group>"; };
+		6780A7A5194A5687006A7DAD /* stock_photo5.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = stock_photo5.jpg; sourceTree = "<group>"; };
+		6780A7B2194A7CDC006A7DAD /* PMLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PMLabel.h; sourceTree = "<group>"; };
+		6780A7B3194A7CDC006A7DAD /* PMLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PMLabel.m; sourceTree = "<group>"; };
 		7450F86418E228B800D66699 /* PMTabBarController-iOSExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PMTabBarController-iOSExample.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7450F86718E228B800D66699 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		7450F86918E228B800D66699 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -58,10 +67,6 @@
 		7450F88818E228B800D66699 /* PMTabBarController-iOSExampleTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PMTabBarController-iOSExampleTests-Info.plist"; sourceTree = "<group>"; };
 		7450F88A18E228B800D66699 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		7450F88C18E228B800D66699 /* PMTabBarController_iOSExampleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PMTabBarController_iOSExampleTests.m; sourceTree = "<group>"; };
-		7450F89618E2292400D66699 /* cp.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = cp.jpg; sourceTree = "<group>"; };
-		7450F89718E2292400D66699 /* kobe.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = kobe.jpg; sourceTree = "<group>"; };
-		7450F89818E2292400D66699 /* lj.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = lj.jpg; sourceTree = "<group>"; };
-		7450F89918E2292400D66699 /* pg.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = pg.jpg; sourceTree = "<group>"; };
 		7450F89E18E2293200D66699 /* PMViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PMViewController.h; sourceTree = "<group>"; };
 		7450F89F18E2293200D66699 /* PMViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PMViewController.m; sourceTree = "<group>"; };
 		7450F8A018E2293200D66699 /* PMViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PMViewController.xib; sourceTree = "<group>"; };
@@ -132,6 +137,8 @@
 				7450F87718E228B800D66699 /* PMAppDelegate.m */,
 				7450F89E18E2293200D66699 /* PMViewController.h */,
 				7450F89F18E2293200D66699 /* PMViewController.m */,
+				6780A7B2194A7CDC006A7DAD /* PMLabel.h */,
+				6780A7B3194A7CDC006A7DAD /* PMLabel.m */,
 				7450F8A018E2293200D66699 /* PMViewController.xib */,
 				674A9FA419469AF500EA8352 /* PMViewController~ipad.xib */,
 				7450F87918E228B800D66699 /* Images.xcassets */,
@@ -143,10 +150,11 @@
 		7450F86E18E228B800D66699 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				7450F89618E2292400D66699 /* cp.jpg */,
-				7450F89718E2292400D66699 /* kobe.jpg */,
-				7450F89818E2292400D66699 /* lj.jpg */,
-				7450F89918E2292400D66699 /* pg.jpg */,
+				6780A7A1194A5687006A7DAD /* stock_photo1.jpg */,
+				6780A7A2194A5687006A7DAD /* stock_photo2.jpg */,
+				6780A7A3194A5687006A7DAD /* stock_photo3.jpg */,
+				6780A7A4194A5687006A7DAD /* stock_photo4.jpg */,
+				6780A7A5194A5687006A7DAD /* stock_photo5.jpg */,
 				7450F86F18E228B800D66699 /* PMTabBarController-iOSExample-Info.plist */,
 				7450F87018E228B800D66699 /* InfoPlist.strings */,
 				7450F87318E228B800D66699 /* main.m */,
@@ -251,14 +259,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7450F89D18E2292400D66699 /* pg.jpg in Resources */,
-				7450F89C18E2292400D66699 /* lj.jpg in Resources */,
+				6780A7A7194A5687006A7DAD /* stock_photo2.jpg in Resources */,
+				6780A7A8194A5687006A7DAD /* stock_photo3.jpg in Resources */,
+				6780A7A9194A5687006A7DAD /* stock_photo4.jpg in Resources */,
 				674A9FA519469AF500EA8352 /* PMViewController~ipad.xib in Resources */,
-				7450F89B18E2292400D66699 /* kobe.jpg in Resources */,
+				6780A7AA194A5687006A7DAD /* stock_photo5.jpg in Resources */,
 				7450F87218E228B800D66699 /* InfoPlist.strings in Resources */,
 				7450F87A18E228B800D66699 /* Images.xcassets in Resources */,
 				7450F8A218E2293200D66699 /* PMViewController.xib in Resources */,
-				7450F89A18E2292400D66699 /* cp.jpg in Resources */,
+				6780A7A6194A5687006A7DAD /* stock_photo1.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -311,6 +320,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7450F87418E228B800D66699 /* main.m in Sources */,
+				6780A7B4194A7CDC006A7DAD /* PMLabel.m in Sources */,
 				7450F8A118E2293200D66699 /* PMViewController.m in Sources */,
 				7450F87818E228B800D66699 /* PMAppDelegate.m in Sources */,
 			);
