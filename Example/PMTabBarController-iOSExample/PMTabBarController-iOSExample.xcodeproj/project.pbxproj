@@ -1,0 +1,534 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		674A9FA519469AF500EA8352 /* PMViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 674A9FA419469AF500EA8352 /* PMViewController~ipad.xib */; };
+		6780A7A6194A5687006A7DAD /* stock_photo1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 6780A7A1194A5687006A7DAD /* stock_photo1.jpg */; };
+		6780A7A7194A5687006A7DAD /* stock_photo2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 6780A7A2194A5687006A7DAD /* stock_photo2.jpg */; };
+		6780A7A8194A5687006A7DAD /* stock_photo3.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 6780A7A3194A5687006A7DAD /* stock_photo3.jpg */; };
+		6780A7A9194A5687006A7DAD /* stock_photo4.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 6780A7A4194A5687006A7DAD /* stock_photo4.jpg */; };
+		6780A7AA194A5687006A7DAD /* stock_photo5.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 6780A7A5194A5687006A7DAD /* stock_photo5.jpg */; };
+		6844A0B4D6FD42D990D0248E /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF05C4D5D0B540579FCD0E97 /* libPods.a */; };
+		7450F86818E228B800D66699 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7450F86718E228B800D66699 /* Foundation.framework */; };
+		7450F86A18E228B800D66699 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7450F86918E228B800D66699 /* CoreGraphics.framework */; };
+		7450F86C18E228B800D66699 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7450F86B18E228B800D66699 /* UIKit.framework */; };
+		7450F87218E228B800D66699 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7450F87018E228B800D66699 /* InfoPlist.strings */; };
+		7450F87418E228B800D66699 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7450F87318E228B800D66699 /* main.m */; };
+		7450F87818E228B800D66699 /* PMAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7450F87718E228B800D66699 /* PMAppDelegate.m */; };
+		7450F87A18E228B800D66699 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7450F87918E228B800D66699 /* Images.xcassets */; };
+		7450F88118E228B800D66699 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7450F88018E228B800D66699 /* XCTest.framework */; };
+		7450F88218E228B800D66699 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7450F86718E228B800D66699 /* Foundation.framework */; };
+		7450F88318E228B800D66699 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7450F86B18E228B800D66699 /* UIKit.framework */; };
+		7450F88B18E228B800D66699 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7450F88918E228B800D66699 /* InfoPlist.strings */; };
+		7450F88D18E228B800D66699 /* PMTabBarController_iOSExampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7450F88C18E228B800D66699 /* PMTabBarController_iOSExampleTests.m */; };
+		7450F8A118E2293200D66699 /* PMViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7450F89F18E2293200D66699 /* PMViewController.m */; };
+		7450F8A218E2293200D66699 /* PMViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7450F8A018E2293200D66699 /* PMViewController.xib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		7450F88418E228B800D66699 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7450F85C18E228B800D66699 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7450F86318E228B800D66699;
+			remoteInfo = "PMTabBarController-iOSExample";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		1B666762540249688A2CDCD7 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = ../Pods/Pods.xcconfig; sourceTree = "<group>"; };
+		674A9FA419469AF500EA8352 /* PMViewController~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "PMViewController~ipad.xib"; sourceTree = "<group>"; };
+		6780A7A1194A5687006A7DAD /* stock_photo1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = stock_photo1.jpg; sourceTree = "<group>"; };
+		6780A7A2194A5687006A7DAD /* stock_photo2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = stock_photo2.jpg; sourceTree = "<group>"; };
+		6780A7A3194A5687006A7DAD /* stock_photo3.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = stock_photo3.jpg; sourceTree = "<group>"; };
+		6780A7A4194A5687006A7DAD /* stock_photo4.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = stock_photo4.jpg; sourceTree = "<group>"; };
+		6780A7A5194A5687006A7DAD /* stock_photo5.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = stock_photo5.jpg; sourceTree = "<group>"; };
+		7450F86418E228B800D66699 /* PMTabBarController-iOSExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PMTabBarController-iOSExample.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7450F86718E228B800D66699 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		7450F86918E228B800D66699 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		7450F86B18E228B800D66699 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		7450F86F18E228B800D66699 /* PMTabBarController-iOSExample-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PMTabBarController-iOSExample-Info.plist"; sourceTree = "<group>"; };
+		7450F87118E228B800D66699 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		7450F87318E228B800D66699 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		7450F87518E228B800D66699 /* PMTabBarController-iOSExample-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PMTabBarController-iOSExample-Prefix.pch"; sourceTree = "<group>"; };
+		7450F87618E228B800D66699 /* PMAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PMAppDelegate.h; sourceTree = "<group>"; };
+		7450F87718E228B800D66699 /* PMAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PMAppDelegate.m; sourceTree = "<group>"; };
+		7450F87918E228B800D66699 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		7450F87F18E228B800D66699 /* PMTabBarController-iOSExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "PMTabBarController-iOSExampleTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7450F88018E228B800D66699 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		7450F88818E228B800D66699 /* PMTabBarController-iOSExampleTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PMTabBarController-iOSExampleTests-Info.plist"; sourceTree = "<group>"; };
+		7450F88A18E228B800D66699 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		7450F88C18E228B800D66699 /* PMTabBarController_iOSExampleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PMTabBarController_iOSExampleTests.m; sourceTree = "<group>"; };
+		7450F89E18E2293200D66699 /* PMViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PMViewController.h; sourceTree = "<group>"; };
+		7450F89F18E2293200D66699 /* PMViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PMViewController.m; sourceTree = "<group>"; };
+		7450F8A018E2293200D66699 /* PMViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PMViewController.xib; sourceTree = "<group>"; };
+		EF05C4D5D0B540579FCD0E97 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		7450F86118E228B800D66699 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7450F86A18E228B800D66699 /* CoreGraphics.framework in Frameworks */,
+				7450F86C18E228B800D66699 /* UIKit.framework in Frameworks */,
+				7450F86818E228B800D66699 /* Foundation.framework in Frameworks */,
+				6844A0B4D6FD42D990D0248E /* libPods.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7450F87C18E228B800D66699 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7450F88118E228B800D66699 /* XCTest.framework in Frameworks */,
+				7450F88318E228B800D66699 /* UIKit.framework in Frameworks */,
+				7450F88218E228B800D66699 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		7450F85B18E228B800D66699 = {
+			isa = PBXGroup;
+			children = (
+				7450F86D18E228B800D66699 /* PMTabBarController-iOSExample */,
+				7450F88618E228B800D66699 /* PMTabBarController-iOSExampleTests */,
+				7450F86618E228B800D66699 /* Frameworks */,
+				7450F86518E228B800D66699 /* Products */,
+				1B666762540249688A2CDCD7 /* Pods.xcconfig */,
+			);
+			sourceTree = "<group>";
+		};
+		7450F86518E228B800D66699 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7450F86418E228B800D66699 /* PMTabBarController-iOSExample.app */,
+				7450F87F18E228B800D66699 /* PMTabBarController-iOSExampleTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7450F86618E228B800D66699 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				7450F86718E228B800D66699 /* Foundation.framework */,
+				7450F86918E228B800D66699 /* CoreGraphics.framework */,
+				7450F86B18E228B800D66699 /* UIKit.framework */,
+				7450F88018E228B800D66699 /* XCTest.framework */,
+				EF05C4D5D0B540579FCD0E97 /* libPods.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		7450F86D18E228B800D66699 /* PMTabBarController-iOSExample */ = {
+			isa = PBXGroup;
+			children = (
+				7450F87618E228B800D66699 /* PMAppDelegate.h */,
+				7450F87718E228B800D66699 /* PMAppDelegate.m */,
+				7450F89E18E2293200D66699 /* PMViewController.h */,
+				7450F89F18E2293200D66699 /* PMViewController.m */,
+				7450F8A018E2293200D66699 /* PMViewController.xib */,
+				674A9FA419469AF500EA8352 /* PMViewController~ipad.xib */,
+				7450F87918E228B800D66699 /* Images.xcassets */,
+				7450F86E18E228B800D66699 /* Supporting Files */,
+			);
+			path = "PMTabBarController-iOSExample";
+			sourceTree = "<group>";
+		};
+		7450F86E18E228B800D66699 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				6780A7A1194A5687006A7DAD /* stock_photo1.jpg */,
+				6780A7A2194A5687006A7DAD /* stock_photo2.jpg */,
+				6780A7A3194A5687006A7DAD /* stock_photo3.jpg */,
+				6780A7A4194A5687006A7DAD /* stock_photo4.jpg */,
+				6780A7A5194A5687006A7DAD /* stock_photo5.jpg */,
+				7450F86F18E228B800D66699 /* PMTabBarController-iOSExample-Info.plist */,
+				7450F87018E228B800D66699 /* InfoPlist.strings */,
+				7450F87318E228B800D66699 /* main.m */,
+				7450F87518E228B800D66699 /* PMTabBarController-iOSExample-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		7450F88618E228B800D66699 /* PMTabBarController-iOSExampleTests */ = {
+			isa = PBXGroup;
+			children = (
+				7450F88C18E228B800D66699 /* PMTabBarController_iOSExampleTests.m */,
+				7450F88718E228B800D66699 /* Supporting Files */,
+			);
+			path = "PMTabBarController-iOSExampleTests";
+			sourceTree = "<group>";
+		};
+		7450F88718E228B800D66699 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				7450F88818E228B800D66699 /* PMTabBarController-iOSExampleTests-Info.plist */,
+				7450F88918E228B800D66699 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		7450F86318E228B800D66699 /* PMTabBarController-iOSExample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7450F89018E228B800D66699 /* Build configuration list for PBXNativeTarget "PMTabBarController-iOSExample" */;
+			buildPhases = (
+				3A9902BA535D45DEA1FAF372 /* Check Pods Manifest.lock */,
+				7450F86018E228B800D66699 /* Sources */,
+				7450F86118E228B800D66699 /* Frameworks */,
+				7450F86218E228B800D66699 /* Resources */,
+				884F014E48754B2B8358F711 /* Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "PMTabBarController-iOSExample";
+			productName = "PMTabBarController-iOSExample";
+			productReference = 7450F86418E228B800D66699 /* PMTabBarController-iOSExample.app */;
+			productType = "com.apple.product-type.application";
+		};
+		7450F87E18E228B800D66699 /* PMTabBarController-iOSExampleTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7450F89318E228B800D66699 /* Build configuration list for PBXNativeTarget "PMTabBarController-iOSExampleTests" */;
+			buildPhases = (
+				7450F87B18E228B800D66699 /* Sources */,
+				7450F87C18E228B800D66699 /* Frameworks */,
+				7450F87D18E228B800D66699 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7450F88518E228B800D66699 /* PBXTargetDependency */,
+			);
+			name = "PMTabBarController-iOSExampleTests";
+			productName = "PMTabBarController-iOSExampleTests";
+			productReference = 7450F87F18E228B800D66699 /* PMTabBarController-iOSExampleTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		7450F85C18E228B800D66699 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = PM;
+				LastUpgradeCheck = 0510;
+				ORGANIZATIONNAME = "Peter Meyers";
+				TargetAttributes = {
+					7450F87E18E228B800D66699 = {
+						TestTargetID = 7450F86318E228B800D66699;
+					};
+				};
+			};
+			buildConfigurationList = 7450F85F18E228B800D66699 /* Build configuration list for PBXProject "PMTabBarController-iOSExample" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 7450F85B18E228B800D66699;
+			productRefGroup = 7450F86518E228B800D66699 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7450F86318E228B800D66699 /* PMTabBarController-iOSExample */,
+				7450F87E18E228B800D66699 /* PMTabBarController-iOSExampleTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		7450F86218E228B800D66699 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6780A7A7194A5687006A7DAD /* stock_photo2.jpg in Resources */,
+				6780A7A8194A5687006A7DAD /* stock_photo3.jpg in Resources */,
+				6780A7A9194A5687006A7DAD /* stock_photo4.jpg in Resources */,
+				674A9FA519469AF500EA8352 /* PMViewController~ipad.xib in Resources */,
+				6780A7AA194A5687006A7DAD /* stock_photo5.jpg in Resources */,
+				7450F87218E228B800D66699 /* InfoPlist.strings in Resources */,
+				7450F87A18E228B800D66699 /* Images.xcassets in Resources */,
+				7450F8A218E2293200D66699 /* PMViewController.xib in Resources */,
+				6780A7A6194A5687006A7DAD /* stock_photo1.jpg in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7450F87D18E228B800D66699 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7450F88B18E228B800D66699 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		3A9902BA535D45DEA1FAF372 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		884F014E48754B2B8358F711 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/../Pods/Pods-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7450F86018E228B800D66699 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7450F87418E228B800D66699 /* main.m in Sources */,
+				7450F8A118E2293200D66699 /* PMViewController.m in Sources */,
+				7450F87818E228B800D66699 /* PMAppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7450F87B18E228B800D66699 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7450F88D18E228B800D66699 /* PMTabBarController_iOSExampleTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		7450F88518E228B800D66699 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7450F86318E228B800D66699 /* PMTabBarController-iOSExample */;
+			targetProxy = 7450F88418E228B800D66699 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		7450F87018E228B800D66699 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7450F87118E228B800D66699 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		7450F88918E228B800D66699 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7450F88A18E228B800D66699 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		7450F88E18E228B800D66699 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		7450F88F18E228B800D66699 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		7450F89118E228B800D66699 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1B666762540249688A2CDCD7 /* Pods.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PMTabBarController-iOSExample/PMTabBarController-iOSExample-Prefix.pch";
+				INFOPLIST_FILE = "PMTabBarController-iOSExample/PMTabBarController-iOSExample-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		7450F89218E228B800D66699 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1B666762540249688A2CDCD7 /* Pods.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PMTabBarController-iOSExample/PMTabBarController-iOSExample-Prefix.pch";
+				INFOPLIST_FILE = "PMTabBarController-iOSExample/PMTabBarController-iOSExample-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		7450F89418E228B800D66699 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/PMTabBarController-iOSExample.app/PMTabBarController-iOSExample";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PMTabBarController-iOSExample/PMTabBarController-iOSExample-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "PMTabBarController-iOSExampleTests/PMTabBarController-iOSExampleTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Debug;
+		};
+		7450F89518E228B800D66699 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/PMTabBarController-iOSExample.app/PMTabBarController-iOSExample";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PMTabBarController-iOSExample/PMTabBarController-iOSExample-Prefix.pch";
+				INFOPLIST_FILE = "PMTabBarController-iOSExampleTests/PMTabBarController-iOSExampleTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7450F85F18E228B800D66699 /* Build configuration list for PBXProject "PMTabBarController-iOSExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7450F88E18E228B800D66699 /* Debug */,
+				7450F88F18E228B800D66699 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7450F89018E228B800D66699 /* Build configuration list for PBXNativeTarget "PMTabBarController-iOSExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7450F89118E228B800D66699 /* Debug */,
+				7450F89218E228B800D66699 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7450F89318E228B800D66699 /* Build configuration list for PBXNativeTarget "PMTabBarController-iOSExampleTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7450F89418E228B800D66699 /* Debug */,
+				7450F89518E228B800D66699 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 7450F85C18E228B800D66699 /* Project object */;
+}
