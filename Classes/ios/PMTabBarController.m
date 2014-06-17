@@ -311,15 +311,23 @@ static inline PMPanDirection _PMPanDirectionForVelocity(CGPoint velocity) {
             animationControllerForTransitionFromViewController:(UIViewController *)fromVC
                                               toViewController:(UIViewController *)toVC
 {
+    NSParameterAssert(toVC);
+    
     if (_panAnimator.panDirection == PMPanDirectionNone) {
         
-        NSUInteger fromVCIndex = [tabBarController.viewControllers indexOfObject:fromVC];
-        NSUInteger toVCIndex = [tabBarController.viewControllers indexOfObject:toVC];
-        
-        NSRange range = NSMakeRange(0, tabBarController.viewControllers.count);
-        NSInteger delta = PMShortestCircularDistance(fromVCIndex, toVCIndex, range);
-        
-        _panAnimator.panDirection = (delta > 0)? PMPanDirectionNegative : PMPanDirectionPositive;
+        if (fromVC) {
+            
+            NSUInteger fromVCIndex = [tabBarController.viewControllers indexOfObject:fromVC];
+            NSUInteger toVCIndex = [tabBarController.viewControllers indexOfObject:toVC];
+            
+            NSRange range = NSMakeRange(0, tabBarController.viewControllers.count);
+            NSInteger delta = PMShortestCircularDistance(fromVCIndex, toVCIndex, range);
+            
+            _panAnimator.panDirection = (delta > 0)? PMPanDirectionNegative : PMPanDirectionPositive;
+        }
+        else {
+            _panAnimator.panDirection = PMPanDirectionPositive;
+        }
     }
     return _panAnimator;
 }
