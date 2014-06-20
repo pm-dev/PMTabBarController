@@ -16,7 +16,7 @@
 #define COCOAPODS_POD_AVAILABLE_PMTabBarController
 #define COCOAPODS_VERSION_MAJOR_PMTabBarController 0
 #define COCOAPODS_VERSION_MINOR_PMTabBarController 9
-#define COCOAPODS_VERSION_PATCH_PMTabBarController 1
+#define COCOAPODS_VERSION_PATCH_PMTabBarController 2
 
 // PMUtils
 #define COCOAPODS_POD_AVAILABLE_PMUtils

@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "PMTabBarController"
-  s.version          = "0.9.1"
+  s.version          = "0.9.2"
   s.summary          = "PMTabBarController is a subclass of UITabBarController that uses a circularly scrolling scroll view for its tab bar."
   s.homepage         = "https://github.com/pm-dev/#{s.name}"
   s.license          = 'MIT'
