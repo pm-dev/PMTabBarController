@@ -95,16 +95,12 @@ static inline PMPanDirection _PMPanDirectionForVelocity(CGPoint velocity) {
 	[_tabBar addObserver:self forKeyPath:NSStringFromSelector(@selector(frame)) options:NSKeyValueObservingOptionNew context:PMContext];
     [self.view addSubview:_tabBar];
 	
-	UIView *panContainer = [[UIView alloc] initWithFrame:containerFrame];
-	panContainer.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-	[self.view addSubview:panContainer];
-	
     UIScreenEdgePanGestureRecognizer *leftEdgePan = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self action:@selector(_handlePan:)];
     leftEdgePan.edges = UIRectEdgeLeft;
     UIScreenEdgePanGestureRecognizer *rightEdgePan = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self action:@selector(_handlePan:)];
     rightEdgePan.edges = UIRectEdgeRight;
-    [panContainer addGestureRecognizer:leftEdgePan];
-    [panContainer addGestureRecognizer:rightEdgePan];
+    [self.view addGestureRecognizer:leftEdgePan];
+    [self.view addGestureRecognizer:rightEdgePan];
 
     _interactivePanTransition = [UIPercentDrivenInteractiveTransition new];
     _interactivePanTransition.completionCurve = UIViewAnimationCurveEaseOut;
@@ -351,8 +347,8 @@ static inline PMPanDirection _PMPanDirectionForVelocity(CGPoint velocity) {
 
 - (void)_handlePan:(UIPanGestureRecognizer *)gestureRecognizer {
 	
-	CGPoint velocity = [gestureRecognizer velocityInView:gestureRecognizer.view.superview];
-	CGPoint delta = [gestureRecognizer translationInView:gestureRecognizer.view.superview];
+	CGPoint velocity = [gestureRecognizer velocityInView:gestureRecognizer.view];
+	CGPoint delta = [gestureRecognizer translationInView:gestureRecognizer.view];
     
 	switch (gestureRecognizer.state) {
             
@@ -365,7 +361,7 @@ static inline PMPanDirection _PMPanDirectionForVelocity(CGPoint velocity) {
 			
         case UIGestureRecognizerStateChanged: {
             
-            CGFloat percent =  fabsf(delta.x) / gestureRecognizer.view.superview.frame.size.width;
+            CGFloat percent =  fabsf(delta.x) / gestureRecognizer.view.frame.size.width;
             [_interactivePanTransition updateInteractiveTransition:percent];
             break;
         }
@@ -373,7 +369,7 @@ static inline PMPanDirection _PMPanDirectionForVelocity(CGPoint velocity) {
         case UIGestureRecognizerStateCancelled:
         case UIGestureRecognizerStateEnded: {
 			
-            CGFloat remainingDistance = gestureRecognizer.view.superview.frame.size.width - fabsf(delta.x);
+            CGFloat remainingDistance = gestureRecognizer.view.frame.size.width - fabsf(delta.x);
             CGFloat speedMultiplier = _interactivePanTransition.duration / _PMDuration(fabsf(velocity.x), remainingDistance);
             _interactivePanTransition.completionSpeed = fmaxf(1.0f, speedMultiplier);
 			
