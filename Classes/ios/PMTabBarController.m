@@ -18,11 +18,11 @@ static CGFloat const BannerHeight = 45.0f;
 static NSString * const PMReuseIdentifier = @"PMReuseIdentifier";
 static void * PMContext = &PMContext;
 
-static inline NSTimeInterval _PMDuration(CGFloat rate, CGFloat distance) {
+static inline NSTimeInterval PM_Duration(CGFloat rate, CGFloat distance) {
     return distance / rate;
 }
 
-static inline PMPanDirection _PMPanDirectionForVelocity(CGPoint velocity) {
+static inline PMPanDirection PM_PanDirectionForVelocity(CGPoint velocity) {
     return (velocity.x > 0.0f)? PMPanDirectionPositive : PMPanDirectionNegative;
 }
 
@@ -53,8 +53,8 @@ static inline PMPanDirection _PMPanDirectionForVelocity(CGPoint velocity) {
 	self = [super initWithNibName:nil bundle:nil];
 	if (self) {
 		_tabViews = tabViews;
-		_tabPadding = [self _calculateTabPadding];
-		[self _commonPMTabBarControllerInit];
+		_tabPadding = [self PM_calculateTabPadding];
+		[self PM_commonPMTabBarControllerInit];
 	}
 	return self;
 }
@@ -68,7 +68,7 @@ static inline PMPanDirection _PMPanDirectionForVelocity(CGPoint velocity) {
 {
     self = [super initWithCoder:aDecoder];
     if (self) {
-        [self _commonPMTabBarControllerInit];
+        [self PM_commonPMTabBarControllerInit];
     }
     return self;
 }
@@ -95,9 +95,9 @@ static inline PMPanDirection _PMPanDirectionForVelocity(CGPoint velocity) {
 	[_tabBar addObserver:self forKeyPath:NSStringFromSelector(@selector(frame)) options:NSKeyValueObservingOptionNew context:PMContext];
     [self.view addSubview:_tabBar];
 	
-    UIScreenEdgePanGestureRecognizer *leftEdgePan = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self action:@selector(_handlePan:)];
+    UIScreenEdgePanGestureRecognizer *leftEdgePan = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self action:@selector(PM_handlePan:)];
     leftEdgePan.edges = UIRectEdgeLeft;
-    UIScreenEdgePanGestureRecognizer *rightEdgePan = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self action:@selector(_handlePan:)];
+    UIScreenEdgePanGestureRecognizer *rightEdgePan = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self action:@selector(PM_handlePan:)];
     rightEdgePan.edges = UIRectEdgeRight;
     [self.view addGestureRecognizer:leftEdgePan];
     [self.view addGestureRecognizer:rightEdgePan];
@@ -118,7 +118,7 @@ static inline PMPanDirection _PMPanDirectionForVelocity(CGPoint velocity) {
 {
 	if (context == PMContext) {
 		if (object == _tabBar && [keyPath isEqualToString:NSStringFromSelector(@selector(frame))]) {
-			CGFloat tabPadding = [self _calculateTabPadding];
+			CGFloat tabPadding = [self PM_calculateTabPadding];
 			if (tabPadding != _tabPadding) {
 				_tabPadding = tabPadding;
 				[_tabBar.collectionViewLayout invalidateLayout];
@@ -159,7 +159,7 @@ static inline PMPanDirection _PMPanDirectionForVelocity(CGPoint velocity) {
 {
     if (_tabViews != tabViews) {
         _tabViews = tabViews;
-		_tabPadding = [self _calculateTabPadding];
+		_tabPadding = [self PM_calculateTabPadding];
 		[_tabBar reloadData];
 		_tabBar.centeredIndex = self.selectedIndex;
     }
@@ -195,7 +195,7 @@ static inline PMPanDirection _PMPanDirectionForVelocity(CGPoint velocity) {
     if (_tabBar.collectionViewLayout.minimumInteritemSpacing != tabBarSpacing) {
 		_tabBar.collectionViewLayout.minimumInteritemSpacing = tabBarSpacing;
 		_tabBar.collectionViewLayout.minimumLineSpacing = tabBarSpacing;
-        _tabPadding = [self _calculateTabPadding];
+        _tabPadding = [self PM_calculateTabPadding];
 		[_tabBar.collectionViewLayout invalidateLayout];
     }
 }
@@ -248,7 +248,7 @@ static inline PMPanDirection _PMPanDirectionForVelocity(CGPoint velocity) {
 {
     CGPoint velocity = [scrollView.panGestureRecognizer velocityInView:scrollView.panGestureRecognizer.view];
     if (velocity.x) {
-        _panAnimator.panDirection = _PMPanDirectionForVelocity(velocity);
+        _panAnimator.panDirection = PM_PanDirectionForVelocity(velocity);
     }
 }
 
@@ -309,15 +309,18 @@ static inline PMPanDirection _PMPanDirectionForVelocity(CGPoint velocity) {
 {
     NSParameterAssert(toVC);
     
-    if (_panAnimator.panDirection == PMPanDirectionNone && fromVC) {
-
-        NSUInteger fromVCIndex = [tabBarController.viewControllers indexOfObject:fromVC];
-        NSUInteger toVCIndex = [tabBarController.viewControllers indexOfObject:toVC];
+    if (fromVC) {
         
-        NSRange range = NSMakeRange(0, tabBarController.viewControllers.count);
-        NSInteger delta = PMShortestCircularDistance(fromVCIndex, toVCIndex, range);
-        
-        _panAnimator.panDirection = (delta > 0)? PMPanDirectionNegative : PMPanDirectionPositive;
+        if (_panAnimator.panDirection == PMPanDirectionNone) {
+            
+            NSUInteger fromVCIndex = [tabBarController.viewControllers indexOfObject:fromVC];
+            NSUInteger toVCIndex = [tabBarController.viewControllers indexOfObject:toVC];
+            
+            NSRange range = NSMakeRange(0, tabBarController.viewControllers.count);
+            NSInteger delta = PMShortestCircularDistance(fromVCIndex, toVCIndex, range);
+            
+            _panAnimator.panDirection = (delta > 0)? PMPanDirectionNegative : PMPanDirectionPositive;
+        }
 
         return _panAnimator;
     }
@@ -335,13 +338,13 @@ static inline PMPanDirection _PMPanDirectionForVelocity(CGPoint velocity) {
 #pragma mark - Private Methods
 
 
-- (void) _commonPMTabBarControllerInit
+- (void) PM_commonPMTabBarControllerInit
 {
     self.delegate = self;
     _animateWithDuration = YES;
 }
 
-- (void)_handlePan:(UIPanGestureRecognizer *)gestureRecognizer {
+- (void)PM_handlePan:(UIPanGestureRecognizer *)gestureRecognizer {
 	
 	CGPoint velocity = [gestureRecognizer velocityInView:gestureRecognizer.view];
 	CGPoint delta = [gestureRecognizer translationInView:gestureRecognizer.view];
@@ -351,8 +354,8 @@ static inline PMPanDirection _PMPanDirectionForVelocity(CGPoint velocity) {
         case UIGestureRecognizerStateBegan: {
             
             self.isTransitionInteractive = YES;
-            _panAnimator.panDirection = _PMPanDirectionForVelocity(velocity);
-            self.selectedIndex = (velocity.x < 0.0f)? [self _nextIndex] : [self _previousIndex];
+            _panAnimator.panDirection = PM_PanDirectionForVelocity(velocity);
+            self.selectedIndex = (velocity.x < 0.0f)? [self PM_nextIndex] : [self PM_previousIndex];
 		}
 			
         case UIGestureRecognizerStateChanged: {
@@ -366,10 +369,10 @@ static inline PMPanDirection _PMPanDirectionForVelocity(CGPoint velocity) {
         case UIGestureRecognizerStateEnded: {
 			
             CGFloat remainingDistance = gestureRecognizer.view.frame.size.width - fabsf(delta.x);
-            CGFloat speedMultiplier = _interactivePanTransition.duration / _PMDuration(fabsf(velocity.x), remainingDistance);
+            CGFloat speedMultiplier = _interactivePanTransition.duration / PM_Duration(fabsf(velocity.x), remainingDistance);
             _interactivePanTransition.completionSpeed = fmaxf(1.0f, speedMultiplier);
 			
-            if ([self _shouldCompleteForVelocity:velocity delta:delta]) {
+            if ([self PM_shouldCompleteForVelocity:velocity delta:delta]) {
                 [_tabBar setCenteredIndex:self.selectedIndex animated:YES];
                 [_interactivePanTransition finishInteractiveTransition];
             }
@@ -382,7 +385,7 @@ static inline PMPanDirection _PMPanDirectionForVelocity(CGPoint velocity) {
     }
 }
 
-- (BOOL) _shouldCompleteForVelocity:(CGPoint)velocity delta:(CGPoint)delta
+- (BOOL) PM_shouldCompleteForVelocity:(CGPoint)velocity delta:(CGPoint)delta
 {
 	switch (_panAnimator.panDirection) {
 		case PMPanDirectionPositive:	return (velocity.x >= RequiredXVelocity && delta.x >= RequiredDeltaDistance);
@@ -391,7 +394,7 @@ static inline PMPanDirection _PMPanDirectionForVelocity(CGPoint velocity) {
 	}
 }
 
-- (NSUInteger) _nextIndex
+- (NSUInteger) PM_nextIndex
 {
 	if (self.selectedIndex == self.viewControllers.count-1) {
 		return 0;
@@ -399,7 +402,7 @@ static inline PMPanDirection _PMPanDirectionForVelocity(CGPoint velocity) {
 	return self.selectedIndex + 1;
 }
 
-- (NSUInteger) _previousIndex
+- (NSUInteger) PM_previousIndex
 {
 	if (self.selectedIndex == 0) {
 		return self.viewControllers.count - 1;
@@ -407,7 +410,7 @@ static inline PMPanDirection _PMPanDirectionForVelocity(CGPoint velocity) {
 	return self.selectedIndex - 1;
 }
 
-- (CGFloat) _calculateTabPadding
+- (CGFloat) PM_calculateTabPadding
 {
     CGFloat contentWidth = 0.0f;
 	CGFloat widestViewWidth = 0.0f;
